@@ -1,0 +1,388 @@
+# Netlify — site de l’association
+# Optimisé : cache long assets hashés, HTML revalidé, Functions légères
+# MAJ-33 : Production = full build + prerender Puppeteer (SEO)
+# LOT-2 : redirections API bureau versionnées, no-store + noindex /bureau
+
+[build]
+  # build:fast = sans prerender (local Windows + previews)
+  command = "npm run build:fast"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "20"
+  # Mémoire Node pour Vite + Puppeteer
+  NODE_OPTIONS = "--max-old-space-size=4096"
+  PUPPETEER_SKIP_DOWNLOAD = "false"
+  PUPPETEER_CACHE_DIR = "/opt/build/cache/puppeteer"
+  # CI : pas de téléchargement inutile
+  NPM_FLAGS = "--no-audit --no-fund"
+
+# ──────────────────────────────────────────────
+# Contextes
+# ──────────────────────────────────────────────
+
+# Production = full build + prerender (SEO crawlers)
+[context.production]
+  command = "npm run build"
+
+# Previews et branch deploys restent rapides
+[context.deploy-preview]
+  command = "npm run build:fast"
+
+[context.branch-deploy]
+  command = "npm run build:fast"
+
+# ──────────────────────────────────────────────
+# Functions : cold start réduit
+# ──────────────────────────────────────────────
+[functions]
+  node_bundler = "esbuild"
+  # Included files si besoin de CSV locaux dans la function
+  # included_files = ["public/data/**"]
+
+[functions.carte-mail]
+  included_files = ["public/assets/carte-verso-2627.png"]
+
+# ──────────────────────────────────────────────
+# Redirects API + SPA bureau
+# ──────────────────────────────────────────────
+
+# SPA interne uniquement (pas de HTML prérendu). force=true écrase tout fichier dist.
+# Ne jamais copier ce pattern sur une page publique (/tarifs, /essai, /faq…).
+
+# Ancienne page bénévoles → un seul espace bureau
+[[redirects]]
+  from = "/benevoles"
+  to = "/bureau"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/benevoles/"
+  to = "/bureau"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/bureau"
+  to = "/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/bureau/"
+  to = "/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/bureau/*"
+  to = "/index.html"
+  status = 200
+  force = true
+
+# Ne pas réécrire /tarifs vers index.html : dist/tarifs/index.html (prerender) doit être servi.
+
+# ── API back-office (ne jamais retirer : sans ces lignes, /bureau ne fonctionne pas)
+[[redirects]]
+  from = "/api/bureau-auth"
+  to = "/.netlify/functions/bureau-auth"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/adhesions-pending"
+  to = "/.netlify/functions/adhesions-pending"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/adhesion-validate"
+  to = "/.netlify/functions/adhesion-validate"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/carte-marquer"
+  to = "/.netlify/functions/carte-marquer"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/carte-mail"
+  to = "/.netlify/functions/carte-mail"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/carte-image"
+  to = "/.netlify/functions/carte-image"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/essais-list"
+  to = "/.netlify/functions/essais-list"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/essai-update"
+  to = "/.netlify/functions/essai-update"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/site-content"
+  to = "/.netlify/functions/site-content"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/sheet"
+  to = "/.netlify/functions/sheet"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/health"
+  to = "/.netlify/functions/health"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/adhesion"
+  to = "/.netlify/functions/adhesion"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/essai"
+  to = "/.netlify/functions/essai"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/bureau/google/start"
+  to = "/.netlify/functions/bureau-google-start"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/bureau/google/callback"
+  to = "/.netlify/functions/bureau-google-callback"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/bureau/mail"
+  to = "/.netlify/functions/bureau-mail"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/bureau/mail/*"
+  to = "/.netlify/functions/bureau-mail/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/bureau/agenda"
+  to = "/.netlify/functions/bureau-agenda"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/bureau/agenda/*"
+  to = "/.netlify/functions/bureau-agenda/:splat"
+  status = 200
+  force = true
+
+# ──────────────────────────────────────────────
+# Headers sécurité + performance
+# ──────────────────────────────────────────────
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), interest-cohort=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; manifest-src 'self'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests"
+    X-XSS-Protection = "0"
+    Cross-Origin-Opener-Policy = "same-origin-allow-popups"
+    Cross-Origin-Resource-Policy = "same-origin"
+    X-Permitted-Cross-Domain-Policies = "none"
+
+# Assets Vite hashés (JS/CSS/images build) — cache 1 an immutable
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    X-Content-Type-Options = "nosniff"
+
+# Polices (public/fonts) — renommer le fichier si la police change
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Access-Control-Allow-Origin = "*"
+
+# Images statiques public/assets (webp) — cache long
+[[headers]]
+  for = "/*.webp"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.woff2"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# CSV planning / événements — cache court + revalidate
+[[headers]]
+  for = "/data/*"
+  [headers.values]
+    Cache-Control = "public, max-age=300, stale-while-revalidate=3600"
+    Content-Type = "text/csv; charset=utf-8"
+
+# HTML — toujours revalider (prerender + index)
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/blog"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/blog/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Sitemap / robots — cache 1 jour
+[[headers]]
+  for = "/sitemap.xml"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+[[headers]]
+  for = "/robots.txt"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+[[headers]]
+  for = "/.well-known/security.txt"
+  [headers.values]
+    Content-Type = "text/plain; charset=utf-8"
+    Cache-Control = "public, max-age=86400"
+
+# API — ne pas cacher les POST d’adhésion / essai
+[[headers]]
+  for = "/api/adhesion"
+  [headers.values]
+    Cache-Control = "no-store"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/api/essai"
+  [headers.values]
+    Cache-Control = "no-store"
+    X-Content-Type-Options = "nosniff"
+
+# Endpoints bureau : données nominatives, jamais de cache CDN
+[[headers]]
+  for = "/api/bureau-auth"
+  [headers.values]
+    Cache-Control = "no-store, private"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/api/adhesions-pending"
+  [headers.values]
+    Cache-Control = "no-store, private"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/api/adhesion-validate"
+  [headers.values]
+    Cache-Control = "no-store, private"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/api/carte-marquer"
+  [headers.values]
+    Cache-Control = "no-store, private"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/api/carte-mail"
+  [headers.values]
+    Cache-Control = "no-store, private"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/api/carte-image"
+  [headers.values]
+    Cache-Control = "no-store, private"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/api/essais-list"
+  [headers.values]
+    Cache-Control = "no-store, private"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/api/essai-update"
+  [headers.values]
+    Cache-Control = "no-store, private"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/api/site-content"
+  [headers.values]
+    Cache-Control = "no-store, private"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Cache-Control = "public, max-age=60, stale-while-revalidate=300"
+    X-Content-Type-Options = "nosniff"
+
+# Espace bénévoles — jamais indexé
+[[headers]]
+  for = "/benevoles"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/benevoles/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Back-office — jamais indexé
+[[headers]]
+  for = "/bureau"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store"
+
+[[headers]]
+  for = "/bureau/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store"

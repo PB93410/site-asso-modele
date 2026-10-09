@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- LCP : même photo desktop / mobile -->
+    <link
+      rel="preload"
+      as="image"
+      href="%ASSO_HERO%"
+      fetchpriority="high"
+    />
+    <!-- Polices du titre et du texte (public/fonts) -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/barlow-condensed-latin-700-normal.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin-400-normal.woff2" crossorigin />
+
+    <!-- ====== HEADERS DE SÉCURITÉ (http-equiv pour site statique) ====== -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; manifest-src 'self'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), interest-cohort=()" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+    <!-- ====== TITRE ET MÉTAS (remplis au build depuis asso.config.js, cf. vite.config.ts) ====== -->
+    <title>%ASSO_TITLE%</title>
+    <meta name="description" content="%ASSO_DESCRIPTION%" />
+    <meta name="author" content="%ASSO_NOM%" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="theme-color" content="%ASSO_COULEUR%" />
+    <link rel="canonical" href="%ASSO_URL%/" />
+    <link rel="alternate" hreflang="fr-fr" href="%ASSO_URL%/" />
+    <link rel="alternate" hreflang="x-default" href="%ASSO_URL%/" />
+
+    <!-- ====== OPEN GRAPH ====== -->
+    <meta property="og:site_name" content="%ASSO_NOM%" />
+    <meta property="og:title" content="%ASSO_TITLE%" />
+    <meta property="og:description" content="%ASSO_DESCRIPTION%" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="%ASSO_URL%/" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:image" content="%ASSO_URL%/assets/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="%ASSO_NOM%" />
+
+    <!-- ====== TWITTER CARDS ====== -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="%ASSO_TITLE%" />
+    <meta name="twitter:description" content="%ASSO_DESCRIPTION%" />
+    <meta name="twitter:image" content="%ASSO_URL%/assets/og-image.png" />
+    <meta name="twitter:image:alt" content="%ASSO_NOM%" />
+
+    <!-- ====== FAVICON ====== -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <!-- ====== HUMANS.TXT ====== -->
+    <link rel="author" type="text/plain" href="/humans.txt" />
+
+    <!-- ====== PERFORMANCE ====== -->
+    <!-- Polices système uniquement (pas de Google Fonts → pas de requête tierce) -->
+    <link rel="dns-prefetch" href="https://wa.me" />
+
+    <!-- JSON-LD : source src/lib/schema.ts — injecté au build (postbuild) et par React -->
+
+
+
+  </head>
+  <body>
+    <!-- Skip link for accessibility -->
+    <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+    <div id="root"></div>
+    <!-- Inscription : alerte mail via Gmail API (/api/adhesion), pas Netlify Forms.
+         Ancien form data-netlify=inscription retiré → plus de mails vides « Nouvelle Adhesion : ». -->
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

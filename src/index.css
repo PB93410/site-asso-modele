@@ -1,0 +1,393 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 30 4% 7%;
+    --card: 0 0% 100%;
+    --card-foreground: 30 4% 7%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 30 4% 7%;
+    --primary: 24 91% 47%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 30 6% 91%;
+    --secondary-foreground: 30 4% 7%;
+    --muted: 30 6% 91%;
+    --muted-foreground: 37 4% 53%;
+    --accent: 30 6% 91%;
+    --accent-foreground: 30 4% 7%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 38 12% 90%;
+    --input: 38 12% 90%;
+    --ring: 24 91% 47%;
+
+    /* Design tokens unifiés */
+    --radius: 0.75rem;           /* 12px — boutons, inputs */
+    --radius-card: 1rem;         /* 16px — cartes */
+    --radius-panel: 1.5rem;      /* 24px — grandes cartes / panels */
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.12);
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.03);
+
+    /* Surfaces (mode sombre par défaut pour les sections dark) */
+    --surface-dark: #111110;
+    --surface-dark-elevated: #1A1916;
+    --text-on-dark: #ffffff;
+    --text-muted-on-dark: #C4C0B8;
+  }
+
+  /* Mode clair optionnel */
+  [data-theme="light"] {
+    --surface-dark: #F4F1EA;
+    --surface-dark-elevated: #FFFFFF;
+    --text-on-dark: #111110;
+    --text-muted-on-dark: #5C5A54;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.07);
+    --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.1);
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 14px rgba(0, 0, 0, 0.04);
+  }
+
+  html {
+    scroll-behavior: auto;
+    scroll-padding-top: 80px;
+  }
+
+  html.has-campaign {
+    scroll-padding-top: 112px;
+  }
+
+  /* Espace sous header fixe (barre 2px + nav 56/72). Avec bandeau rentrée : +~32px. */
+  .page-chrome-top {
+    padding-top: 76px;
+  }
+  html.has-campaign .page-chrome-top {
+    padding-top: 108px;
+  }
+  @media (min-width: 640px) {
+    html.has-campaign .page-chrome-top {
+      padding-top: 118px;
+    }
+  }
+
+  @media (max-width: 380px) {
+    html {
+      scroll-padding-top: 72px;
+    }
+    html.has-campaign {
+      scroll-padding-top: 104px;
+    }
+  }
+
+  /* Contraste WCAG : gris lisible sur fond noir / pages cours-blog */
+  .bg-brand-black .text-brand-gray,
+  .bg-\[\#0E0E0D\] .text-brand-gray {
+    color: var(--text-muted-on-dark, #C4C0B8);
+  }
+
+  body {
+    /* Stack système stable — pas de webfont bloquante = moins de CLS texte */
+    font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: #FFFFFF;
+    color: #111110;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Polices servies par le site (public/fonts, licence OFL) : aucune requête tierce.
+     Inter 600/700 : le navigateur épaissit le 500 (ajouter les fichiers 600/700 pour un rendu exact). */
+  @font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: local('Inter'), url('/fonts/inter-latin-400-normal.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: local('Inter Medium'), url('/fonts/inter-latin-500-normal.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Barlow Condensed';
+    font-style: normal;
+    font-weight: 700 900;
+    font-display: swap;
+    src: local('Barlow Condensed Bold'), url('/fonts/barlow-condensed-latin-700-normal.woff2') format('woff2');
+  }
+
+  /* Images : ratio réservé ; évite les sauts si le CSS force une largeur */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  *:focus-visible {
+    outline: 3px solid #4A90E2;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /*
+   * Zones cliquables — confort mobile / seniors
+   * WCAG 2.2 : 24px min · Apple/Google : 44px recommandé
+   */
+  button,
+  [role="button"],
+  [type="button"],
+  [type="submit"],
+  a.inline-flex,
+  a.flex,
+  a.inline-block,
+  nav a,
+  footer a,
+  .skip-link {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Liens texte dans le contenu : agrandir la zone sans casser le flux */
+  p a,
+  li a,
+  td a,
+  .prose-blog a {
+    padding-block: 0.25em;
+    margin-block: -0.25em;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 3px;
+  }
+}
+
+/* Écrans tactiles : renforcer encore un peu */
+@media (pointer: coarse) {
+  button,
+  [role="button"],
+  a.inline-flex,
+  a.flex,
+  nav a,
+  footer a {
+    min-height: 48px;
+  }
+
+  /* Icônes seules (fermer, menu) : zone de frappe confortable */
+  button.p-1,
+  button.p-2,
+  a.p-1,
+  a.p-2 {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@layer components {
+  .section-padding {
+    padding-top: clamp(56px, 7vh, 88px);
+    padding-bottom: clamp(56px, 7vh, 88px);
+  }
+
+  .content-max-width {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  /* Rayons unifiés */
+  .rounded-card {
+    border-radius: var(--radius-card);
+  }
+  .rounded-panel {
+    border-radius: var(--radius-panel);
+  }
+
+  /* Ombres unifiées */
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+  .shadow-elevated {
+    box-shadow: var(--shadow-md);
+  }
+
+  /*
+   * Texture discrète sur les grandes zones sombres
+   * Motif grain SVG léger (faible opacité, n'impacte pas la lisibilité)
+   */
+  .bg-brand-black,
+  .surface-dark {
+    background-color: var(--surface-dark) !important;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    background-blend-mode: overlay;
+  }
+
+  /* Mode clair : inverser texte sur surfaces sombres */
+  [data-theme="light"] .bg-brand-black,
+  [data-theme="light"] .surface-dark {
+    color: var(--text-on-dark);
+  }
+
+  [data-theme="light"] .bg-brand-black .text-white,
+  [data-theme="light"] .bg-brand-black h1,
+  [data-theme="light"] .bg-brand-black h2,
+  [data-theme="light"] .bg-brand-black h3,
+  [data-theme="light"] .bg-brand-black .font-display {
+    color: #111110;
+  }
+
+  [data-theme="light"] .bg-brand-black .text-brand-gray,
+  [data-theme="light"] .bg-brand-black p.text-brand-gray {
+    color: #5C5A54;
+  }
+
+  [data-theme="light"] .bg-brand-black .border-white\/\[0\.06\],
+  [data-theme="light"] .bg-brand-black [class*="border-white"] {
+    border-color: rgba(0, 0, 0, 0.08) !important;
+  }
+
+  [data-theme="light"] .bg-brand-black .bg-white\/\[0\.02\],
+  [data-theme="light"] .bg-brand-black .bg-white\/\[0\.03\],
+  [data-theme="light"] .bg-brand-black .hover\:bg-white\/\[0\.03\]:hover {
+    background-color: rgba(0, 0, 0, 0.03) !important;
+  }
+
+  [data-theme="light"] footer.bg-brand-black {
+    background-color: #EDE9E0 !important;
+  }
+
+  /* Skip link for accessibility & SEO */
+  .skip-link {
+    position: absolute;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    background: theme('colors.orange-primary');
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 0 0 var(--radius) var(--radius);
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    text-decoration: none;
+    transition: top 0.2s;
+  }
+
+  .skip-link:focus {
+    top: 0;
+  }
+
+  /* Sous le pli : le navigateur saute le rendu jusqu’au scroll */
+  .cv-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 480px;
+  }
+
+  /* Visually hidden for screen readers */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Animation pulse pour le CTA Essai Gratuit */
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 4px 20px rgba(4, 120, 87, 0.4); }
+    50% { box-shadow: 0 4px 30px rgba(4, 120, 87, 0.7), 0 0 60px rgba(4, 120, 87, 0.2); }
+  }
+  .animate-pulse-glow {
+    animation: pulse-glow 2.5s ease-in-out infinite;
+  }
+
+  /* Blog article content styles */
+  .prose-blog {
+    @apply font-body text-[16px] leading-relaxed;
+  }
+  .prose-blog .lead {
+    @apply text-[17px] text-brand-black leading-relaxed mb-6;
+  }
+  .prose-blog h2 {
+    @apply font-display font-black text-[24px] text-brand-black mt-10 mb-4 leading-tight;
+  }
+  .prose-blog p {
+    @apply text-brand-gray mb-5 leading-relaxed;
+  }
+  .prose-blog strong {
+    @apply text-brand-black font-bold;
+  }
+  .prose-blog ul {
+    @apply list-disc pl-6 mb-5 space-y-2;
+  }
+  .prose-blog ul li {
+    @apply text-brand-gray leading-relaxed;
+  }
+  .prose-blog a {
+    @apply text-orange-primary hover:underline;
+  }
+
+  [data-theme="light"] .prose-blog .lead,
+  [data-theme="light"] .prose-blog h2,
+  [data-theme="light"] .prose-blog strong {
+    color: #111110;
+  }
+}
+
+/* Respecter la préférence système si aucun choix manuel */
+@media (prefers-color-scheme: light) {
+  html:not([data-theme]) {
+    /* laisser le thème sombre par défaut du site ; le bouton permet le light */
+  }
+}
+
+
+/* Accessibilité : réduire les animations */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-pulse-glow,
+  .animate-card {
+    animation: none !important;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media print {
+  [data-print-hide],
+  [data-bureau-root] > header,
+  [data-bureau-root] .fixed {
+    display: none !important;
+  }
+  [data-bureau-root] {
+    background: #fff !important;
+  }
+}

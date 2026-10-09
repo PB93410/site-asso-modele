@@ -1,0 +1,35 @@
+# Local Netlify folder
+.netlify
+
+# Secrets & env
+.env
+.env.*
+!.env.example
+credentials.json
+*-credentials.json
+google-credentials.json
+*.pem
+*.p12
+
+# Données nominatives (ne jamais pousser sur GitHub)
+*.xlsx
+*.csv
+!public/data/*.csv
+
+# Cartes adhérent : jamais dans public/ (Vite les copierait dans dist)
+public/cartes/
+*cartes-adherents*.zip
+
+# Dépendances et build
+node_modules
+dist
+scripts/.generated
+tmp
+
+# Fichiers générés
+public/agenda.ics
+
+# OS / éditeur
+.DS_Store
+Thumbs.db
+*.local
