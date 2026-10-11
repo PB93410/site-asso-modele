@@ -3,6 +3,12 @@ export interface AssoLieu {
   nom: string;
   rue: string;
   acces?: string;
+  /** Si la salle n'est pas dans la ville de l'association. */
+  codePostal?: string;
+  ville?: string;
+  /** Coordonnées GPS (données structurées, plan). */
+  lat?: number;
+  lon?: number;
 }
 
 export interface AssoModules {

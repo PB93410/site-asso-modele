@@ -20,6 +20,8 @@
 - Mode démo (`npm run demo`, `netlify/functions/_demo.mjs`) : tout appel Google passe par `getSheets()`, `gmailApi()` ou `calendarApi()`, jamais `google.*` directement, sinon la démo casse.
 - Fonctions activables (`asso.config.js → modules`) : une nouvelle page ou fonction liée à un module vérifie `MODULES` (client) ou `moduleOff()` (serveur).
 - `npm run verifier` doit rester juste : un nouveau réglage obligatoire y est ajouté (`scripts/_verifier.mjs`).
+- Un champ ajouté à `asso.config.js` l’est aussi dans `scripts/_config-gabarit.mjs` (test d’identité) et, si l’association doit le fournir, dans `src/lib/dossier.js` et le questionnaire (`configurateur/`).
+- Les bénévoles ne sont pas techniques : ce qui les concerne se fait dans le navigateur (questionnaire, /bureau), jamais en ligne de commande.
 
 ## Textes
 - Ton associatif, pas startup. Public senior-friendly : phrases courtes, contrastes forts, cibles 44 px.

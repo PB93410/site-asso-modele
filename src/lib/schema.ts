@@ -2,7 +2,7 @@ import type { ActivityFAQ, ActivityPageData } from '../data/activityPages';
 import type { BlogArticle } from '../data/blogData';
 import { faqs } from '../data/faqData';
 import { SITE_CONFIG, type Event } from '../data/siteData';
-import { ASSO, PAYMENT_MODES, SITE_URL, TEL_INTL, lieuAdresse } from '../data/asso';
+import { ASSO, PAYMENT_MODES, SITE_URL, TEL_INTL, lieuAdresse, type AssoLieu } from '../data/asso';
 import { eventIsoDates, isPastEvent } from './events';
 
 export type Crumb = {
@@ -16,12 +16,12 @@ const PRICE = String(ASSO.adhesion.tarif);
 /** Réseaux sociaux renseignés dans asso.config.js (sameAs). */
 const SAME_AS = [ASSO.reseaux.facebook, ASSO.reseaux.instagram].filter(Boolean);
 
-function postalAddress(streetAddress?: string) {
+function postalAddress(streetAddress?: string, lieu?: AssoLieu) {
   return {
     '@type': 'PostalAddress',
     ...(streetAddress ? { streetAddress } : {}),
-    addressLocality: ASSO.ville,
-    postalCode: ASSO.codePostal,
+    addressLocality: lieu?.ville || ASSO.ville,
+    postalCode: lieu?.codePostal || ASSO.codePostal,
     addressRegion: ASSO.departement,
     addressCountry: 'FR',
   };
@@ -70,7 +70,10 @@ export function buildHomeSchema() {
         telephone: TEL,
         email: SITE_CONFIG.email,
         parentOrganization: { '@id': `${SITE_URL}/#organization` },
-        address: postalAddress(lieu.rue),
+        address: postalAddress(lieu.rue, lieu),
+        ...(lieu.lat !== undefined && lieu.lon !== undefined
+          ? { geo: { '@type': 'GeoCoordinates', latitude: lieu.lat, longitude: lieu.lon } }
+          : {}),
       })),
       {
         '@type': 'Offer',
@@ -94,7 +97,7 @@ function eventPlace(location: string) {
     return {
       '@type': 'Place',
       name: lieu.nom,
-      address: { ...postalAddress(lieu.rue), name: lieuAdresse(lieu) },
+      address: { ...postalAddress(lieu.rue, lieu), name: lieuAdresse(lieu) },
     };
   }
   return { '@type': 'Place', name: loc || ASSO.ville, address: postalAddress() };

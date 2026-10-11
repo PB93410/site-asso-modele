@@ -23,6 +23,7 @@ public/cartes/
 # Dépendances et build
 node_modules
 dist
+configurateur/dist
 scripts/.generated
 tmp
 

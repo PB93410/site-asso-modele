@@ -26,6 +26,11 @@ const P = ASSO.couleurs.primaire;
 const S = ASSO.couleurs.secondaire;
 const INITIALES = (ASSO.sigle || ASSO.nomCourt).slice(0, 3).toUpperCase();
 
+/** Logo fourni par l'association (asso.config.js → logo) : il remplace le monogramme partout. */
+const LOGO_FICHIER = ASSO.logo && ASSO.logo !== '/assets/logo.svg' ? path.join(PUB, ASSO.logo.replace(/^\/+/, '')) : '';
+const LOGO_PERSO = Boolean(LOGO_FICHIER && fs.existsSync(LOGO_FICHIER));
+const MIME = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.svg': 'image/svg+xml' };
+
 function write(rel, content) {
   const file = path.join(PUB, rel);
   if (!FORCE && fs.existsSync(file)) {
@@ -161,8 +166,13 @@ async function renderPngs() {
         await page.screenshot({ type: 'png', omitBackground: transparent, clip: { x: 0, y: 0, width: w, height: h } }),
       );
     };
+    const logoUrl = LOGO_PERSO
+      ? `data:${MIME[path.extname(LOGO_FICHIER).toLowerCase()] || 'image/png'};base64,${fs.readFileSync(LOGO_FICHIER).toString('base64')}`
+      : '';
     const logoPage = (size) =>
-      `<!doctype html><html><body style="margin:0;background:transparent">${logoSvg().replace('<svg ', `<svg width="${size}" height="${size}" `)}</body></html>`;
+      LOGO_PERSO
+        ? `<!doctype html><html><body style="margin:0;background:transparent"><img src="${logoUrl}" style="display:block;width:${size}px;height:${size}px;object-fit:contain"></body></html>`
+        : `<!doctype html><html><body style="margin:0;background:transparent">${logoSvg().replace('<svg ', `<svg width="${size}" height="${size}" `)}</body></html>`;
 
     write('assets/logo-512.png', await shot(logoPage(512), 512, 512, true));
     const fav32 = await shot(logoPage(32), 32, 32, true);
@@ -180,8 +190,9 @@ async function renderPngs() {
 // ---------- Main ----------
 
 fs.mkdirSync(ASSETS, { recursive: true });
-write('assets/logo.svg', logoSvg());
-write('assets/hero.svg', sceneSvg(1344, 768, 0));
+if (LOGO_PERSO) console.log(`[identite] logo de l'association : ${ASSO.logo}`);
+else write('assets/logo.svg', logoSvg());
+if (ASSO.heroImage === '/assets/hero.svg') write('assets/hero.svg', sceneSvg(1344, 768, 0));
 write('assets/act-pilates.svg', sceneSvg(900, 675, 1, 'Pilates'));
 write('assets/act-zumba.svg', sceneSvg(900, 675, 2, 'Zumba'));
 write('assets/act-renfo.svg', sceneSvg(900, 675, 3, 'Renforcement'));

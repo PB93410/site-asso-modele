@@ -33,7 +33,7 @@ export const PAIEMENTS_BUREAU = ASSO.adhesion.autresPaiements.join(', ');
 export const PAIEMENT_NOM = ASSO.adhesion.paiementNom || 'paiement en ligne';
 
 export function lieuAdresse(lieu: AssoLieu) {
-  return `${lieu.rue}, ${ASSO.codePostal} ${ASSO.ville}`;
+  return `${lieu.rue}, ${lieu.codePostal || ASSO.codePostal} ${lieu.ville || ASSO.ville}`;
 }
 
 export function lieuParNom(nom: string): AssoLieu | undefined {

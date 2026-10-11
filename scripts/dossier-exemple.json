@@ -1,0 +1,140 @@
+{
+  "version": 1,
+  "envoyeLe": "2026-10-11T10:00:00.000Z",
+  "contact": {
+    "nom": "Claire Fictive",
+    "role": "Secrétaire",
+    "email": "claire.fictive@example.org",
+    "telephone": "06 00 00 00 42"
+  },
+  "association": {
+    "nom": "Sport Santé des Tilleuls",
+    "nomCourt": "Les Tilleuls",
+    "sigle": "SST",
+    "accroche": "Gym douce, Yoga, Marche nordique",
+    "slogan": "Bouger à son rythme, ensemble",
+    "anneeCreation": "1992",
+    "rna": "",
+    "siret": "",
+    "siege": "3 allée des Tilleuls, 99000 Villeneuve-les-Tilleuls",
+    "responsablePublication": "La présidente de l’association",
+    "assureur": "",
+    "ville": "Villeneuve-les-Tilleuls",
+    "codePostal": "99000",
+    "departement": "Département fictif",
+    "region": "Région fictive",
+    "communesVoisines": [
+      "Saint-Fictif",
+      "Bourg-Neuf"
+    ]
+  },
+  "lieux": [
+    {
+      "nom": "Salle polyvalente",
+      "rue": "3 allée des Tilleuls",
+      "codePostal": "99000",
+      "ville": "Villeneuve-les-Tilleuls",
+      "acces": "Parking derrière la mairie.",
+      "lat": 46.5,
+      "lon": 2.5
+    },
+    {
+      "nom": "Dojo de Saint-Fictif",
+      "rue": "12 rue du Stade",
+      "codePostal": "99010",
+      "ville": "Saint-Fictif",
+      "acces": ""
+    }
+  ],
+  "contacts": {
+    "email": "contact@sport-sante-tilleuls.example",
+    "telephone": "0600000042",
+    "whatsapp": true,
+    "siteSouhaite": "www.sport-sante-tilleuls.example",
+    "instagram": "",
+    "facebook": "",
+    "avisGoogle": ""
+  },
+  "federation": {
+    "nom": "Fédération Fictive Sport Santé",
+    "sigle": "FFSS",
+    "url": "https://federation.example"
+  },
+  "adhesion": {
+    "tarif": 120,
+    "inclus": "",
+    "essais": 2,
+    "paiementNom": "HelloAsso",
+    "paiementUrl": "https://www.helloasso.com/associations/fictive",
+    "autresPaiements": [
+      "chèque",
+      "espèces"
+    ]
+  },
+  "saison": {
+    "label": "2026-2027",
+    "reprise": "2026-09-14"
+  },
+  "cours": [
+    {
+      "nom": "Gym douce",
+      "description": "Mobilité et équilibre, sur chaise si besoin. Idéal pour reprendre."
+    },
+    {
+      "nom": "Yoga",
+      "description": "Respiration et postures simples, tous niveaux."
+    },
+    {
+      "nom": "Marche nordique",
+      "description": "Sortie d’une heure trente, bâtons prêtés."
+    }
+  ],
+  "planning": [
+    {
+      "jour": "Mardi",
+      "debut": "10:00",
+      "fin": "11:00",
+      "cours": "Gym douce",
+      "lieu": "Salle polyvalente",
+      "note": ""
+    },
+    {
+      "jour": "Jeudi",
+      "debut": "18:30",
+      "fin": "19:30",
+      "cours": "Yoga",
+      "lieu": "Dojo de Saint-Fictif",
+      "note": ""
+    },
+    {
+      "jour": "Samedi",
+      "debut": "9:00",
+      "fin": "10:30",
+      "cours": "Marche nordique",
+      "lieu": "Salle polyvalente",
+      "note": "Départ du parking"
+    },
+    {
+      "jour": "Lundi",
+      "debut": "14:00",
+      "fin": "15:00",
+      "cours": "Gym douce",
+      "lieu": "Salle polyvalente",
+      "note": ""
+    }
+  ],
+  "apparence": {
+    "couleur": "#4CAF50",
+    "secondaire": "#5C6B4A",
+    "logo": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjI0MCIgZmlsbD0iIzRDQUY1MCIvPjx0ZXh0IHg9IjI1NiIgeT0iMjU2IiBkeT0iLjM1ZW0iIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC13ZWlnaHQ9IjgwMCIgZm9udC1zaXplPSIxNzAiIGZpbGw9IiNmZmYiPlNTVDwvdGV4dD48L3N2Zz4=",
+    "hero": "",
+    "heroAlt": ""
+  },
+  "modules": {
+    "essais": true,
+    "adhesion": false,
+    "bureau": true,
+    "mail": false
+  },
+  "remarques": "Nous aimerions que la marche nordique apparaisse en premier."
+}

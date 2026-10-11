@@ -60,6 +60,16 @@ Dans `asso.config.js → modules`, chaque fonction s’active séparément :
 
 Une fonction à `false` disparaît proprement : `/essai` et `/inscription` proposent alors d’appeler, d’écrire ou de venir sur place. On peut publier le jour même et brancher le reste plus tard.
 
+## Installer pour une association (référent)
+
+L’association remplit un **questionnaire en ligne** (`configurateur/`, sans compte ni installation) : nom retrouvé dans le répertoire officiel, salles avec recherche d’adresse, horaires, couleur tirée du logo, aperçu de la carte. Vous recevez un dossier, puis :
+
+```bash
+npm run installer -- dossier-sigle.json
+```
+
+Tout est expliqué dans **[docs/CONFIGURATEUR.md](docs/CONFIGURATEUR.md)**.
+
 ## Adapter à votre association
 
 Tout ce qui est propre à l’association est dans **un seul fichier : [`asso.config.js`](asso.config.js)** — nom, ville, salles, contacts, fédération, tarif, nombre d’essais, paiement en ligne, saison, couleurs.
@@ -80,6 +90,8 @@ Le guide pas à pas, avec la mise en ligne et le branchement de Google : **[docs
 |---|---|
 | `npm run demo` | Site et bureau en local avec des données fictives, sans Google |
 | `npm run verifier` | Ce qui manque pour publier, et comment le corriger |
+| `npm run installer -- dossier.json` | Installe le dossier envoyé par une association |
+| `npm run configurateur` | Questionnaire en ligne, en local |
 | `npm run dev` | Site en local (formulaires et bureau : avec `netlify dev`) |
 | `npm run build` | Build complet (pré-rendu Puppeteer + validation JSON-LD) — **le seul pour la prod** |
 | `npm run build:fast` | Build sans pré-rendu — essais locaux et previews uniquement |
@@ -92,6 +104,7 @@ Si le site est relié à GitHub, Netlify lance lui-même `npm run build` à chaq
 
 ## Documentation
 
+- [docs/CONFIGURATEUR.md](docs/CONFIGURATEUR.md) — questionnaire en ligne et `npm run installer`
 - [docs/ADAPTER-LE-MODELE.md](docs/ADAPTER-LE-MODELE.md) — reprendre le modèle pour son asso
 - [docs/DOC-BUREAU-GOOGLE.md](docs/DOC-BUREAU-GOOGLE.md) — brancher Gmail / Agenda / Contacts
 - [docs/DOC-GOOGLE-SHEETS.md](docs/DOC-GOOGLE-SHEETS.md) — planning et événements dans un Google Sheet

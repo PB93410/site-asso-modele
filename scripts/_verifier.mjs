@@ -3,33 +3,13 @@
  * Chaque contrôle renvoie { niveau: 'ok' | 'attention' | 'erreur', texte, aFaire? }.
  */
 
+import { contraste } from '../src/lib/dossier.js';
+
+export { contraste };
+
 const ok = (texte) => ({ niveau: 'ok', texte });
 const attention = (texte, aFaire) => ({ niveau: 'attention', texte, aFaire });
 const erreur = (texte, aFaire) => ({ niveau: 'erreur', texte, aFaire });
-
-// ---------------------------------------------------------------------------
-// Couleurs
-// ---------------------------------------------------------------------------
-
-function luminance(hex) {
-  const m = String(hex || '').trim().match(/^#?([0-9a-f]{3}|[0-9a-f]{6})$/i);
-  if (!m) return null;
-  const h = m[1].length === 3 ? m[1].replace(/./g, '$&$&') : m[1];
-  const [r, g, b] = [0, 2, 4].map((i) => {
-    const c = parseInt(h.slice(i, i + 2), 16) / 255;
-    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-  });
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-}
-
-/** Rapport de contraste WCAG entre deux couleurs « #rrggbb » (null si invalide). */
-export function contraste(a, b = '#ffffff') {
-  const la = luminance(a);
-  const lb = luminance(b);
-  if (la === null || lb === null) return null;
-  const [hi, lo] = la > lb ? [la, lb] : [lb, la];
-  return (hi + 0.05) / (lo + 0.05);
-}
 
 // ---------------------------------------------------------------------------
 // Configuration (asso.config.js)

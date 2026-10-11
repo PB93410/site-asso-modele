@@ -1,0 +1,19 @@
+# Questionnaire en ligne (site Netlify séparé, même dépôt).
+# Netlify → nouveau site depuis ce dépôt → Base directory : configurateur
+# Les dossiers envoyés arrivent dans Netlify → Forms → « dossier-association »
+# (activer « Form detection » et une notification par e-mail).
+
+[build]
+  command = "cd .. && npm ci --no-audit --no-fund && npm run build:configurateur"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+  PUPPETEER_SKIP_DOWNLOAD = "true"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Robots-Tag = "noindex"
