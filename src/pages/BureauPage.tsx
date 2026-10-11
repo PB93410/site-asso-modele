@@ -1332,12 +1332,12 @@ export default function BureauPage() {
               }
               return carte;
             }}
-            onEnvoyerMail={async (row, imageBase64, fileName) => {
+            onEnvoyerMail={async (row, renvoyer) => {
               const tel = cartesList.find((i) => i.row === row)?.tel || '';
               const data = await api<{ carte?: string; suivi?: boolean }>('/api/carte-mail', {
                 method: 'POST',
                 token,
-                body: JSON.stringify({ row, tel, imageBase64, fileName }),
+                body: JSON.stringify({ row, tel, renvoyer }),
               });
               const carte = String(data.carte || '').trim();
               if (carte) {

@@ -3,44 +3,35 @@
  * Envoie UNE carte adhérent par mail (Gmail asso), avec le PNG joint.
  * Destinataire = MAIL de la fiche, jamais une adresse choisie par le navigateur.
  * Pas d’envoi groupé. Ne touche pas adhesion.mjs ni les colonnes A→R.
- * Body: { row, imageBase64 }
+ * Body: { row, tel, renvoyer? }. Le recto est fabriqué à l’instant à partir de la même fiche
+ * que le destinataire : il ne peut pas partir chez quelqu’un d’autre.
+ * Carte déjà notée (CARTE) : refus, sauf renvoyer: true. Chaque envoi est noté au journal.
  */
 
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { connectLambda, getStore } from '@netlify/blobs';
 import { google } from 'googleapis';
 import { noteCarteDate } from './carte-marquer.mjs';
-import { CARTES_STORE, CARTE_NUMERO_RE, SEASON_PREFIX } from './_cartes-store.mjs';
+import { carteFiche } from './carte-image.mjs';
+import { renderRecto } from './_carte-recto.mjs';
+import { journalEntry, masquerMail, noteEnvoi } from './_cartes-journal.mjs';
+import { SEASON_PREFIX } from './_cartes-store.mjs';
 import { ASSO_GMAIL, getUserGoogleAuth, googleErrorMessage, mimeName, toBase64Url } from './_google-user.mjs';
 import {
   getAdherentsSheetId,
   getAdherentsTab,
   handleOptions,
-  isTestPrenom,
   json,
   pickRow,
   readSheetAsObjects,
   requireAuth,
   telPersonKey,
 } from './_bureau-lib.mjs';
-import { ASSO } from '../../asso.derive.js';
+import { ASSO, SAISON_COURTE } from '../../asso.derive.js';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function isCarteMailAddress(raw) {
   return EMAIL_RE.test(String(raw || '').trim());
-}
-
-/** PNG réel, taille d’une carte (~125 Ko). Refuse le reste. */
-export function pngFromBase64(raw) {
-  const clean = String(raw || '')
-    .replace(/^data:image\/png;base64,/i, '')
-    .replace(/\s/g, '');
-  if (!clean || !/^[A-Za-z0-9+/]+=*$/.test(clean)) return null;
-  const buf = Buffer.from(clean, 'base64');
-  if (buf.length < 1000 || buf.length > 400_000) return null;
-  if (buf[0] !== 0x89 || buf[1] !== 0x50 || buf[2] !== 0x4e || buf[3] !== 0x47) return null;
-  return buf;
 }
 
 function encodeMimeSubject(raw) {
@@ -62,7 +53,7 @@ ${ASSO.federation.sigle ? `Ce n’est pas la licence ${ASSO.federation.sigle}, c
 Le bureau`;
 }
 
-const VERSO_REL = 'public/assets/carte-verso-2627.png';
+const VERSO_REL = `public/assets/carte-verso-${SAISON_COURTE}.png`;
 
 export function versoFileName(prefix = SEASON_PREFIX) {
   return `${String(prefix || '').replace(/-$/, '')}-verso.png`;
@@ -118,50 +109,6 @@ export function buildMime({ to, numero, prenom, png, verso }) {
   return lines.join('\r\n');
 }
 
-function blobsStore(event) {
-  const headers = {};
-  for (const [key, value] of Object.entries(event.headers || {})) {
-    headers[String(key).toLowerCase()] = value;
-  }
-  connectLambda({ ...event, headers });
-  return getStore(CARTES_STORE);
-}
-
-/** PNG du coffre, sinon le fichier envoyé s’il porte le bon nom — puis rangé dans le coffre. */
-async function pngForCarte(event, body, numero) {
-  let store = null;
-  try {
-    store = blobsStore(event);
-    const data = await store.get(numero, { type: 'arrayBuffer' });
-    if (data && data.byteLength) return { png: Buffer.from(data) };
-  } catch (err) {
-    console.error('carte-mail coffre', err?.message || 'failed');
-    store = null;
-  }
-
-  const fileName = String(body.fileName || '').trim();
-  if (fileName !== `${numero}.png`) {
-    return {
-      error: json(400, {
-        error: `Carte introuvable dans le coffre. Ajoutez le fichier ${numero}.png.`,
-      }),
-    };
-  }
-  const png = pngFromBase64(body.imageBase64);
-  if (!png) return { error: json(400, { error: 'Image de la carte introuvable' }) };
-
-  try {
-    if (!store) store = blobsStore(event);
-    await store.set(numero, new Blob([png], { type: 'image/png' }), {
-      metadata: { contentType: 'image/png' },
-    });
-  } catch (err) {
-    console.error('carte-mail coffre', err?.message || 'failed');
-    return { error: json(500, { error: 'Impossible d’enregistrer la carte. Réessayez dans un instant.' }) };
-  }
-  return { png };
-}
-
 function readBody(event) {
   let raw = event.body || '';
   if (event.isBase64Encoded && raw) raw = Buffer.from(raw, 'base64').toString('utf8');
@@ -187,7 +134,9 @@ export async function handler(event) {
     return json(400, { error: 'Numéro de ligne invalide' });
   }
 
-  let png;
+  let numero = '';
+  let to = '';
+  let deja = '';
   try {
     const tab = getAdherentsTab();
     const { rows } = await readSheetAsObjects(getAdherentsSheetId(), `'${tab}'!A:Z`);
@@ -202,36 +151,33 @@ export async function handler(event) {
         return json(409, { error: 'Cette fiche a changé. Appuyez sur Actualiser.' });
       }
     }
-    if (isTestPrenom(pickRow(target, 'PRENOM'), pickRow(target, 'NOM'))) {
-      return json(400, { error: 'Fiche de test. Rien n’a été envoyé.' });
+    const fiche = carteFiche(target, '');
+    if (fiche.error) return fiche.error;
+    numero = fiche.numero;
+    deja = pickRow(target, 'CARTE');
+    if (deja && body.renvoyer !== true) {
+      return json(409, { error: `Carte déjà partie le ${deja}. Rien n’a été envoyé.`, deja });
     }
-    if (pickRow(target, 'STATUT') !== 'À jour') {
-      return json(400, { error: 'Cette fiche n’est pas à jour. Rien n’a été envoyé.' });
-    }
-    const numero = pickRow(target, 'NUMERO');
-    if (!CARTE_NUMERO_RE.test(numero)) {
-      return json(400, { error: 'Numéro manquant. Rien n’a été envoyé.' });
-    }
-    const to = pickRow(target, 'MAIL');
+    to = pickRow(target, 'MAIL');
     if (!isCarteMailAddress(to)) {
       return json(400, { error: 'E-mail manquant ou invalide. Rien n’a été envoyé.' });
     }
-    const loaded = await pngForCarte(event, body, numero);
-    if (loaded.error) return loaded.error;
-    png = loaded.png;
+    const png = await renderRecto(fiche);
     const verso = readVersoPng();
     if (!verso) console.error('carte-mail verso introuvable, envoi du recto seul');
 
     const gmail = google.gmail({ version: 'v1', auth: getUserGoogleAuth() });
     await gmail.users.messages.send({
       userId: 'me',
-      requestBody: { raw: toBase64Url(buildMime({ to, numero, prenom: pickRow(target, 'PRENOM'), png, verso })) },
+      requestBody: { raw: toBase64Url(buildMime({ to, numero, prenom: fiche.prenom, png, verso })) },
     });
   } catch (err) {
     const googleCode = err?.response?.data?.error || err?.message || 'failed';
     console.error('carte-mail send', googleCode);
     return json(500, { error: googleErrorMessage(err) });
   }
+
+  await noteEnvoi(event, journalEntry({ numero, row, canal: 'mail', dest: masquerMail(to), renvoi: Boolean(deja) }));
 
   try {
     const noted = await noteCarteDate(row, body.tel);

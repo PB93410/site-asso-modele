@@ -29,7 +29,7 @@ Le bureau lira le nouvel onglet. Les numéros de carte partiront de `ASE-2728-00
 
 Dans `src/data/CONFIG.ts`, mettez à jour `SEASON_LABEL` et `SEASON_PREFIX`. `SAISON` suit `SEASON_LABEL`.
 
-Chaque saison a son verso de carte. Copiez le nouveau `VERSO-commun.png` vers `public/assets/carte-verso-….png` (la saison dans le nom : `/assets` est en cache un an), mettez à jour `CARTE_VERSO_URL`, et le chemin `included_files` de `carte-mail` dans `netlify.toml`.
+Chaque saison a son verso de carte. Copiez le nouveau `VERSO-commun.png` vers `public/assets/carte-verso-….png` (la saison dans le nom : `/assets` est en cache un an) et mettez à jour `CARTE_VERSO_URL`. `netlify.toml` embarque déjà tous les `carte-verso-*.png`.
 
 Puis déployez le site, quand vous le décidez.
 
@@ -65,4 +65,6 @@ Une personne qui revient a une **nouvelle ligne** dans le nouvel onglet, et un *
 
 ## 6. Rectos de carte
 
-Après des encaissements : `node scripts/make-cartes.mjs` (aperçu), puis `--generer --envoyer-coffre`.
+Rien à fabriquer. Le recto est dessiné au moment de l’envoi (onglet **Cartes** du bureau), à partir de la fiche : nom, prénom, numéro et saison. Pour corriger une carte, corrigez la fiche dans le Sheet puis renvoyez-la.
+
+Journal des envois (date, numéro, canal, destinataire masqué) : `node scripts/journal-cartes.mjs`.

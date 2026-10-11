@@ -21,18 +21,15 @@ type Props = {
   qPeople: string;
   onBack?: () => void;
   onMarquer?: (row: number) => Promise<string>;
-  onEnvoyerMail?: (
-    row: number,
-    imageBase64: string,
-    fileName?: string,
-  ) => Promise<{ carte: string; suivi: boolean }>;
+  onEnvoyerMail?: (row: number, renvoyer: boolean) => Promise<{ carte: string; suivi: boolean }>;
   token?: string | null;
 };
 
 const NUMERO_RE = new RegExp(`^${SEASON_PREFIX.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\d{3}$`);
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MSG_SUCCESS =
-  'Carte prête. Dans WhatsApp, vérifiez le prénom puis appuyez sur Envoyer.';
+const MSG_SUCCESS = 'C’est noté : carte envoyée.';
+const MSG_WA_ASK = 'Dans WhatsApp, vérifiez le prénom puis appuyez sur Envoyer. La carte est partie ?';
+const MSG_WA_NON = 'Rien n’est noté. Vous pourrez réessayer.';
 const MSG_MAIL =
   'Carte envoyée par mail. La personne doit vérifier sa boîte, et les courriers indésirables.';
 const MSG_MAIL_SUIVI = 'Le mail est parti. Le suivi n’a pas été noté sur la feuille.';
@@ -42,8 +39,7 @@ const ERR_TEL = 'Téléphone manquant ou invalide';
 const ERR_RIEN = 'E-mail et téléphone manquants';
 const ERR_MAIL = 'E-mail invalide';
 const ERR_IMAGE = 'Image de la carte introuvable';
-const ERR_SUIVI =
-  'Carte prête dans WhatsApp. Le suivi n’a pas été noté. Réessayez.';
+const ERR_SUIVI = 'Le suivi n’a pas été noté. Réessayez.';
 const ERR_MAIL_SEND = 'Le mail n’est pas parti. Réessayez.';
 
 function msgCarte(prenom: string, numero: string) {
@@ -84,19 +80,27 @@ function blocage(item: CarteAdherent): string | null {
   return ERR_RIEN;
 }
 
-async function fetchCartePng(numero: string, token?: string | null): Promise<File | null> {
+/** Image du coffre, ou le message du serveur (ex. carte qui ne correspond pas à la fiche). */
+async function fetchCartePng(
+  row: number,
+  numero: string,
+  token?: string | null,
+): Promise<{ file: File } | { error: string }> {
   const headers: Record<string, string> = {};
   if (token) headers.Authorization = `Bearer ${token}`;
-  const res = await fetch(`/api/carte-image?numero=${encodeURIComponent(numero)}`, {
+  const res = await fetch(`/api/carte-image?numero=${encodeURIComponent(numero)}&row=${row}`, {
     headers,
     cache: 'no-store',
   });
-  if (!res.ok) return null;
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    return { error: (data as { error?: string })?.error || ERR_IMAGE };
+  }
   const blob = await res.blob();
-  if (!blob || blob.size === 0) return null;
+  if (!blob || blob.size === 0) return { error: ERR_IMAGE };
   const type = blob.type || 'image/png';
-  if (type && !type.startsWith('image/')) return null;
-  return new File([blob], `${numero}.png`, { type: type || 'image/png' });
+  if (type && !type.startsWith('image/')) return { error: ERR_IMAGE };
+  return { file: new File([blob], `${numero}.png`, { type: type || 'image/png' }) };
 }
 
 function versoFileName() {
@@ -127,16 +131,6 @@ function downloadFile(file: File) {
   URL.revokeObjectURL(url);
 }
 
-async function fileToBase64(file: File) {
-  const bytes = new Uint8Array(await file.arrayBuffer());
-  let binary = '';
-  const chunk = 0x8000;
-  for (let i = 0; i < bytes.length; i += chunk) {
-    binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
-  }
-  return btoa(binary);
-}
-
 export default function BureauCartesTab({
   items,
   loading,
@@ -148,8 +142,7 @@ export default function BureauCartesTab({
 }: Props) {
   const [busyRow, setBusyRow] = useState<number | null>(null);
   const [confirmRow, setConfirmRow] = useState<number | null>(null);
-  const [fromCoffre, setFromCoffre] = useState<Record<number, boolean>>({});
-  const [pickedFile, setPickedFile] = useState<Record<number, File | undefined>>({});
+  const [waAskRow, setWaAskRow] = useState<number | null>(null);
   const [rowInfo, setRowInfo] = useState<Record<number, { kind: 'ok' | 'cancel' | 'err'; text: string }>>(
     {},
   );
@@ -170,18 +163,19 @@ export default function BureauCartesTab({
     });
 
     const text = msgCarte(item.prenom, numero);
-    let file: File | null = null;
+    let loaded: { file: File } | { error: string };
     try {
-      file = await fetchCartePng(numero, token);
+      loaded = await fetchCartePng(item.row, numero, token);
     } catch {
-      file = null;
+      loaded = { error: ERR_IMAGE };
     }
 
-    if (!file) {
-      setRowInfo((prev) => ({ ...prev, [item.row]: { kind: 'err', text: ERR_IMAGE } }));
+    if ('error' in loaded) {
+      setRowInfo((prev) => ({ ...prev, [item.row]: { kind: 'err', text: loaded.error } }));
       setBusyRow(null);
       return;
     }
+    const file = loaded.file;
 
     const recto = new File([file], `${numero}-recto.png`, { type: file.type || 'image/png' });
     const verso = await fetchVersoFile();
@@ -220,8 +214,16 @@ export default function BureauCartesTab({
       window.open(`https://wa.me/${telDigits}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
     }
 
+    // Noté seulement quand le bénévole confirme que le message est parti.
+    setWaAskRow(item.row);
+    setBusyRow(null);
+  }
+
+  async function confirmerWhatsApp(item: CarteAdherent) {
+    setBusyRow(item.row);
     try {
       if (onMarquer) await onMarquer(item.row);
+      setWaAskRow(null);
       setRowInfo((prev) => ({ ...prev, [item.row]: { kind: 'ok', text: MSG_SUCCESS } }));
     } catch {
       setRowInfo((prev) => ({ ...prev, [item.row]: { kind: 'err', text: ERR_SUIVI } }));
@@ -229,28 +231,21 @@ export default function BureauCartesTab({
     setBusyRow(null);
   }
 
-  async function ouvrirMail(item: CarteAdherent) {
-    const numero = String(item.numero || '').trim();
-    setBusyRow(item.row);
+  function pasEnvoyeWhatsApp(item: CarteAdherent) {
+    setWaAskRow(null);
+    setRowInfo((prev) => ({ ...prev, [item.row]: { kind: 'cancel', text: MSG_WA_NON } }));
+  }
+
+  function ouvrirMail(item: CarteAdherent) {
     setRowInfo((prev) => {
       const next = { ...prev };
       delete next[item.row];
       return next;
     });
-    let file: File | null = null;
-    try {
-      file = await fetchCartePng(numero, token);
-    } catch {
-      file = null;
-    }
-    setFromCoffre((prev) => ({ ...prev, [item.row]: Boolean(file) }));
     setConfirmRow(item.row);
-    setBusyRow(null);
   }
 
   async function envoyerMail(item: CarteAdherent) {
-    const numero = String(item.numero || '').trim();
-    const inCoffre = fromCoffre[item.row] === true;
     setBusyRow(item.row);
     setRowInfo((prev) => {
       const next = { ...prev };
@@ -258,28 +253,9 @@ export default function BureauCartesTab({
       return next;
     });
 
-    let imageBase64 = '';
-    let fileName = '';
-    if (!inCoffre) {
-      const picked = pickedFile[item.row];
-      if (!picked || picked.name !== `${numero}.png`) {
-        setRowInfo((prev) => ({
-          ...prev,
-          [item.row]: {
-            kind: 'err',
-            text: `Carte introuvable dans le coffre. Ajoutez le fichier ${numero}.png.`,
-          },
-        }));
-        setBusyRow(null);
-        return;
-      }
-      imageBase64 = await fileToBase64(picked);
-      fileName = picked.name;
-    }
-
     setConfirmRow(null);
     try {
-      const result = await onEnvoyerMail?.(item.row, imageBase64, fileName || undefined);
+      const result = await onEnvoyerMail?.(item.row, Boolean(String(item.carte || '').trim()));
       if (!result) throw new Error(ERR_MAIL_SEND);
       setRowInfo((prev) => ({
         ...prev,
@@ -302,6 +278,7 @@ export default function BureauCartesTab({
       <h2 className="font-display font-bold text-lg">Cartes adhérents</h2>
       <p className="text-base text-brand-gray">
         Une personne à la fois. S’il y a un e-mail, la carte part par mail. Sinon, WhatsApp.
+        La carte est fabriquée à l’envoi, à partir de la fiche.
       </p>
       {items.length === 0 && !loading ? (
         <div className="rounded-2xl bg-brand-cream border border-[#E8E6E1] px-4 py-8 text-center text-brand-olive">
@@ -320,6 +297,8 @@ export default function BureauCartesTab({
         const isBusy = busyRow === item.row;
         const info = rowInfo[item.row];
         const confirming = confirmRow === item.row;
+        const waAsking = waAskRow === item.row;
+        const deja = String(item.carte || '').trim();
         const underError = blocked || (info?.kind === 'err' ? info.text : null);
         return (
           <article
@@ -339,21 +318,11 @@ export default function BureauCartesTab({
             ) : null}
             {parMail && confirming ? (
               <div className="space-y-2">
-                <p className="text-sm text-brand-black">Envoyer la carte à cette adresse ?</p>
-                {fromCoffre[item.row] === false ? (
-                  <label className="block text-sm text-brand-gray">
-                    Fichier {numero}.png
-                    <input
-                      type="file"
-                      accept="image/png,.png"
-                      className="mt-1 block w-full text-sm"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        setPickedFile((prev) => ({ ...prev, [item.row]: file }));
-                      }}
-                    />
-                  </label>
-                ) : null}
+                <p className="text-sm text-brand-black">
+                  {deja
+                    ? `Carte déjà partie le ${deja}. La renvoyer à cette adresse ?`
+                    : 'Envoyer la carte à cette adresse ?'}
+                </p>
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
@@ -362,7 +331,7 @@ export default function BureauCartesTab({
                     className="inline-flex items-center justify-center gap-2 h-11 min-h-[44px] px-4 rounded-xl bg-orange-primary text-white font-semibold text-sm disabled:opacity-50"
                   >
                     <Mail className="w-4 h-4 shrink-0" aria-hidden="true" />
-                    {isBusy ? 'Envoi…' : 'Confirmer'}
+                    {isBusy ? 'Envoi…' : deja ? 'Renvoyer' : 'Confirmer'}
                   </button>
                   <button
                     type="button"
@@ -383,10 +352,33 @@ export default function BureauCartesTab({
                 className="inline-flex items-center justify-center gap-2 w-full sm:w-auto h-11 min-h-[44px] px-4 rounded-xl bg-orange-primary text-white font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Mail className="w-4 h-4 shrink-0" aria-hidden="true" />
-                Envoyer par mail
+                {deja ? 'Renvoyer par mail' : 'Envoyer par mail'}
               </button>
             ) : null}
-            {!parMail ? (
+            {!parMail && waAsking ? (
+              <div className="space-y-2">
+                <p className="text-sm text-brand-black">{MSG_WA_ASK}</p>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    disabled={isBusy}
+                    onClick={() => void confirmerWhatsApp(item)}
+                    className="inline-flex items-center justify-center h-11 min-h-[44px] px-4 rounded-xl bg-orange-primary text-white font-semibold text-sm disabled:opacity-50"
+                  >
+                    {isBusy ? 'Enregistrement…' : 'Oui, c’est parti'}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isBusy}
+                    onClick={() => pasEnvoyeWhatsApp(item)}
+                    className="inline-flex items-center justify-center h-11 min-h-[44px] px-4 rounded-xl border border-[#E8E6E1] text-brand-black font-semibold text-sm"
+                  >
+                    Non
+                  </button>
+                </div>
+              </div>
+            ) : null}
+            {!parMail && !waAsking ? (
               <button
                 type="button"
                 disabled={Boolean(blocked) || isBusy}
@@ -394,7 +386,7 @@ export default function BureauCartesTab({
                 className="inline-flex items-center justify-center gap-2 w-full sm:w-auto h-11 min-h-[44px] px-4 rounded-xl border-2 border-[#25D366] text-[#25D366] bg-transparent font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <MessageCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
-                {isBusy ? 'Préparation…' : 'Envoyer la carte'}
+                {isBusy ? 'Préparation…' : deja ? 'Renvoyer la carte' : 'Envoyer la carte'}
               </button>
             ) : null}
             {underError ? <p className="text-sm text-orange-primary">{underError}</p> : null}

@@ -1,6 +1,8 @@
 import { SEASON_PREFIX as DEFAULT_PREFIX } from '../../asso.derive.js';
-/** Nom du coffre Netlify et format du numéro de carte. Pas d’URL publique. */
-export const CARTES_STORE = 'cartes-adherents';
+/**
+ * Format du numéro de carte. Les cartes ne sont plus stockées : le recto est fabriqué
+ * à l’envoi (_carte-recto.mjs). Un numéro attribué est définitif, ne jamais renuméroter.
+ */
 
 /** Préfixe des numéros d'adhérent : asso.config.js (sigle + saison), ou ADHERENT_PREFIX. */
 export const SEASON_PREFIX = process.env.ADHERENT_PREFIX || DEFAULT_PREFIX;

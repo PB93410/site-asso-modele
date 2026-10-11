@@ -41,8 +41,21 @@
   # Included files si besoin de CSV locaux dans la function
   # included_files = ["public/data/**"]
 
+# Cartes adhérents : recto fabriqué à l’envoi (polices, logo, moteur resvg), verso commun.
 [functions.carte-mail]
-  included_files = ["public/assets/carte-verso-2627.png"]
+  included_files = [
+    "public/assets/carte-verso-*.png",
+    "public/assets/logo-512.png",
+    "netlify/cartes/fonts/*.ttf",
+    "node_modules/@resvg/resvg-wasm/index_bg.wasm",
+  ]
+
+[functions.carte-image]
+  included_files = [
+    "public/assets/logo-512.png",
+    "netlify/cartes/fonts/*.ttf",
+    "node_modules/@resvg/resvg-wasm/index_bg.wasm",
+  ]
 
 # ──────────────────────────────────────────────
 # Redirects API + SPA bureau

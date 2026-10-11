@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildMime, isCarteMailAddress, pngFromBase64 } from '../netlify/functions/carte-mail.mjs';
+import { buildMime, isCarteMailAddress } from '../netlify/functions/carte-mail.mjs';
 
 describe('carte par mail', () => {
   it('accepte une adresse simple et refuse le reste', () => {
@@ -7,17 +7,6 @@ describe('carte par mail', () => {
     expect(isCarteMailAddress('  marie.dupont@example.fr  ')).toBe(true);
     expect(isCarteMailAddress('pas une adresse')).toBe(false);
     expect(isCarteMailAddress('')).toBe(false);
-  });
-
-  it('accepte un PNG et refuse un autre fichier', () => {
-    const png = Buffer.alloc(1200);
-    png[0] = 0x89;
-    png[1] = 0x50;
-    png[2] = 0x4e;
-    png[3] = 0x47;
-    expect(pngFromBase64(png.toString('base64'))?.length).toBe(1200);
-    expect(pngFromBase64(Buffer.from('bonjour').toString('base64'))).toBeNull();
-    expect(pngFromBase64('')).toBeNull();
   });
 
   it('joint le recto puis le verso', () => {

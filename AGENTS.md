@@ -14,6 +14,8 @@
 ## Données
 - Colonnes des Sheets Essais / Adhérents : ne pas les renommer ni les réordonner (`netlify/functions/_bureau-lib.mjs`).
 - Lignes de test (prénom ou nom « test ») exclues des compteurs.
+- NUMERO : un numéro attribué est définitif, ne jamais le réécrire ni renuméroter.
+- Cartes : le recto est fabriqué à l’envoi depuis la fiche (`_carte-recto.mjs`). Pas de coffre d’images, pas de PNG nominatif sur disque.
 - Aucune donnée personnelle dans le dépôt.
 
 ## Textes

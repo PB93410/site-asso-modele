@@ -1,12 +1,13 @@
 /**
  * POST /api/carte-marquer
- * Note la date du jour dans CARTE (colonne T) quand la carte est prête
- * dans WhatsApp. N'écrit pas « Envoyé » : le bureau appuie lui-même sur Envoyer.
+ * Note la date du jour dans CARTE (colonne T) quand la carte est partie
+ * par WhatsApp (le bureau répond « Oui, c’est parti »). L’envoi est noté au journal.
  * Ne touche pas aux colonnes A→R ni à adhesion.mjs.
- * Body: { row }
+ * Body: { row, tel }
  */
 
 import { CARTE_NUMERO_RE } from './_cartes-store.mjs';
+import { journalEntry, masquerTel, noteEnvoi } from './_cartes-journal.mjs';
 import {
   getAdherentsSheetId,
   getAdherentsTab,
@@ -61,9 +62,10 @@ export async function noteCarteDate(row, tel) {
     return { status: 400, body: { error: 'Colonne CARTE introuvable. Rien n’a été écrit.' } };
   }
 
+  const telFiche = pickRow(target, 'TEL', 'Téléphone', 'Telephone', 'Tel');
   const existing = pickRow(target, 'CARTE');
   if (existing) {
-    return { status: 200, body: { ok: true, row, carte: existing, already: true } };
+    return { status: 200, body: { ok: true, row, carte: existing, already: true }, numero, tel: telFiche };
   }
 
   const carte = todayFr();
@@ -75,7 +77,7 @@ export async function noteCarteDate(row, tel) {
     headers,
     colIndices,
   );
-  return { status: 200, body: { ok: true, row, carte, already: false } };
+  return { status: 200, body: { ok: true, row, carte, already: false }, numero, tel: telFiche };
 }
 
 export async function handler(event) {
@@ -101,6 +103,18 @@ export async function handler(event) {
 
   try {
     const noted = await noteCarteDate(row, body.tel);
+    if (noted.status === 200) {
+      await noteEnvoi(
+        event,
+        journalEntry({
+          numero: noted.numero,
+          row,
+          canal: 'whatsapp',
+          dest: masquerTel(noted.tel),
+          renvoi: noted.body.already === true,
+        }),
+      );
+    }
     return json(noted.status, noted.body);
   } catch (err) {
     console.error('carte-marquer error', err);

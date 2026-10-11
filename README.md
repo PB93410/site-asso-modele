@@ -20,7 +20,7 @@ Issu du site d’une association sportive en production, puis rendu générique.
 
 - Essais à confirmer, rappels WhatsApp la veille, relances après le cours
 - Adhésions en attente, « J’ai reçu l’argent », numéros d’adhérent
-- Cartes d’adhérent (image + envoi par mail)
+- Cartes d’adhérent fabriquées à l’envoi à partir de la fiche (mail ou WhatsApp), journal des envois
 - Édition du planning et des événements sans toucher au code
 - Boîte mail et agenda du compte Google de l’asso, modèles de messages
 
