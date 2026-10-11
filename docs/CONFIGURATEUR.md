@@ -73,7 +73,7 @@ Pour essayer sans dossier réel : `scripts/dossier-exemple.json` (association fi
 
 1. `npm run demo` : montrer le site à l’association (bureau : mot de passe `demo`).
 2. Enrichir `contenu/cours.json` (accroche, bienfaits détaillés, FAQ du cours) et relire `contenu/faq.json`. `npm run verifier` contrôle la cohérence (planning ↔ cours, animateurs, textes à trous).
-3. Brancher Google pour les fonctions demandées (`docs/DOC-GOOGLE-SHEETS.md`, `docs/DOC-BUREAU-GOOGLE.md`).
+3. Brancher Google pour les fonctions demandées : `npm run sheets:creer` crée les classeurs (réglages préalables : `docs/ADAPTER-LE-MODELE.md`, étape 5), puis `docs/DOC-BUREAU-GOOGLE.md` pour le mail.
 4. `npm run verifier` jusqu’à zéro « ✖ », puis mise en ligne (`README.md`).
 
 ---

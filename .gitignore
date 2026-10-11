@@ -34,3 +34,6 @@ public/agenda.ics
 .DS_Store
 Thumbs.db
 *.local
+
+# Graphe de code (graphify), régénérable : graphify update .
+graphify-out/

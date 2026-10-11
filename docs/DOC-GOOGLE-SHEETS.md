@@ -4,7 +4,8 @@ Ce guide explique comment mettre à jour le **planning** et les **événements**
 
 > **Important (août 2026)**  
 > - Seuls le **planning** et les **événements** sont pilotés par le Sheet.  
-> - Les **coachs**  sont gérés dans le code (`siteData.ts`) pour protéger les photos et les biographies.  
+> - Les **animateurs** sont dans `contenu/coachs.json` (photos publiées seulement avec leur accord).  
+> - Pour **créer** les classeurs : `npm run sheets:creer` (voir ADAPTER-LE-MODELE.md, étape 5).  
 > - Après toute modification du Sheet → demander un **rebuild** au référent technique (`npm run build`).
 
 ---

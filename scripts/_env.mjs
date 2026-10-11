@@ -64,7 +64,10 @@ function netlifyEnv(name) {
 export function loadEnv() {
   parseDotEnv(path.join(ROOT, '.env'));
   parseDotEnv(path.join(ROOT, '.env.local'));
+  // ENV_LOCAL_SEUL=1 : .env seulement, sans interroger Netlify (npm run sheets:creer).
+  const local = process.env.ENV_LOCAL_SEUL === '1';
   for (const key of NEEDED) {
+    if (local) break;
     if (process.env[key] && !/no value set/i.test(process.env[key])) continue;
     const val = netlifyEnv(key);
     if (!val || /no value set|no project|not linked/i.test(val)) continue;

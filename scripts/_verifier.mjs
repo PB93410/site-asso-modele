@@ -160,8 +160,8 @@ export function verifierEnv(env, modules) {
 
   // [modules qui en ont besoin, variable, aide]
   const besoins = [
-    [['essais', 'bureau'], 'GOOGLE_SHEET_ESSAIS_ID', 'ID du classeur Essais (dans son adresse, entre /d/ et /edit).'],
-    [['adhesion', 'bureau'], 'GOOGLE_SHEET_ID', 'ID du classeur Adhérents.'],
+    [['essais', 'bureau'], 'GOOGLE_SHEET_ESSAIS_ID', 'Créez les classeurs : npm run sheets:creer (ou ID du classeur Essais existant, entre /d/ et /edit).'],
+    [['adhesion', 'bureau'], 'GOOGLE_SHEET_ID', 'Créez les classeurs : npm run sheets:creer (ou ID du classeur Adhérents existant).'],
     [['bureau'], 'BUREAU_PASSWORD', 'Mot de passe partagé du bureau.'],
     [['bureau'], 'BUREAU_SECRET', 'Longue chaîne aléatoire (32 caractères ou plus).'],
     [['mail'], 'GOOGLE_CLIENT_ID', 'Voir docs/DOC-BUREAU-GOOGLE.md.'],

@@ -91,6 +91,7 @@ Le guide pas à pas, avec la mise en ligne et le branchement de Google : **[docs
 | `npm run demo` | Site et bureau en local avec des données fictives, sans Google |
 | `npm run verifier` | Ce qui manque pour publier, et comment le corriger |
 | `npm run installer -- dossier.json` | Installe le dossier envoyé par une association |
+| `npm run sheets:creer` | Crée, partage et met en forme les Google Sheets du site |
 | `npm run configurateur` | Questionnaire en ligne, en local |
 | `npm run dev` | Site en local (formulaires et bureau : avec `netlify dev`) |
 | `npm run build` | Build complet (pré-rendu Puppeteer + validation JSON-LD) — **le seul pour la prod** |

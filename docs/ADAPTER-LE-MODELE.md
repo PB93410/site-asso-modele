@@ -101,23 +101,27 @@ Le bureau s’appuie sur trois classeurs Google, dans le Drive du compte de l’
 | Adhérents | ex. `Saison 2026-2027` | `NOM PRENOM TEL MAIL DATE_NAISSANCE ADRESSE CP VILLE MODE STATUT MONTANT DETAIL DATE_PAIEMENT DROIT_IMAGE QS_SPORT SOURCE NOTES DATE_DEMANDE` puis `NUMERO CARTE` |
 | Contenu site | `PLANNING`, `EVENEMENTS` | créé automatiquement par `npm run sheets:site` |
 
-1. **Google Cloud Console** → nouveau projet → activer **Google Sheets API**.
-2. **Comptes de service** → créer → onglet Clés → **JSON**. Ce fichier est un secret : ne le mettez jamais dans le dépôt.
-3. Partagez chaque classeur avec l’adresse du compte de service (`…@….iam.gserviceaccount.com`) en **Éditeur**.
-4. Dans Netlify → **Environment variables**, ajoutez (voir [`.env.example`](../.env.example)) :
-   - `GOOGLE_SERVICE_ACCOUNT_JSON` : tout le contenu du fichier JSON ;
-   - `GOOGLE_SHEET_ID` / `GOOGLE_SHEET_NAME` : classeur et onglet Adhérents (l’ID est dans l’URL du Sheet, entre `/d/` et `/edit` ; onglet par défaut `Saison <saison.label>`) ;
-   - `GOOGLE_SHEET_ESSAIS_ID` : classeur Essais ;
-   - `BUREAU_PASSWORD`, `BUREAU_SECRET` (longue chaîne aléatoire).
-5. En local, avec un `.env` rempli :
+Une commande crée les trois classeurs, les partage et les met en forme : `npm run sheets:creer`. Avant, deux réglages Google (une fois par association, 15 minutes), de préférence **connecté avec le compte Google de l’association** :
+
+1. **Google Cloud Console** → nouveau projet → **API et services → Bibliothèque** : activez **Google Sheets API** et **Google Drive API**.
+2. **Compte de service** (le site s’en sert pour lire et écrire les classeurs) : **IAM → Comptes de service → Créer**, puis onglet **Clés → Ajouter une clé → JSON**. Collez tout le contenu du fichier, sur une ligne, dans `.env` : `GOOGLE_SERVICE_ACCOUNT_JSON={...}`. Ce fichier est un secret : jamais dans le dépôt.
+3. **Client OAuth** (pour que la commande crée les classeurs dans le Drive de l’asso) :
+   - **Écran de consentement OAuth** : type *Externe*, mode *Test*, ajoutez le compte Google de l’asso aux **utilisateurs test** ;
+   - **Identifiants → Créer → ID client OAuth → Application de bureau** ;
+   - dans `.env` : `GOOGLE_SETUP_CLIENT_ID=…` et `GOOGLE_SETUP_CLIENT_SECRET=…`.
+4. Puis :
    ```bash
-   npm run sheets:site
+   npm run sheets:creer -- --essai
    ```
-   Le script crée les onglets `PLANNING` et `EVENEMENTS` (dans un classeur dédié, ou dans le classeur Essais si le compte de service ne peut pas créer de fichier), les remplit avec `public/data/*.csv`, puis renseigne `GOOGLE_SITE_SHEET_ID` sur Netlify — ou affiche la valeur à saisir à la main. Pour les menus déroulants et couleurs :
+   montre ce qui sera créé (selon `asso.config.js → modules`). Pour de bon :
    ```bash
-   npm run sheets:format
+   npm run sheets:creer
    ```
-6. Redéployez. Testez `/essai`, puis `/bureau`.
+   Une page Google s’ouvre : choisissez le compte de l’asso. L’autorisation demandée est minimale (l’outil ne voit que les fichiers qu’il crée). La commande crée les classeurs avec les bonnes colonnes, remplit horaires et événements, les partage avec le compte de service, écrit leurs IDs dans `.env`, applique couleurs et menus (`sheets:format`) et lance `verifier`.
+5. Dans Netlify → **Environment variables** : `GOOGLE_SERVICE_ACCOUNT_JSON`, les IDs affichés à la fin, `BUREAU_PASSWORD` et `BUREAU_SECRET` (voir [`.env.example`](../.env.example)).
+6. Redéployez. Testez `/essai`, puis `/bureau`. Partagez les classeurs avec les membres du bureau qui en ont besoin.
+
+**Classeurs déjà existants ?** Partagez-les avec l’adresse du compte de service (`…@….iam.gserviceaccount.com`) en **Éditeur**, mettez leurs IDs dans `.env` (entre `/d/` et `/edit` dans l’adresse), puis `npm run sheets:site` et `npm run sheets:format`.
 
 ---
 
