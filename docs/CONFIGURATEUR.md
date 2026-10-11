@@ -57,10 +57,11 @@ npm run installer -- chemin/vers/dossier-sst-2026-10-11.json
 L’installation :
 
 - écrit `asso.config.js` (avec ses commentaires), `public/data/planning.csv`, le logo et la photo (`public/assets/logo-asso.*`, `hero-asso.*`) ;
+- écrit `contenu/` : cours (niveau, texte, animateur), animateurs (photo seulement avec leur accord), FAQ, planning ; vide les événements d’exemple ;
 - assombrit la couleur si besoin et calcule les couleurs de survol ;
 - lance `npm run identite` (favicons, image de partage, verso de carte **à partir du logo de l’association**) ;
 - lance `npm run verifier` ;
-- écrit `tmp/installation-<sigle>.md` : contact, cours à rédiger, remarques, liste « à faire ». Ce fichier n’est jamais commité (il contient le contact du bénévole).
+- écrit `tmp/installation-<sigle>.md` : contact, cours à enrichir, remarques, liste « à faire ». Ce fichier n’est jamais commité (il contient le contact du bénévole).
 
 Un projet déjà configuré pour une autre association est protégé : ajoutez `--force` pour le remplacer.
 
@@ -71,11 +72,23 @@ Pour essayer sans dossier réel : `scripts/dossier-exemple.json` (association fi
 ## 3. Ensuite
 
 1. `npm run demo` : montrer le site à l’association (bureau : mot de passe `demo`).
-2. Rédiger les pages de cours, coachs et FAQ dans `src/data/` à partir de `tmp/installation-<sigle>.md`.
+2. Enrichir `contenu/cours.json` (accroche, bienfaits détaillés, FAQ du cours) et relire `contenu/faq.json`. `npm run verifier` contrôle la cohérence (planning ↔ cours, animateurs, textes à trous).
 3. Brancher Google pour les fonctions demandées (`docs/DOC-GOOGLE-SHEETS.md`, `docs/DOC-BUREAU-GOOGLE.md`).
 4. `npm run verifier` jusqu’à zéro « ✖ », puis mise en ligne (`README.md`).
 
 ---
+
+## Les contenus (`contenu/`)
+
+| Fichier | Contenu |
+|---|---|
+| `cours.json` | nom, niveau, résumé (une ligne), animateur, bienfaits, image ; page du cours : accroche, texte, bienfaitsDetail, faq, liens, noteHoraire, debut |
+| `coachs.json` | nom, spécialités, image, bio |
+| `faq.json` | question, réponse, populaire |
+| `planning.json` | planning par défaut (avant branchement du Sheet) : jour, horaire, cours, lieu, note |
+| `evenements.json` | événements par défaut |
+
+Textes à trous, remplis avec `asso.config.js` : `{tarif}`, `{ville}`, `{lieux}`, `{lieu1}`, `{communes}`, `{essais}`, `{coursEssai}`, `{nbCours}`, `{federation}`… et des parties conditionnelles : `{?federation| et la licence {federation}}` (le texte après `|` n’apparaît que si la valeur existe). Voir `src/lib/gabarit.js`.
 
 ## Format du dossier
 

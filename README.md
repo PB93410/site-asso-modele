@@ -79,7 +79,7 @@ Tout ce qui est propre à l’association est dans **un seul fichier : [`asso.co
    ```bash
    npm run identite -- --force
    ```
-3. Remplacez les contenus de `src/data/` : coachs, cours, bureau (`siteData.ts`), textes des pages de cours (`activityPages.ts`), FAQ (`faqData.ts`), articles (`blogData.ts`).
+3. Remplacez les contenus de `contenu/` (JSON) : cours et textes de leurs pages (`cours.json`), animateurs (`coachs.json`), FAQ (`faq.json`), planning et événements par défaut. Les articles restent dans `src/data/blogData.ts`.
 4. Mettez vos photos dans `public/assets/` (hero, cours, coachs) et le planning dans `public/data/planning.csv`.
 
 Le guide pas à pas, avec la mise en ligne et le branchement de Google : **[docs/ADAPTER-LE-MODELE.md](docs/ADAPTER-LE-MODELE.md)**.

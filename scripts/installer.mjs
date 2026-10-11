@@ -2,7 +2,8 @@
  * npm run installer -- <dossier.json>
  *
  * Installe le dossier envoyé par une association (questionnaire en ligne /configurer) :
- *   asso.config.js, public/data/planning.csv, logo et photo dans public/assets/,
+ *   asso.config.js, contenu/*.json (cours, animateurs, FAQ, planning, événements),
+ *   public/data/planning.csv et evenements.csv, logo et photos dans public/assets/,
  * puis logo/favicons/verso (npm run identite) et contrôle (npm run verifier).
  * Récapitulatif pour le référent : tmp/installation-<sigle>.md (jamais commité : il
  * contient le contact du bénévole).
@@ -15,7 +16,14 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { configDepuisDossier, erreursDossier, imagesDossier, normaliserDossier, planningCsv } from '../src/lib/dossier.js';
+import {
+  configDepuisDossier,
+  contenuDepuisDossier,
+  erreursDossier,
+  imagesDossier,
+  normaliserDossier,
+  planningCsv,
+} from '../src/lib/dossier.js';
 import { rendreConfig } from './_config-gabarit.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -49,9 +57,13 @@ export function recapitulatif(dossier, config) {
     '',
     ...Object.entries(config.modules).map(([k, v]) => `- ${v ? '[x]' : '[ ]'} ${k}`),
     '',
-    '## Cours à reprendre dans src/data (siteData.ts → ACTIVITIES, activityPages.ts)',
+    '## Cours (contenu/cours.json : à enrichir — accroche, bienfaits détaillés, FAQ du cours)',
     '',
     ...d.cours.map((c) => `- **${c.nom}** — ${String(c.description || '').trim() || '(pas de description)'}`),
+    '',
+    `## Animateurs : ${d.coachs.length ? d.coachs.map((c) => c.prenom).join(', ') : 'aucun (bloc masqué sur le site)'}`,
+    '',
+    `## FAQ : ${d.faq.length ? `${d.faq.length} questions relues par l’association` : 'celle du modèle (à relire)'}`,
     '',
   ];
   if (d.remarques.trim()) lignes.push('## Remarques de l’association', '', d.remarques.trim(), '');
@@ -59,7 +71,7 @@ export function recapitulatif(dossier, config) {
     '## À faire',
     '',
     '- [ ] Relire le site : `npm run demo` (bureau : mot de passe demo), le montrer à l’association',
-    '- [ ] Cours, coachs, FAQ dans src/data/',
+    '- [ ] Relire contenu/*.json (cours, animateurs, FAQ)',
     ...(config.modules.essais || config.modules.adhesion || config.modules.bureau
       ? ['- [ ] Google : compte de service, classeurs (docs/DOC-GOOGLE-SHEETS.md)']
       : []),
@@ -90,7 +102,16 @@ export function installerDossier({ dossier, root = ROOT, base, essai = false }) 
     ecrire(`public/${img.chemin}`, Buffer.from(img.dataUrl.split(',')[1], 'base64'));
   }
   ecrire('asso.config.js', rendreConfig(config));
-  if (d.planning.length) ecrire('public/data/planning.csv', planningCsv(d));
+  const contenu = contenuDepuisDossier(d);
+  const json = (v) => `${JSON.stringify(v, null, 2)}\n`;
+  ecrire('contenu/cours.json', json(contenu.cours));
+  ecrire('contenu/coachs.json', json(contenu.coachs));
+  if (contenu.faq) ecrire('contenu/faq.json', json(contenu.faq));
+  ecrire('contenu/planning.json', json(contenu.planning));
+  // Les événements d'exemple du modèle ne doivent pas apparaître chez l'association.
+  ecrire('contenu/evenements.json', json(contenu.evenements));
+  ecrire('public/data/planning.csv', planningCsv(d));
+  ecrire('public/data/evenements.csv', 'date,month,year,title,description,time,location,highlight,image,type\n');
   ecrire(`tmp/installation-${config.sigle.toLowerCase()}.md`, recapitulatif(d, config));
   return { config, ecrits };
 }

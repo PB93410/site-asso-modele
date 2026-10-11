@@ -1,0 +1,237 @@
+[
+  {
+    "nom": "Pilates",
+    "niveau": "Tous niveaux",
+    "resume": "Renforcement profond, posture, gainage et bien-être",
+    "animateur": "Karim",
+    "bienfaits": [
+      "Tenir le dos",
+      "Souplesse",
+      "Tout le matériel est sur place"
+    ],
+    "image": "/assets/act-pilates.svg",
+    "accroche": "Renforcement profond, posture et bien-être pour tous",
+    "texte": "On déroule le tapis, le coach pose le rythme de la respiration, et en vingt minutes le dos se tient déjà autrement. On travaille le ventre, le bas du dos et les cuisses, sans machines : respiration, mouvements lents, matériel déjà sur place. Ouvert à celles et ceux qui n’ont jamais fait de Pilates.",
+    "bienfaitsDetail": [
+      {
+        "titre": "Tenir le dos",
+        "texte": "On renforce le ventre et le bas du dos, à un rythme lent. Utile si vous restez assis toute la semaine."
+      },
+      {
+        "titre": "Souplesse",
+        "texte": "Les étirements restent contrôlés : on allonge sans forcer, chacun à son amplitude."
+      },
+      {
+        "titre": "Tout le matériel est sur place",
+        "texte": "Tapis, ballons, élastiques : vous venez en tenue confortable, rien d’autre à acheter."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Le Pilates est-il fait pour les débutants ?",
+        "reponse": "Oui. Le coach adapte chaque exercice et vous guide pas à pas dans les mouvements de base."
+      },
+      {
+        "question": "Faut-il un tapis ou du matériel ?",
+        "reponse": "Non, tout est fourni. Venez simplement en tenue confortable."
+      }
+    ],
+    "liens": [
+      "Stretching",
+      "Gym Douce"
+    ]
+  },
+  {
+    "nom": "Zumba",
+    "niveau": "Tous niveaux",
+    "resume": "Danse fitness rythmée et festive",
+    "animateur": "Julie",
+    "bienfaits": [
+      "Souffle",
+      "Pas besoin de savoir danser",
+      "On suit le groupe"
+    ],
+    "image": "/assets/act-zumba.svg",
+    "accroche": "Danse, sueur et bonne humeur",
+    "texte": "La musique démarre, le coach montre le premier pas, et en trois minutes même ceux qui « ne dansent pas » suivent le groupe. Des chorégraphies simples sur des rythmes latins et internationaux, pour bouger une heure sans voir le temps passer.",
+    "bienfaitsDetail": [
+      {
+        "titre": "Souffle",
+        "texte": "On bouge une heure sur la musique. Chacun garde son rythme : on peut marquer le pas si ça va trop vite."
+      },
+      {
+        "titre": "Pas besoin de savoir danser",
+        "texte": "Le coach montre le pas, on répète. Ce n’est pas un cours de danse."
+      },
+      {
+        "titre": "On suit le groupe",
+        "texte": "Les chorégraphies restent simples et reviennent d’une semaine à l’autre."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Faut-il savoir danser ?",
+        "reponse": "Pas du tout. Les mouvements sont simples, répétitifs et faciles à suivre."
+      },
+      {
+        "question": "Quelle tenue ?",
+        "reponse": "Une tenue de sport confortable, des baskets propres, une serviette et une bouteille d’eau."
+      }
+    ],
+    "liens": [
+      "Cardio & Gym"
+    ]
+  },
+  {
+    "nom": "Renforcement Musculaire",
+    "niveau": "Tous niveaux",
+    "resume": "Renforcement musculaire ciblé",
+    "animateur": "Karim",
+    "bienfaits": [
+      "Tenir le dos",
+      "Jambes et bras, sans machines",
+      "Tout le matériel est sur place"
+    ],
+    "image": "/assets/act-renfo.svg",
+    "accroche": "Jambes, bras, dos — sans machines",
+    "texte": "Un cours complet pour renforcer jambes, fessiers, bras et dos avec le poids du corps et un peu de matériel léger. Le coach propose toujours une version plus facile et une plus difficile.",
+    "bienfaitsDetail": [
+      {
+        "titre": "Tenir le dos",
+        "texte": "Gainage et renforcement du tronc, utile au quotidien."
+      },
+      {
+        "titre": "Jambes et bras, sans machines",
+        "texte": "Poids du corps, élastiques, haltères légers."
+      },
+      {
+        "titre": "Tout le matériel est sur place",
+        "texte": "Rien à acheter : venez en tenue."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Je n’ai jamais fait de musculation, c’est pour moi ?",
+        "reponse": "Oui. Chaque exercice a une version adaptée aux débutants."
+      }
+    ],
+    "liens": [
+      "Pilates",
+      "Cardio & Gym"
+    ]
+  },
+  {
+    "nom": "Stretching",
+    "niveau": "Tous niveaux",
+    "resume": "Souplesse, détente et récupération",
+    "animateur": "Claire",
+    "bienfaits": [
+      "Relâcher",
+      "Souplesse",
+      "Équilibre"
+    ],
+    "image": "/assets/act-stretch.svg",
+    "accroche": "Souplesse, détente et récupération",
+    "texte": "Une heure pour relâcher les tensions : étirements lents, respiration, mobilité des épaules, du dos et des hanches. On repart plus léger, sans jamais forcer.",
+    "bienfaitsDetail": [
+      {
+        "titre": "Relâcher",
+        "texte": "On dénoue la nuque, les épaules et le dos."
+      },
+      {
+        "titre": "Souplesse",
+        "texte": "On gagne en amplitude, semaine après semaine."
+      },
+      {
+        "titre": "Équilibre",
+        "texte": "Des exercices simples pour se sentir plus stable."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Je ne suis pas souple, c’est grave ?",
+        "reponse": "Non, c’est justement le but du cours. Chacun va à son amplitude."
+      }
+    ],
+    "liens": [
+      "Pilates",
+      "Gym Douce"
+    ]
+  },
+  {
+    "nom": "Cardio & Gym",
+    "niveau": "Tous niveaux",
+    "resume": "Endurance et dynamisme",
+    "animateur": "Claire",
+    "bienfaits": [
+      "Souffle",
+      "Endurance",
+      "On module l’effort"
+    ],
+    "image": "/assets/act-cardio.svg",
+    "accroche": "Endurance et dynamisme",
+    "texte": "Un cours rythmé qui alterne exercices cardio et renforcement. On travaille le souffle et l’endurance, chacun module l’effort selon sa forme du jour.",
+    "bienfaitsDetail": [
+      {
+        "titre": "Souffle",
+        "texte": "On travaille l’endurance progressivement."
+      },
+      {
+        "titre": "Endurance",
+        "texte": "Des enchaînements qui reviennent pour mesurer ses progrès."
+      },
+      {
+        "titre": "On module l’effort",
+        "texte": "Toujours une version plus douce proposée."
+      }
+    ],
+    "faq": [
+      {
+        "question": "C’est très intense ?",
+        "reponse": "C’est dynamique, mais chacun garde son rythme. Le coach propose des variantes."
+      }
+    ],
+    "liens": [
+      "Zumba",
+      "Renforcement Musculaire"
+    ]
+  },
+  {
+    "nom": "Gym Douce",
+    "niveau": "Reprise en douceur",
+    "resume": "Aucun niveau requis · rythme adapté — mobilité, équilibre et bien-être",
+    "animateur": "Claire",
+    "bienfaits": [
+      "Mobilité",
+      "Équilibre",
+      "Reprise sans se brusquer"
+    ],
+    "image": "/assets/act-stretch.svg",
+    "accroche": "Reprendre le sport en douceur",
+    "texte": "Mobilité, équilibre, renforcement léger et détente : la gym douce est pensée pour reprendre après une longue pause ou bouger en préservant ses articulations. Aucun niveau requis.",
+    "bienfaitsDetail": [
+      {
+        "titre": "Mobilité",
+        "texte": "On fait travailler toutes les articulations, en douceur."
+      },
+      {
+        "titre": "Équilibre",
+        "texte": "Des exercices simples pour gagner en stabilité au quotidien."
+      },
+      {
+        "titre": "Reprise sans se brusquer",
+        "texte": "Le rythme est adapté, on fait des pauses quand il faut."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Faut-il un certificat médical ?",
+        "reponse": "Non pour la pratique de loisir, un questionnaire de santé suffit. En cas de doute, demandez l’avis de votre médecin."
+      }
+    ],
+    "liens": [
+      "Stretching",
+      "Pilates"
+    ]
+  }
+]

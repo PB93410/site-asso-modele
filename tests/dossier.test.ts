@@ -100,7 +100,22 @@ describe('asso.config.js écrit par l’outil', () => {
   it('npm run installer écrit un projet valide, relu à l’identique', async () => {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), 'installer-'));
     const { config, ecrits } = installerDossier({ dossier: dossier(), root, base: ASSO });
-    expect(ecrits).toEqual(['public/assets/logo-asso.svg', 'asso.config.js', 'public/data/planning.csv', 'tmp/installation-sst.md']);
+    expect(ecrits).toEqual([
+      'public/assets/logo-asso.svg',
+      'asso.config.js',
+      'contenu/cours.json',
+      'contenu/coachs.json',
+      'contenu/faq.json',
+      'contenu/planning.json',
+      'contenu/evenements.json',
+      'public/data/planning.csv',
+      'public/data/evenements.csv',
+      'tmp/installation-sst.md',
+    ]);
+    const lire = (f: string) => JSON.parse(fs.readFileSync(path.join(root, 'contenu', f), 'utf8'));
+    expect(lire('evenements.json')).toEqual([]);
+    expect(lire('cours.json').map((c: { nom: string }) => c.nom)).toEqual(['Gym douce', 'Yoga', 'Marche nordique']);
+    expect(fs.readFileSync(path.join(root, 'public/data/evenements.csv'), 'utf8').trim().split('\n')).toHaveLength(1);
     const relu = (await import(pathToFileURL(path.join(root, 'asso.config.js')).href)).default;
     expect(relu).toEqual(JSON.parse(JSON.stringify(config)));
     expect(fs.readFileSync(path.join(root, 'tmp/installation-sst.md'), 'utf8')).toContain('Marche nordique');

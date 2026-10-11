@@ -12,7 +12,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ASSO, MODULES, SAISON_COURTE } from '../asso.derive.js';
-import { compteDeService, ecartsColonnes, verifierConfig, verifierEnv } from './_verifier.mjs';
+import { valeursTexte } from '../src/lib/gabarit.js';
+import { compteDeService, ecartsColonnes, verifierConfig, verifierContenu, verifierEnv } from './_verifier.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const horsLigne = process.argv.includes('--hors-ligne');
@@ -38,6 +39,7 @@ function lireEnv() {
   return env;
 }
 
+const lireContenu = (f) => JSON.parse(fs.readFileSync(path.join(ROOT, 'contenu', f), 'utf8'));
 const existe = (p) => fs.existsSync(path.join(ROOT, 'public', String(p).replace(/^\/+/, '')));
 
 function afficher(titre, lignes) {
@@ -124,6 +126,15 @@ async function verifierConnexions(env) {
 
 // ---------------------------------------------------------------------------
 
+function contenus() {
+  try {
+    const c = Object.fromEntries(['cours', 'coachs', 'faq', 'planning', 'evenements'].map((k) => [k, lireContenu(`${k}.json`)]));
+    return verifierContenu(c, valeursTexte(ASSO, c.cours.length), existe);
+  } catch (err) {
+    return [{ niveau: 'erreur', texte: `contenu/ illisible : ${err.message}`, aFaire: 'Un fichier JSON est mal formé (virgule, guillemet) : ouvrez-le dans un éditeur qui le signale.' }];
+  }
+}
+
 async function main() {
   console.log(teinte(1, `Vérification — ${ASSO.nom}`));
   const actifs = Object.entries(MODULES).map(([k, v]) => `${v ? teinte(32, '●') : teinte(90, '○')} ${k}`).join('   ');
@@ -132,6 +143,7 @@ async function main() {
   const env = lireEnv();
   const sections = [
     ['Configuration (asso.config.js)', verifierConfig(ASSO, MODULES, existe, SAISON_COURTE)],
+    ['Contenus (contenu/*.json)', contenus()],
     ['Variables (.env en local, Netlify en ligne)', verifierEnv(env, MODULES)],
   ];
   if (!horsLigne) sections.push(['Connexions Google', await verifierConnexions(env)]);

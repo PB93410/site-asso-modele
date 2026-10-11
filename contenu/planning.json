@@ -1,0 +1,44 @@
+[
+  {
+    "jour": "Lundi",
+    "horaire": "13h30 – 14h30",
+    "cours": "Gym Douce",
+    "lieu": "{lieu2}",
+    "note": ""
+  },
+  {
+    "jour": "Lundi",
+    "horaire": "20h00 – 21h30",
+    "cours": "Renforcement Musculaire",
+    "lieu": "{lieu1}",
+    "note": ""
+  },
+  {
+    "jour": "Mercredi",
+    "horaire": "20h45 – 21h45",
+    "cours": "Cardio & Gym",
+    "lieu": "{lieu1}",
+    "note": ""
+  },
+  {
+    "jour": "Jeudi",
+    "horaire": "15h30 – 16h30",
+    "cours": "Stretching",
+    "lieu": "{lieu2}",
+    "note": ""
+  },
+  {
+    "jour": "Jeudi",
+    "horaire": "19h30 – 20h30",
+    "cours": "Zumba",
+    "lieu": "{lieu1}",
+    "note": ""
+  },
+  {
+    "jour": "Samedi",
+    "horaire": "10h00 – 11h00",
+    "cours": "Pilates",
+    "lieu": "{lieu2}",
+    "note": ""
+  }
+]

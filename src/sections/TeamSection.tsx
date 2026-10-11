@@ -29,7 +29,8 @@ export default function TeamSection({ part = 'all' }: { part?: 'coaches' | 'club
   const coachesRef = useRef<HTMLDivElement>(null);
   const [openCoach, setOpenCoach] = useState<string | null>(null);
 
-  const showCoaches = part === 'coaches' || part === 'all';
+  // Sans animateur renseigné (contenu/coachs.json vide), le bloc disparaît.
+  const showCoaches = (part === 'coaches' || part === 'all') && COACHS.length > 0;
   const showClub = part === 'club' || part === 'all';
   const selectedCoach = COACHS.find((c) => c.name === openCoach) ?? null;
   const selectedCourses = selectedCoach
@@ -58,6 +59,8 @@ export default function TeamSection({ part = 'all' }: { part?: 'coaches' | 'club
       window.removeEventListener('keydown', onKey);
     };
   }, [openCoach]);
+
+  if (!showCoaches && !showClub) return null;
 
   return (
     <section

@@ -3,6 +3,8 @@ import { dossierVide, erreursDossier, normaliserDossier, type Dossier, type Erre
 import { envoyer, telecharger } from './envoi';
 import {
   EtapeAdhesion,
+  EtapeAnimateurs,
+  EtapeFaq,
   EtapeAssociation,
   EtapeContacts,
   EtapeCours,
@@ -25,6 +27,8 @@ const ETAPES: { id: IdEtape; titre: string; sousTitre?: string }[] = [
   { id: 'contacts', titre: 'Vous joindre', sousTitre: 'Mail, téléphone, réseaux.' },
   { id: 'adhesion', titre: 'L’adhésion', sousTitre: 'Tarif, essais, paiement.' },
   { id: 'cours', titre: 'Cours et horaires', sousTitre: 'Ce que vous proposez, et quand.' },
+  { id: 'animateurs', titre: 'Les animateurs', sousTitre: 'Qui accueille les adhérents.' },
+  { id: 'faq', titre: 'Questions fréquentes', sousTitre: 'Ce que l’on vous demande souvent.' },
   { id: 'apparence', titre: 'L’apparence', sousTitre: 'Logo, couleur, photo.' },
   { id: 'fonctions', titre: 'Ce que le site fera', sousTitre: 'Les options, en plus de la vitrine.' },
   { id: 'envoi', titre: 'Envoyer', sousTitre: 'Vérifier et nous transmettre le dossier.' },
@@ -118,6 +122,8 @@ export default function App() {
           {etape.id === 'contacts' ? <EtapeContacts {...props} /> : null}
           {etape.id === 'adhesion' ? <EtapeAdhesion {...props} /> : null}
           {etape.id === 'cours' ? <EtapeCours {...props} /> : null}
+          {etape.id === 'animateurs' ? <EtapeAnimateurs {...props} /> : null}
+          {etape.id === 'faq' ? <EtapeFaq {...props} /> : null}
           {etape.id === 'apparence' ? <EtapeApparence {...props} /> : null}
           {etape.id === 'fonctions' ? <EtapeFonctions {...props} /> : null}
           {etape.id === 'envoi' ? (
@@ -177,7 +183,7 @@ function Accueil({
   return (
     <div className="space-y-6 text-[17px] leading-relaxed">
       <p>
-        Décrivez votre association en <strong>une vingtaine de minutes</strong>. Nous préparons votre site à partir de vos réponses, puis nous vous le montrons
+        Décrivez votre association en <strong>une demi-heure environ</strong>. Nous préparons votre site à partir de vos réponses, puis nous vous le montrons
         avant de le mettre en ligne.
       </p>
       <Encadre>

@@ -95,3 +95,18 @@ export async function couleurDuLogo(dataUrl: string): Promise<string | null> {
   const hex = (v: number) => Math.round(v / top.n).toString(16).padStart(2, '0');
   return `#${hex(top.r)}${hex(top.g)}${hex(top.b)}`.toUpperCase();
 }
+
+/** Portrait d'animateur : recadré au centre en 400 × 500, WebP (JPEG si besoin). */
+export async function preparerPortrait(file: File): Promise<string> {
+  if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+    throw new Error('Choisissez une photo JPEG, PNG ou WebP.');
+  }
+  const img = await chargerImage(await lireFichier(file));
+  const W = 400;
+  const H = 500;
+  const k = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+  const { c, ctx } = toile(W, H);
+  ctx.drawImage(img, (W - img.naturalWidth * k) / 2, (H - img.naturalHeight * k) / 3, img.naturalWidth * k, img.naturalHeight * k);
+  const webp = c.toDataURL('image/webp', 0.82);
+  return webp.startsWith('data:image/webp') ? webp : c.toDataURL('image/jpeg', 0.85);
+}

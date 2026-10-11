@@ -1,0 +1,30 @@
+[
+  {
+    "nom": "Claire",
+    "specialites": [
+      "Gym",
+      "Cardio",
+      "Stretching"
+    ],
+    "image": "/assets/coach-1.svg",
+    "bio": "Claire commence chaque séance par un tour des épaules et du dos : si quelque chose tire, elle propose une autre version. Assez d’énergie pour avancer, personne n’est laissé sur le bord du tapis."
+  },
+  {
+    "nom": "Karim",
+    "specialites": [
+      "Pilates",
+      "Renfo"
+    ],
+    "image": "/assets/coach-2.svg",
+    "bio": "Karim pose le cadre : on avance sans se forcer, on sent le corps travailler, et on repart plus droit. Diplômé en activité physique adaptée."
+  },
+  {
+    "nom": "Julie",
+    "specialites": [
+      "Zumba",
+      "Fitness"
+    ],
+    "image": "/assets/coach-3.svg",
+    "bio": "Julie démarre par un échauffement simple sur une musique que tout le monde connaît : pas besoin d’avoir dansé avant. Les pas se répètent, le groupe se lance, et on termine souvent en riant."
+  }
+]

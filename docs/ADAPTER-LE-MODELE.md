@@ -59,14 +59,15 @@ Vous pouvez ensuite remplacer `public/assets/logo.svg` par votre vrai logo (et r
 
 ## Étape 3 — Contenus
 
-Tout est dans `src/data/` :
+Le plus simple : faites remplir le **questionnaire en ligne** à l’association, puis `npm run installer` (voir [CONFIGURATEUR.md](CONFIGURATEUR.md)). À la main, tout est dans `contenu/` (JSON) :
 
-- **`siteData.ts`** : coachs (`COACHS`), membres du bureau (`BUREAU`), cours (`ACTIVITIES`), événements et planning par défaut.
-  Le **nom d’un cours** doit être le même partout : `ACTIVITIES`, planning, pages de cours.
-- **`activityPages.ts`** : texte long, bienfaits et FAQ de chaque cours (bloc `CONTENT`, clé = nom du cours). Un cours sans bloc a une page minimale.
-- **`faqData.ts`** : questions fréquentes.
-- **`blogData.ts`** : articles (HTML simple). Trois exemples génériques sont fournis.
-- **`bureauMessages.ts`** : modèles de messages du bureau.
+- **`cours.json`** : chaque cours (nom, niveau, résumé, animateur, bienfaits, image) et le texte de sa page (accroche, texte, bienfaits détaillés, FAQ du cours).
+  Le **nom d’un cours** doit être le même partout : `cours.json`, planning. `npm run verifier` le contrôle.
+- **`coachs.json`** : animateurs. Vide = le bloc disparaît du site.
+- **`faq.json`** : questions fréquentes. Les textes peuvent contenir `{tarif}`, `{ville}`… (voir CONFIGURATEUR.md).
+- **`planning.json`**, **`evenements.json`** : planning et événements par défaut.
+
+Restent dans `src/data/` : les articles (`blogData.ts`, HTML simple), les membres du bureau (`siteData.ts → BUREAU`) et les modèles de messages (`bureauMessages.ts`).
 
 Les **photos** vont dans `public/assets/` :
 
@@ -74,7 +75,7 @@ Les **photos** vont dans `public/assets/` :
 - cours : 900 × 675 ; si vous fournissez `act-pilates.webp`, ajoutez aussi `act-pilates-600.webp` pour le mobile ;
 - coachs : 400 × 500 (et `-320.webp` pour le mobile).
 
-Le **planning** et les **événements** affichés par défaut : `public/data/planning.csv` et `public/data/evenements.csv`. Une fois Google branché, le bureau les modifie depuis `/bureau`.
+Le **planning** et les **événements** affichés sur la page d’accueil : `public/data/planning.csv` et `public/data/evenements.csv` (même contenu que `contenu/`, écrit par l’installation). Une fois Google branché, le bureau les modifie depuis `/bureau`.
 
 Enfin, relisez **les mentions légales et la page confidentialité** (`src/sections/LegalSection.tsx`) : elles décrivent l’hébergement Netlify, Google Sheets, WhatsApp et ntfy. Retirez ce que vous n’utilisez pas.
 

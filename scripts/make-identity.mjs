@@ -193,13 +193,19 @@ fs.mkdirSync(ASSETS, { recursive: true });
 if (LOGO_PERSO) console.log(`[identite] logo de l'association : ${ASSO.logo}`);
 else write('assets/logo.svg', logoSvg());
 if (ASSO.heroImage === '/assets/hero.svg') write('assets/hero.svg', sceneSvg(1344, 768, 0));
-write('assets/act-pilates.svg', sceneSvg(900, 675, 1, 'Pilates'));
-write('assets/act-zumba.svg', sceneSvg(900, 675, 2, 'Zumba'));
-write('assets/act-renfo.svg', sceneSvg(900, 675, 3, 'Renforcement'));
-write('assets/act-stretch.svg', sceneSvg(900, 675, 4, 'Stretching'));
-write('assets/act-cardio.svg', sceneSvg(900, 675, 5, 'Cardio'));
-write('assets/coach-1.svg', coachSvg(0));
-write('assets/coach-2.svg', coachSvg(1));
-write('assets/coach-3.svg', coachSvg(2));
+// Images de remplacement des cours et animateurs listés dans contenu/ (SVG seulement :
+// une vraie photo .webp/.jpg n'est jamais touchée).
+const lire = (f) => JSON.parse(fs.readFileSync(path.join(ROOT, 'contenu', f), 'utf8'));
+const remplacable = (img) => /^\/assets\/[\w-]+\.svg$/.test(String(img || ''));
+const faites = new Set();
+lire('cours.json').forEach((c, i) => {
+  if (!remplacable(c.image) || faites.has(c.image)) return;
+  faites.add(c.image);
+  write(c.image.slice(1), sceneSvg(900, 675, i + 1, c.nom));
+});
+lire('coachs.json').forEach((c, i) => {
+  if (remplacable(c.image) && !faites.has(c.image)) write(c.image.slice(1), coachSvg(i));
+  faites.add(c.image);
+});
 if (ASSO.federation.nom) write('assets/logo-federation.svg', federationSvg());
 await renderPngs();

@@ -159,6 +159,8 @@ export function dossierVide(date = new Date()) {
     saison: { label: saison, reprise: `${an}-09-07` },
     cours: [],
     planning: [],
+    coachs: [],
+    faq: [],
     apparence: { couleur: '#C45309', secondaire: '#5C6B4A', logo: '', hero: '', heroAlt: '' },
     modules: { essais: true, adhesion: false, bureau: false, mail: false },
     remarques: '',
@@ -185,6 +187,8 @@ export function normaliserDossier(raw) {
     lieux: Array.isArray(d.lieux) ? d.lieux : [],
     cours: Array.isArray(d.cours) ? d.cours : [],
     planning: Array.isArray(d.planning) ? d.planning : [],
+    coachs: Array.isArray(d.coachs) ? d.coachs : [],
+    faq: Array.isArray(d.faq) ? d.faq : [],
   };
 }
 
@@ -236,6 +240,15 @@ export function erreursDossier(dossier) {
     if (p.lieu && !nomsLieux.has(String(p.lieu).trim().toLowerCase())) add('cours', `planning[${i}]`, `${n} : choisissez une salle de la liste.`);
   });
 
+  d.coachs.forEach((c, i) => {
+    if (vide(c.prenom)) add('animateurs', `coachs[${i}]`, `Animateur ${i + 1} : prénom manquant.`);
+    if (c.photo && !c.accord) add('animateurs', `coachs[${i}]`, `${c.prenom || `Animateur ${i + 1}`} : cochez son accord pour publier sa photo, ou retirez-la.`);
+    if (c.photo && !IMAGE.test(c.photo)) add('animateurs', `coachs[${i}]`, 'Photo illisible : reprenez un fichier JPEG, PNG ou WebP.');
+  });
+  d.faq.forEach((f, i) => {
+    if (vide(f.question) || vide(f.reponse)) add('faq', `faq[${i}]`, `Question ${i + 1} : la question et la réponse sont obligatoires.`);
+  });
+
   if (!rgb(d.apparence.couleur)) add('apparence', 'apparence.couleur', 'Choisissez une couleur.');
   for (const k of ['logo', 'hero']) {
     if (d.apparence[k] && !IMAGE.test(d.apparence[k])) add('apparence', `apparence.${k}`, 'Image illisible : reprenez un fichier PNG, JPEG, WebP ou SVG.');
@@ -248,7 +261,7 @@ export function erreursDossier(dossier) {
 
 const EXT = { png: 'png', jpeg: 'jpg', webp: 'webp', 'svg+xml': 'svg' };
 
-/** Images du dossier à écrire dans public/ : [{ chemin: 'assets/logo.png', dataUrl }]. */
+/** Images du dossier à écrire dans public/ : logo, photo d'accueil, photos des animateurs (avec accord). */
 export function imagesDossier(dossier) {
   const d = normaliserDossier(dossier);
   const out = [];
@@ -260,6 +273,10 @@ export function imagesDossier(dossier) {
     const m = String(d.apparence[k] || '').match(/^data:image\/(png|jpeg|webp|svg\+xml);base64,/);
     if (m) out.push({ cle: k, chemin: `assets/${nom}.${EXT[m[1]]}`, dataUrl: d.apparence[k] });
   }
+  d.coachs.forEach((c, i) => {
+    const m = String(c.photo || '').match(/^data:image\/(png|jpeg|webp);base64,/);
+    if (m && c.accord) out.push({ cle: `coach-${i}`, chemin: `assets/coach-${slugify(c.prenom) || i + 1}.${EXT[m[1]]}`, dataUrl: c.photo });
+  });
   return out;
 }
 
@@ -371,4 +388,51 @@ export function planningCsv(dossier) {
     'day,time,course,location,note',
     ...lignes.map((p) => [p.jour, plageHoraire(p.debut, p.fin), p.cours, p.lieu || d.lieux[0]?.nom || '', p.note || ''].map(csv).join(',')),
   ].join('\n') + '\n';
+}
+
+/** Première phrase, pour la ligne courte des cartes de cours. */
+function premierePhrase(texte) {
+  const t = String(texte || '').trim();
+  const m = t.match(/^(.{20,140}?[.!?])(\s|$)/);
+  return (m ? m[1] : t).replace(/[.!]$/, '');
+}
+
+/**
+ * Fichiers du dossier contenu/ (cours, animateurs, FAQ, planning, événements).
+ * `faq` vaut null quand l'association n'a rien changé : on garde la FAQ du modèle.
+ */
+export function contenuDepuisDossier(dossier) {
+  const d = normaliserDossier(dossier);
+  const images = Object.fromEntries(imagesDossier(d).map((i) => [i.cle, `/${i.chemin}`]));
+  const coachs = d.coachs
+    .filter((c) => String(c.prenom || '').trim())
+    .map((c, i) => ({
+      nom: String(c.prenom).trim(),
+      specialites: (c.cours || []).filter(Boolean),
+      image: images[`coach-${i}`] || `/assets/coach-${i + 1}.svg`,
+      bio: String(c.bio || '').trim(),
+    }));
+  const animateurDe = (nom) => coachs.find((c) => c.specialites.includes(nom))?.nom || '';
+  const cours = d.cours
+    .filter((c) => String(c.nom || '').trim())
+    .map((c) => {
+      const nom = String(c.nom).trim();
+      return {
+        nom,
+        niveau: String(c.niveau || '').trim() || 'Tous niveaux',
+        resume: premierePhrase(c.description) || nom,
+        animateur: String(c.animateur || '').trim() || animateurDe(nom),
+        bienfaits: (c.bienfaits || []).map((b) => String(b).trim()).filter(Boolean).slice(0, 3),
+        image: `/assets/act-${slugify(nom)}.svg`,
+        texte: String(c.description || '').trim(),
+      };
+    });
+  const lieu1 = d.lieux[0]?.nom || '';
+  const planning = [...d.planning]
+    .sort((x, y) => JOURS.indexOf(x.jour) - JOURS.indexOf(y.jour) || String(x.debut).padStart(5, '0').localeCompare(String(y.debut).padStart(5, '0')))
+    .map((p) => ({ jour: p.jour, horaire: plageHoraire(p.debut, p.fin), cours: p.cours, lieu: p.lieu || lieu1, note: p.note || '' }));
+  const faq = d.faq.length
+    ? d.faq.map((f) => ({ question: String(f.question).trim(), reponse: String(f.reponse).trim(), ...(f.populaire ? { populaire: true } : {}) }))
+    : null;
+  return { cours, coachs, faq, planning, evenements: [] };
 }

@@ -19,6 +19,23 @@ export interface DossierCreneau {
   note?: string;
 }
 
+export interface DossierCours {
+  nom: string;
+  description: string;
+  niveau?: string;
+  animateur?: string;
+  bienfaits?: string[];
+}
+
+export interface DossierCoach {
+  prenom: string;
+  cours: string[];
+  bio: string;
+  /** data URL JPEG/PNG/WebP, publiée seulement avec `accord`. */
+  photo?: string;
+  accord?: boolean;
+}
+
 export interface Dossier {
   version: number;
   envoyeLe: string;
@@ -61,15 +78,18 @@ export interface Dossier {
     autresPaiements: string[];
   };
   saison: { label: string; reprise: string };
-  cours: { nom: string; description: string }[];
+  cours: DossierCours[];
   planning: DossierCreneau[];
+  coachs: DossierCoach[];
+  /** Vide = FAQ du modèle conservée. Les textes peuvent contenir {tarif}, {ville}… */
+  faq: { question: string; reponse: string; populaire?: boolean }[];
   apparence: { couleur: string; secondaire: string; logo: string; hero: string; heroAlt: string };
   modules: AssoModules;
   remarques: string;
 }
 
 export interface ErreurDossier {
-  etape: 'association' | 'lieux' | 'contacts' | 'adhesion' | 'cours' | 'apparence' | 'envoi';
+  etape: 'association' | 'lieux' | 'contacts' | 'adhesion' | 'cours' | 'animateurs' | 'faq' | 'apparence' | 'envoi';
   champ: string;
   message: string;
 }
@@ -89,6 +109,13 @@ export declare function plageHoraire(debut: string, fin: string): string;
 export declare function dossierVide(date?: Date): Dossier;
 export declare function normaliserDossier(raw: unknown): Dossier;
 export declare function erreursDossier(dossier: unknown): ErreurDossier[];
-export declare function imagesDossier(dossier: unknown): { cle: 'logo' | 'hero'; chemin: string; dataUrl: string }[];
+export declare function imagesDossier(dossier: unknown): { cle: string; chemin: string; dataUrl: string }[];
 export declare function configDepuisDossier(dossier: unknown, base: AssoConfig): AssoConfig;
 export declare function planningCsv(dossier: unknown): string;
+export declare function contenuDepuisDossier(dossier: unknown): {
+  cours: { nom: string; niveau: string; resume: string; animateur: string; bienfaits: string[]; image: string; texte: string }[];
+  coachs: { nom: string; specialites: string[]; image: string; bio: string }[];
+  faq: { question: string; reponse: string; populaire?: boolean }[] | null;
+  planning: { jour: string; horaire: string; cours: string; lieu: string; note: string }[];
+  evenements: never[];
+};

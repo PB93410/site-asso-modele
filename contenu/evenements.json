@@ -1,0 +1,25 @@
+[
+  {
+    "id": "portes-ouvertes",
+    "date": "15",
+    "mois": "NOV",
+    "annee": "2026",
+    "titre": "Séance portes ouvertes",
+    "description": "Venez avec un ami : séance ouverte à tous, sans inscription.",
+    "heure": "10h00",
+    "lieu": "{lieu1}, {ville}",
+    "miseEnAvant": true,
+    "type": "sportif"
+  },
+  {
+    "id": "repas-fin-annee",
+    "date": "12",
+    "mois": "DÉC",
+    "annee": "2026",
+    "titre": "Repas de fin d’année",
+    "description": "Séance festive pour célébrer les fêtes ensemble.",
+    "heure": "19h00",
+    "lieu": "{lieu1}, {ville}",
+    "type": "festif"
+  }
+]

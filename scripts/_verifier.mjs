@@ -4,6 +4,7 @@
  */
 
 import { contraste } from '../src/lib/dossier.js';
+import { remplir } from '../src/lib/gabarit.js';
 
 export { contraste };
 
@@ -215,4 +216,47 @@ export function ecartsColonnes(attendus, lus) {
     if (v.toUpperCase().replace(/\s+/g, '_') !== h) out.push(`colonne ${i + 1} : « ${v || 'vide'} » au lieu de « ${h} »`);
   });
   return out;
+}
+
+// ---------------------------------------------------------------------------
+// Contenus (contenu/*.json)
+// ---------------------------------------------------------------------------
+
+
+/**
+ * Cohérence des contenus : planning ↔ cours, cours ↔ animateurs, textes à trous.
+ * @param {{ cours: object[], coachs: object[], faq: object[], planning: object[], evenements: object[] }} c
+ * @param {Record<string, string>} valeurs valeursTexte(asso, nbCours)
+ * @param {(publicPath: string) => boolean} existe
+ */
+export function verifierContenu(c, valeurs, existe = () => true) {
+  const r = [];
+  const noms = new Set(c.cours.map((x) => x.nom));
+  if (!c.cours.length) r.push(erreur('Aucun cours dans contenu/cours.json.'));
+  const horsCours = [...new Set(c.planning.map((p) => p.cours).filter((n) => !noms.has(n)))];
+  if (horsCours.length) {
+    r.push(erreur(`Planning : cours inconnus ${horsCours.map((n) => `« ${n} »`).join(', ')}.`, 'Même nom, à la lettre près, que dans contenu/cours.json.'));
+  }
+  const sansCreneau = c.cours.filter((x) => !x.noteHoraire && !c.planning.some((p) => p.cours === x.nom)).map((x) => x.nom);
+  if (sansCreneau.length) r.push(attention(`Cours sans créneau au planning : ${sansCreneau.join(', ')}.`, 'Ajoutez un créneau, ou une noteHoraire (« Reprise en janvier »).'));
+  if (c.coachs.length) {
+    const coachs = new Set(c.coachs.map((x) => x.nom));
+    const inconnus = [...new Set(c.cours.map((x) => x.animateur).filter((a) => a && !coachs.has(a)))];
+    if (inconnus.length) r.push(attention(`Animateurs absents de contenu/coachs.json : ${inconnus.join(', ')}.`));
+  }
+  const images = [...c.cours, ...c.coachs].map((x) => x.image).filter((img) => img && !existe(img));
+  if (images.length) r.push(erreur(`Images manquantes : ${images.join(', ')}.`, 'npm run identite crée les illustrations ; ou ajoutez la photo dans public/assets/.'));
+  const textes = [
+    ...c.faq.flatMap((f) => [f.question, f.reponse]),
+    ...c.cours.flatMap((x) => [x.resume, x.texte, x.accroche]),
+    ...c.coachs.map((x) => x.bio),
+    ...c.planning.map((p) => p.lieu),
+    ...c.evenements.map((e) => e.lieu),
+  ].filter(Boolean);
+  const restes = [...new Set(textes.map((t) => remplir(t, valeurs)).flatMap((t) => t.match(/\{[^}]*\}/g) || []))];
+  if (restes.length) r.push(erreur(`Textes à trous inconnus : ${restes.join(', ')}.`, `Disponibles : ${Object.keys(valeurs).map((k) => `{${k}}`).join(' ')}`));
+  if (!r.some((x) => x.niveau === 'erreur')) {
+    r.push(ok(`${c.cours.length} cours, ${c.coachs.length} animateur(s), ${c.faq.length} questions, ${c.planning.length} créneaux.`));
+  }
+  return r;
 }

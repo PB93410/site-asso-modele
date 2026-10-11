@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import {
   JOURS,
+  configDepuisDossier,
   contraste,
   couleurLisible,
   saisonCourante,
@@ -9,9 +10,12 @@ import {
   whatsappDepuis,
   type Dossier,
 } from '../../src/lib/dossier.js';
+import { remplir, valeursTexte } from '../../src/lib/gabarit.js';
+import MODELE from '../../asso.config.js';
+import FAQ_MODELE from '../../contenu/faq.json';
 import { chercherAdresse, chercherAssociation, type AdresseTrouvee, type AssociationTrouvee } from './api';
 import { ApercuAccueil, ApercuCarte } from './Apercu';
-import { couleurDuLogo, preparerLogo, preparerPhoto } from './images';
+import { couleurDuLogo, preparerLogo, preparerPhoto, preparerPortrait } from './images';
 import { Bouton, Case, Champ, Choix, Encadre, Texte, ZoneTexte } from './ui';
 
 export type PropsEtape = {
@@ -456,6 +460,8 @@ export function EtapeAdhesion({ d, maj, erreur }: PropsEtape) {
 
 // ---------------------------------------------------------------------------
 
+const NIVEAUX = ['Tous niveaux', 'Débutants', 'Reprise en douceur', 'Intermédiaire', 'Confirmés'];
+
 export function EtapeCours({ d, maj, erreur }: PropsEtape) {
   const saison = saisonCourante();
   const [an] = saison.split('-').map(Number);
@@ -490,8 +496,24 @@ export function EtapeCours({ d, maj, erreur }: PropsEtape) {
               rows={2}
               value={c.description}
               onChange={(v) => maj(`cours.${i}.description`, v)}
-              aide="Pour qui, ce qu’on y fait. Nous rédigerons la page à partir de ça."
+              aide="Pour qui, ce qu’on y fait. C’est le texte de la page du cours : nous le relirons avec vous."
             />
+            <div className="grid sm:grid-cols-2 gap-3">
+              <Choix
+                label="Niveau"
+                value={c.niveau || 'Tous niveaux'}
+                onChange={(v) => maj(`cours.${i}.niveau`, v)}
+                options={NIVEAUX.map((n) => ({ value: n, label: n }))}
+              />
+              <Texte
+                label="Ce que ça apporte"
+                facultatif
+                value={(c.bienfaits || []).join(', ')}
+                onChange={(v) => maj(`cours.${i}.bienfaits`, v.split(',').map((x) => x.trimStart()).slice(0, 3))}
+                placeholder="ex. Équilibre, Souplesse, Bonne humeur"
+                aide="2 ou 3 mots, séparés par des virgules."
+              />
+            </div>
             <Bouton variante="danger" onClick={() => maj('cours', d.cours.filter((_, j) => j !== i))}>
               Retirer ce cours
             </Bouton>
@@ -685,6 +707,152 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
         />
       ) : null}
       <Encadre>Pas sûr ? Cochez seulement « essai gratuit » : c’est ce qui fait venir de nouveaux adhérents.</Encadre>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+
+export function EtapeAnimateurs({ d, maj, erreur }: PropsEtape) {
+  const [msg, setMsg] = useState('');
+  const nomsCours = d.cours.map((c) => c.nom).filter((n) => n.trim());
+  async function photo(i: number, file?: File) {
+    if (!file) return;
+    setMsg('');
+    try {
+      maj(`coachs.${i}.photo`, await preparerPortrait(file));
+    } catch (e) {
+      setMsg(e instanceof Error ? e.message : 'Photo illisible.');
+    }
+  }
+  return (
+    <div className="space-y-6">
+      <p className="text-[17px] text-slate-700">
+        Les personnes qui animent les cours. Un prénom et quelques mots suffisent : les visiteurs aiment savoir qui les accueillera.
+        Facultatif : sans animateur, le bloc n’apparaît pas.
+      </p>
+      {msg ? <Encadre ton="attention">{msg}</Encadre> : null}
+      {d.coachs.map((c, i) => {
+        const e = erreur(`coachs[${i}]`);
+        return (
+          <fieldset key={i} className={`rounded-2xl border bg-white p-4 space-y-4 ${e ? 'border-red-300' : 'border-slate-200'}`}>
+            <legend className="px-2 font-semibold text-[16px]">Animateur {i + 1}</legend>
+            <Texte label="Prénom" value={c.prenom} onChange={(v) => maj(`coachs.${i}.prenom`, v)} />
+            {nomsCours.length ? (
+              <Champ label="Cours qu’il ou elle anime">
+                <div className="flex flex-wrap gap-2">
+                  {nomsCours.map((n) => {
+                    const on = (c.cours || []).includes(n);
+                    return (
+                      <button
+                        key={n}
+                        type="button"
+                        aria-pressed={on}
+                        onClick={() => maj(`coachs.${i}.cours`, on ? c.cours.filter((x) => x !== n) : [...(c.cours || []), n])}
+                        className={`min-h-[44px] rounded-full px-4 text-[15px] font-medium border ${on ? 'bg-slate-900 text-white border-slate-900' : 'bg-white border-slate-300'}`}
+                      >
+                        {on ? '✓ ' : ''}
+                        {n}
+                      </button>
+                    );
+                  })}
+                </div>
+              </Champ>
+            ) : null}
+            <ZoneTexte
+              label="Quelques mots de présentation"
+              facultatif
+              rows={3}
+              value={c.bio}
+              onChange={(v) => maj(`coachs.${i}.bio`, v)}
+              aide="Comment se passe son cours, ce qui rassure. Ex. « Elle adapte chaque exercice : personne ne force. »"
+            />
+            <Champ label="Photo" facultatif>
+              <div className="flex flex-wrap items-center gap-3">
+                {c.photo ? <img src={c.photo} alt="" className="w-16 h-20 object-cover rounded-lg border border-slate-200" /> : null}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={(ev) => void photo(i, ev.target.files?.[0])}
+                  className="text-[15px] max-w-full"
+                />
+                {c.photo ? (
+                  <Bouton variante="danger" onClick={() => maj(`coachs.${i}`, { ...c, photo: '', accord: false })}>
+                    Retirer
+                  </Bouton>
+                ) : null}
+              </div>
+            </Champ>
+            {c.photo ? (
+              <Case
+                label={`${c.prenom || 'Cette personne'} est d’accord pour que sa photo soit sur le site`}
+                aide="Obligatoire pour publier une photo. Sans accord, nous mettrons une illustration."
+                checked={Boolean(c.accord)}
+                onChange={(v) => maj(`coachs.${i}.accord`, v)}
+              />
+            ) : null}
+            {e ? <p className="text-red-700 text-[14px] font-medium">{e}</p> : null}
+            <Bouton variante="danger" onClick={() => maj('coachs', d.coachs.filter((_, j) => j !== i))}>
+              Retirer cet animateur
+            </Bouton>
+          </fieldset>
+        );
+      })}
+      <Bouton variante="secondaire" onClick={() => maj('coachs', [...d.coachs, { prenom: '', cours: [], bio: '', photo: '', accord: false }])}>
+        + Ajouter un animateur
+      </Bouton>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+
+type QuestionModele = { question: string; reponse: string; populaire?: boolean };
+
+export function EtapeFaq({ d, maj, erreur }: PropsEtape) {
+  // Questions habituelles du modèle, remplies avec les réponses déjà données (tarif, ville…).
+  function partirDesHabituelles() {
+    const v = valeursTexte(configDepuisDossier(d, MODELE), d.cours.length);
+    maj(
+      'faq',
+      (FAQ_MODELE as QuestionModele[]).map((f) => ({
+        question: remplir(f.question, v),
+        reponse: remplir(f.reponse, v),
+        ...(f.populaire ? { populaire: true } : {}),
+      })),
+    );
+  }
+  return (
+    <div className="space-y-6">
+      <p className="text-[17px] text-slate-700">Les questions que l’on vous pose le plus souvent. De bonnes réponses ici évitent beaucoup d’appels.</p>
+      {!d.faq.length ? (
+        <Encadre>
+          <p>
+            Partez de nos questions habituelles (certificat médical, inscription en cours d’année, cotisation…), déjà remplies avec vos réponses : il ne
+            reste qu’à relire.
+          </p>
+          <Bouton className="mt-3" onClick={partirDesHabituelles}>
+            Partir des questions habituelles
+          </Bouton>
+          <p className="mt-3 text-[14px]">Si vous laissez vide, nous les reprendrons telles quelles.</p>
+        </Encadre>
+      ) : null}
+      {d.faq.map((f, i) => {
+        const e = erreur(`faq[${i}]`);
+        return (
+          <div key={i} className={`rounded-2xl border bg-white p-4 space-y-3 ${e ? 'border-red-300' : 'border-slate-200'}`}>
+            <Texte label={`Question ${i + 1}`} value={f.question} onChange={(v) => maj(`faq.${i}.question`, v)} />
+            <ZoneTexte label="Réponse" rows={3} value={f.reponse} onChange={(v) => maj(`faq.${i}.reponse`, v)} />
+            {e ? <p className="text-red-700 text-[14px] font-medium">{e}</p> : null}
+            <Bouton variante="danger" onClick={() => maj('faq', d.faq.filter((_, j) => j !== i))}>
+              Retirer cette question
+            </Bouton>
+          </div>
+        );
+      })}
+      <Bouton variante="secondaire" onClick={() => maj('faq', [...d.faq, { question: '', reponse: '' }])}>
+        + Ajouter une question
+      </Bouton>
     </div>
   );
 }

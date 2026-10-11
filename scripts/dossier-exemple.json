@@ -78,15 +78,34 @@
   "cours": [
     {
       "nom": "Gym douce",
-      "description": "Mobilité et équilibre, sur chaise si besoin. Idéal pour reprendre."
+      "description": "Mobilité et équilibre, sur chaise si besoin. Idéal pour reprendre.",
+      "niveau": "Reprise en douceur",
+      "animateur": "",
+      "bienfaits": [
+        "Équilibre",
+        "Mobilité",
+        "Sans se brusquer"
+      ]
     },
     {
       "nom": "Yoga",
-      "description": "Respiration et postures simples, tous niveaux."
+      "description": "Respiration et postures simples, tous niveaux.",
+      "niveau": "Tous niveaux",
+      "animateur": "",
+      "bienfaits": [
+        "Respiration",
+        "Souplesse"
+      ]
     },
     {
       "nom": "Marche nordique",
-      "description": "Sortie d’une heure trente, bâtons prêtés."
+      "description": "Sortie d’une heure trente, bâtons prêtés.",
+      "niveau": "Tous niveaux",
+      "animateur": "Hélène",
+      "bienfaits": [
+        "Plein air",
+        "Cardio doux"
+      ]
     }
   ],
   "planning": [
@@ -136,5 +155,41 @@
     "bureau": true,
     "mail": false
   },
-  "remarques": "Nous aimerions que la marche nordique apparaisse en premier."
+  "remarques": "Nous aimerions que la marche nordique apparaisse en premier.",
+  "coachs": [
+    {
+      "prenom": "Hélène",
+      "cours": [
+        "Gym douce",
+        "Marche nordique"
+      ],
+      "bio": "Hélène anime depuis dix ans. Elle adapte chaque exercice : personne ne force.",
+      "photo": "",
+      "accord": false
+    },
+    {
+      "prenom": "Marc",
+      "cours": [
+        "Yoga"
+      ],
+      "bio": "Marc enseigne un yoga simple, centré sur la respiration.",
+      "photo": "",
+      "accord": false
+    }
+  ],
+  "faq": [
+    {
+      "question": "Faut-il un certificat médical ?",
+      "reponse": "Non pour la pratique de loisir : un questionnaire de santé suffit.",
+      "populaire": true
+    },
+    {
+      "question": "Je n’habite pas {ville}, je peux venir ?",
+      "reponse": "Oui, des adhérents viennent de {communes}."
+    },
+    {
+      "question": "Combien coûte l’adhésion ?",
+      "reponse": "{tarif} pour la saison.{?essais| Les {essais} premières séances sont gratuites.}"
+    }
+  ]
 }
