@@ -6,12 +6,28 @@
 // nom, ville, salles, contacts, tarif, couleurs, saison.
 // Le site, les fonctions Netlify et les scripts lisent ce fichier.
 //
-// Après modification : `npm run dev` pour vérifier, puis déployer.
+// Après modification : `npm run verifier`, puis `npm run dev` pour voir le site.
+// Pour tout essayer sans compte Google : `npm run demo` (mot de passe bureau : demo).
 // Les contenus éditoriaux (coachs, cours, FAQ, blog) sont dans src/data/.
 // ============================================================
 
 /** @type {import('./asso.config').AssoConfig} */
 const ASSO = {
+  // ---- Fonctions du site ----
+  // Montez le site par étapes : mettez false à ce qui n'est pas encore branché.
+  // Le site vitrine (cours, planning, tarifs, contact) marche toujours, sans réglage.
+  // `npm run verifier` dit ce qui manque pour chaque fonction activée.
+  modules: {
+    /** Formulaire d'essai gratuit → Google Sheet Essais. Sinon /essai propose d'appeler ou d'écrire. */
+    essais: true,
+    /** Inscription en ligne → Google Sheet Adhérents. Sinon /inscription explique comment s'inscrire. */
+    adhesion: true,
+    /** Espace /bureau des bénévoles (essais, encaissements, cartes, planning). */
+    bureau: true,
+    /** Mail et agenda du compte Google de l'asso, dans le bureau (demande le bureau). */
+    mail: true,
+  },
+
   // ---- Identité ----
   nom: 'Association Sportive Exemple',
   /** Nom court affiché dans le header, les mails, les cartes. */

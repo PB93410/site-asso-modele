@@ -33,10 +33,32 @@ npm install
 ```
 
 ```bash
-npm run dev
+npm run demo
 ```
 
-Le site tourne sur http://localhost:5173 avec les données d’exemple (« Association Sportive Exemple », à Villexemple).
+Tout le site **et l’espace bureau** tournent sur http://localhost:5173, sans aucun compte Google, avec des données fictives : essais, adhérents, mails, agenda, cartes. Mot de passe du bureau : `demo`. Rien n’est envoyé ni enregistré.
+
+Ensuite, pour savoir ce qu’il reste à régler :
+
+```bash
+npm run verifier
+```
+
+Il dit en français simple ce qui manque (configuration, variables, accès aux Google Sheets, colonnes, compte Gmail) et comment le corriger.
+
+### Monter le site par étapes
+
+Dans `asso.config.js → modules`, chaque fonction s’active séparément :
+
+| Fonction | Ce qu’elle fait | Ce qu’elle demande |
+|---|---|---|
+| *(toujours)* | Site vitrine : cours, planning, tarifs, contact | Rien |
+| `essais` | Formulaire d’essai gratuit → Google Sheet | Compte de service Google + classeur Essais |
+| `adhesion` | Inscription en ligne → Google Sheet | Compte de service Google + classeur Adhérents |
+| `bureau` | Espace `/bureau` des bénévoles | Mot de passe + secret + les deux classeurs |
+| `mail` | Mail et agenda de l’asso dans le bureau | Connexion du compte Google de l’asso |
+
+Une fonction à `false` disparaît proprement : `/essai` et `/inscription` proposent alors d’appeler, d’écrire ou de venir sur place. On peut publier le jour même et brancher le reste plus tard.
 
 ## Adapter à votre association
 
@@ -56,7 +78,9 @@ Le guide pas à pas, avec la mise en ligne et le branchement de Google : **[docs
 
 | Commande | Rôle |
 |---|---|
-| `npm run dev` | Site en local |
+| `npm run demo` | Site et bureau en local avec des données fictives, sans Google |
+| `npm run verifier` | Ce qui manque pour publier, et comment le corriger |
+| `npm run dev` | Site en local (formulaires et bureau : avec `netlify dev`) |
 | `npm run build` | Build complet (pré-rendu Puppeteer + validation JSON-LD) — **le seul pour la prod** |
 | `npm run build:fast` | Build sans pré-rendu — essais locaux et previews uniquement |
 | `npm test` | Tests (Vitest) |

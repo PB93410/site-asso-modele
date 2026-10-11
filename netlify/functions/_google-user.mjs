@@ -7,6 +7,7 @@
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { google } from 'googleapis';
 import { ASSO, SITE_URL } from '../../asso.derive.js';
+import { DEMO, demoCalendar, demoGmail } from './_demo.mjs';
 
 /** Compte Google de l’association (Gmail, Agenda, Contacts) : ASSO_GMAIL ou asso.config.js → email. */
 export const ASSO_GMAIL = process.env.ASSO_GMAIL || ASSO.email;
@@ -70,6 +71,16 @@ export function getUserGoogleAuth() {
     );
   }
   return createOAuth2Client({ refreshToken });
+}
+
+/** Gmail du compte asso (faux en mode démo). */
+export function gmailApi() {
+  return DEMO ? demoGmail() : google.gmail({ version: 'v1', auth: getUserGoogleAuth() });
+}
+
+/** Agenda du compte asso (faux en mode démo). */
+export function calendarApi() {
+  return DEMO ? demoCalendar() : google.calendar({ version: 'v3', auth: getUserGoogleAuth() });
 }
 
 export function getCalendarId() {

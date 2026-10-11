@@ -12,6 +12,7 @@ import {
   createBureauToken,
   handleOptions,
   json,
+  moduleOff,
 } from './_bureau-lib.mjs';
 import { checkLoginLock, clearLoginFailures, recordLoginFailure } from './_login-guard.mjs';
 
@@ -29,6 +30,8 @@ function tooMany(retryAfterSec) {
 
 export async function handler(event) {
   if (event.httpMethod === 'OPTIONS') return handleOptions();
+  const off = moduleOff('bureau');
+  if (off) return off;
   if (event.httpMethod !== 'POST') {
     return json(405, { error: 'Method not allowed' });
   }

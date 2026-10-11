@@ -39,7 +39,7 @@ import { buildPersonSheet, personSheetKey } from '../lib/personSheet';
 import { isAVenir, isCountableEssai, isStrictAVenir } from '../lib/essaiStatuts';
 import { essaiYmdFromCreneau } from '../lib/essaiDates';
 import { countEssaisATraiter, essaisAPointer } from '../lib/essaisSemaine';
-import { ASSO, PAIEMENTS_BUREAU, PAIEMENT_NOM } from '../data/asso';
+import { ASSO, MODULES, PAIEMENTS_BUREAU, PAIEMENT_NOM } from '../data/asso';
 
 type AdhesionItem = {
   row: number;
@@ -1041,7 +1041,7 @@ export default function BureauPage() {
             ) : null}
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
-            {porte === 'admin' ? (
+            {porte === 'admin' && MODULES.mail ? (
               <Link
                 to="/bureau/mail?filter=adhesions"
                 className="px-3 py-2 rounded-xl border border-black/10 text-slate-700 text-sm font-medium min-h-[40px] inline-flex items-center gap-1"
@@ -1244,42 +1244,46 @@ export default function BureauPage() {
                 </span>
               </span>
             </button>
-            <Link
-              to="/bureau/mail?filter=adhesions"
-              className="w-full flex items-center gap-3 rounded-2xl bg-white border border-black/10 p-4 text-left min-h-[56px]"
-            >
-              <Mail className="w-5 h-5 text-orange-primary shrink-0" aria-hidden="true" />
-              <span>
-                <span className="block font-semibold text-brand-black">Mail</span>
-                <span className="block text-sm text-slate-500">
-                  Adhésions et paiements en ligne (pas les relevés d’essai)
+            {MODULES.mail ? (
+              <>
+              <Link
+                to="/bureau/mail?filter=adhesions"
+                className="w-full flex items-center gap-3 rounded-2xl bg-white border border-black/10 p-4 text-left min-h-[56px]"
+              >
+                <Mail className="w-5 h-5 text-orange-primary shrink-0" aria-hidden="true" />
+                <span>
+                  <span className="block font-semibold text-brand-black">Mail</span>
+                  <span className="block text-sm text-slate-500">
+                    Adhésions et paiements en ligne (pas les relevés d’essai)
+                  </span>
                 </span>
-              </span>
-            </Link>
-            <Link
-              to="/bureau/agenda"
-              className="w-full flex items-center gap-3 rounded-2xl bg-white border border-black/10 p-4 text-left min-h-[56px]"
-            >
-              <Calendar className="w-5 h-5 text-orange-primary shrink-0" aria-hidden="true" />
-              <span>
-                <span className="block font-semibold text-brand-black">Agenda</span>
-                <span className="block text-sm text-slate-500">
-                  Agenda unique du bureau
+              </Link>
+              <Link
+                to="/bureau/agenda"
+                className="w-full flex items-center gap-3 rounded-2xl bg-white border border-black/10 p-4 text-left min-h-[56px]"
+              >
+                <Calendar className="w-5 h-5 text-orange-primary shrink-0" aria-hidden="true" />
+                <span>
+                  <span className="block font-semibold text-brand-black">Agenda</span>
+                  <span className="block text-sm text-slate-500">
+                    Agenda unique du bureau
+                  </span>
                 </span>
-              </span>
-            </Link>
-            <Link
-              to="/bureau/connexion-google"
-              className="w-full flex items-center gap-3 rounded-2xl bg-white border border-dashed border-black/15 p-4 text-left min-h-[56px]"
-            >
-              <Shield className="w-5 h-5 text-brand-gray shrink-0" aria-hidden="true" />
-              <span>
-                <span className="block font-semibold text-brand-black">Connecter Google</span>
-                <span className="block text-sm text-slate-500">
-                  Référent — une fois (Mail + Agenda)
+              </Link>
+              <Link
+                to="/bureau/connexion-google"
+                className="w-full flex items-center gap-3 rounded-2xl bg-white border border-dashed border-black/15 p-4 text-left min-h-[56px]"
+              >
+                <Shield className="w-5 h-5 text-brand-gray shrink-0" aria-hidden="true" />
+                <span>
+                  <span className="block font-semibold text-brand-black">Connecter Google</span>
+                  <span className="block text-sm text-slate-500">
+                    Référent — une fois (Mail + Agenda)
+                  </span>
                 </span>
-              </span>
-            </Link>
+              </Link>
+              </>
+            ) : null}
             {[
               { id: 'planning' as const, label: 'Horaires', hint: 'Ce que voit le site', icon: Clock },
               { id: 'events' as const, label: 'Événements', hint: 'Affichés sur le site', icon: CalendarDays },

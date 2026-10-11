@@ -13,6 +13,7 @@ import {
   isValidFrPhone,
   parseFrBirthDate,
   pickValue,
+  moduleOff,
 } from './_bureau-lib.mjs';
 import { sendAdhesionNotification } from './_adhesion-mail.mjs';
 import { ASSO, PAYMENT_MODES, SITE_URL } from '../../asso.derive.js';
@@ -85,6 +86,8 @@ export async function handler(event) {
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 204, headers: CORS, body: '' };
   }
+  const off = moduleOff('adhesion');
+  if (off) return off;
 
   if (event.httpMethod !== 'POST') {
     return publicJson(405, { ok: false, error: 'Method Not Allowed' });

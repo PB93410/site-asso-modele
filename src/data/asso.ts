@@ -5,6 +5,7 @@ import type { AssoLieu } from '../../asso.config';
 export { ASSO };
 export type { AssoLieu };
 export {
+  MODULES,
   SITE_URL,
   SEASON_PREFIX,
   SAISON_COURTE,

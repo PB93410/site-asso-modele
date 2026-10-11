@@ -6,14 +6,13 @@
  *   POST /api/bureau/mail/:id/reply
  */
 
-import { google } from 'googleapis';
-import { handleOptions, json, requireAuth } from './_bureau-lib.mjs';
+import { handleOptions, json, moduleOff, requireAuth } from './_bureau-lib.mjs';
 import {
   ASSO_GMAIL,
   ensureReSubject,
   extractMessageBody,
   getMessageHeaders,
-  getUserGoogleAuth,
+  gmailApi,
   googleErrorMessage,
   toBase64Url,
 } from './_google-user.mjs';
@@ -52,8 +51,7 @@ export function isInboxMessage(msg) {
 const NOT_IN_INBOX = { error: 'Ce message n’est pas dans la boîte de réception.' };
 
 async function gmailClient() {
-  const auth = getUserGoogleAuth();
-  return google.gmail({ version: 'v1', auth });
+  return gmailApi();
 }
 
 function formatListItem(msg) {
@@ -187,6 +185,8 @@ async function handleReply(id, body) {
 
 export async function handler(event) {
   if (event.httpMethod === 'OPTIONS') return handleOptions();
+  const off = moduleOff('mail');
+  if (off) return off;
 
   const auth = requireAuth(event);
   if (!auth.ok) return auth.response;

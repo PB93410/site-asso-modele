@@ -1,7 +1,12 @@
 # Adapter le modèle à votre association
 
 Compter une demi-journée pour le site public, une journée de plus pour brancher l’espace bureau sur Google.
-Le site public fonctionne seul : l’espace bureau et les formulaires peuvent attendre.
+Le site public fonctionne seul : l’espace bureau et les formulaires peuvent attendre (`asso.config.js → modules`).
+
+Deux commandes vous guident tout du long :
+
+- `npm run demo` : le site et le bureau complets, avec des données fictives, sans compte Google (mot de passe du bureau : `demo`). Pour montrer l’outil au bureau de l’association avant de décider quoi brancher.
+- `npm run verifier` : la liste de ce qui manque, en français simple, avec la correction. À relancer après chaque étape.
 
 ---
 
@@ -19,7 +24,7 @@ npm install
 ```
 
 ```bash
-npm run dev
+npm run demo
 ```
 
 ---
@@ -39,6 +44,8 @@ Ouvrez [`asso.config.js`](../asso.config.js) à la racine et remplissez chaque c
 | `adhesion.paiementUrl` | Vide = pas de paiement en ligne ; seuls les moyens « au bureau » sont proposés. |
 | `saison.finCampagneEssai` | Après cette date, le bouton principal passe d’« Essai » à « Adhérer ». |
 | `couleurs.primaire` | Contraste ≥ 4,5:1 avec le blanc (texte des boutons). Vérifiez sur webaim.org/resources/contrastchecker. |
+
+Choisissez aussi les **fonctions** (`modules`) : commencez par tout mettre à `false` sauf ce que vous brancherez tout de suite. Le site vitrine marche sans rien.
 
 Puis régénérez logo, favicons, image de partage et verso de carte :
 
@@ -128,6 +135,12 @@ Pour que le bureau lise la boîte mail et l’agenda de l’asso sans ouvrir Gma
 ---
 
 ## Vérifier avant de publier
+
+```bash
+npm run verifier
+```
+
+Zéro « ✖ » avant de publier. Les « ⚠ » sont à lire (valeurs d’exemple restantes, photo d’exemple, mentions légales).
 
 ```bash
 npx tsc -b

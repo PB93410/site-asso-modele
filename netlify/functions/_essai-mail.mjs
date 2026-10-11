@@ -3,8 +3,7 @@
  * Le dossier se traite dans Bureau → Essais. L’essai s’enregistre même si le mail échoue.
  */
 
-import { google } from 'googleapis';
-import { ASSO_GMAIL, getUserGoogleAuth, toBase64Url } from './_google-user.mjs';
+import { ASSO_GMAIL, gmailApi, toBase64Url } from './_google-user.mjs';
 
 function formatFrPhoneDisplay(raw) {
   let d = String(raw || '').replace(/\D/g, '');
@@ -73,8 +72,7 @@ export async function sendEssaiNotification(payload) {
     prospectMail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(prospectMail) ? prospectMail : ASSO_GMAIL;
 
   try {
-    const auth = getUserGoogleAuth();
-    const gmail = google.gmail({ version: 'v1', auth });
+    const gmail = gmailApi();
     const mime = [
       `From: ${ASSO_GMAIL}`,
       `To: ${ASSO_GMAIL}`,

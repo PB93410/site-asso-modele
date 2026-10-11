@@ -1,11 +1,12 @@
 import { Component, type ReactNode, lazy, Suspense } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Navigation from './components/Navigation';
+import DemoBanner from './components/DemoBanner';
 import HomePage from './pages/HomePage';
 import EssaiPage from './pages/EssaiPage';
 import InscriptionPage from './pages/InscriptionPage';
 import TarifsPage from './pages/TarifsPage';
-import { ASSO, AUTOUR_PATH } from './data/asso';
+import { ASSO, AUTOUR_PATH, MODULES } from './data/asso';
 
 // Espace bureau : chargé seulement quand on ouvre /bureau (jamais pour les visiteurs).
 const BureauPage = lazy(() => import('./pages/BureauPage'));
@@ -112,6 +113,7 @@ export default function App() {
   return (
     <div className="relative">
       {!hidePublicChrome && <Navigation />}
+      <DemoBanner />
       <ErrorBoundary>
         <Suspense fallback={<PageFallback />}>
           <Routes>
@@ -120,14 +122,25 @@ export default function App() {
             <Route path="/blog/:slug" element={<BlogArticlePage />} />
             <Route path="/benevoles" element={<Navigate to="/bureau" replace />} />
             <Route path="/benevoles/*" element={<Navigate to="/bureau" replace />} />
-            <Route path="/bureau/mail" element={<BureauMailPage />} />
-            <Route path="/bureau/agenda" element={<BureauAgendaPage />} />
-            <Route path="/bureau/connexion-google" element={<BureauGoogleConnectPage />} />
-            <Route path="/bureau/relances" element={<BureauRelancesPage />} />
-            <Route path="/bureau" element={<BureauPage />} />
-            {CartesApercuPage ? (
-              <Route path="/bureau/apercu-cartes" element={<CartesApercuPage />} />
+            {/* Fonctions activées dans asso.config.js → modules */}
+            {MODULES.mail ? (
+              <>
+                <Route path="/bureau/mail" element={<BureauMailPage />} />
+                <Route path="/bureau/agenda" element={<BureauAgendaPage />} />
+                <Route path="/bureau/connexion-google" element={<BureauGoogleConnectPage />} />
+              </>
             ) : null}
+            {MODULES.bureau ? (
+              <>
+                <Route path="/bureau/relances" element={<BureauRelancesPage />} />
+                <Route path="/bureau" element={<BureauPage />} />
+                {CartesApercuPage ? (
+                  <Route path="/bureau/apercu-cartes" element={<CartesApercuPage />} />
+                ) : null}
+              </>
+            ) : (
+              <Route path="/bureau/*" element={<NotFoundPage />} />
+            )}
             <Route path="/inscription" element={<InscriptionPage />} />
             <Route path="/tarifs" element={<TarifsPage />} />
             <Route path="/essai" element={<EssaiPage />} />

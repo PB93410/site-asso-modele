@@ -17,6 +17,9 @@
 - NUMERO : un numéro attribué est définitif, ne jamais le réécrire ni renuméroter.
 - Cartes : le recto est fabriqué à l’envoi depuis la fiche (`_carte-recto.mjs`). Pas de coffre d’images, pas de PNG nominatif sur disque.
 - Aucune donnée personnelle dans le dépôt.
+- Mode démo (`npm run demo`, `netlify/functions/_demo.mjs`) : tout appel Google passe par `getSheets()`, `gmailApi()` ou `calendarApi()`, jamais `google.*` directement, sinon la démo casse.
+- Fonctions activables (`asso.config.js → modules`) : une nouvelle page ou fonction liée à un module vérifie `MODULES` (client) ou `moduleOff()` (serveur).
+- `npm run verifier` doit rester juste : un nouveau réglage obligatoire y est ajouté (`scripts/_verifier.mjs`).
 
 ## Textes
 - Ton associatif, pas startup. Public senior-friendly : phrases courtes, contrastes forts, cibles 44 px.

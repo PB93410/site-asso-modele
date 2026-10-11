@@ -5,7 +5,16 @@ export interface AssoLieu {
   acces?: string;
 }
 
+export interface AssoModules {
+  essais: boolean;
+  adhesion: boolean;
+  bureau: boolean;
+  mail: boolean;
+}
+
 export interface AssoConfig {
+  /** Fonctions activées (toutes par défaut). */
+  modules?: Partial<AssoModules>;
   nom: string;
   nomCourt: string;
   sigle: string;

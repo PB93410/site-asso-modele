@@ -21,6 +21,7 @@ import {
   readSheetAsObjects,
   rowFromHeaders,
   telPersonKey,
+  moduleOff,
 } from './_bureau-lib.mjs';
 import { buildDateEssaiCell, formatEssaiDateLabel } from './_essai-dates.mjs';
 import { notifyBureauNewLead } from './_notify-bureau.mjs';
@@ -79,6 +80,8 @@ export async function handler(event) {
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 204, headers: CORS, body: '' };
   }
+  const off = moduleOff('essais');
+  if (off) return off;
   if (event.httpMethod !== 'POST') {
     return publicJson(405, { ok: false });
   }

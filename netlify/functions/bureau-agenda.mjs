@@ -6,11 +6,10 @@
  * DELETE /api/bureau/agenda/:id
  */
 
-import { google } from 'googleapis';
-import { handleOptions, json, requireAuth } from './_bureau-lib.mjs';
+import { handleOptions, json, moduleOff, requireAuth } from './_bureau-lib.mjs';
 import {
   getCalendarId,
-  getUserGoogleAuth,
+  calendarApi,
   googleErrorMessage,
 } from './_google-user.mjs';
 
@@ -113,8 +112,7 @@ function validateEventBody(body, { partial = false } = {}) {
 }
 
 async function calendarClient() {
-  const auth = getUserGoogleAuth();
-  return google.calendar({ version: 'v3', auth });
+  return calendarApi();
 }
 
 async function handleList(q) {
@@ -200,6 +198,8 @@ async function handleDelete(id) {
 
 export async function handler(event) {
   if (event.httpMethod === 'OPTIONS') return handleOptions();
+  const off = moduleOff('mail');
+  if (off) return off;
 
   const auth = requireAuth(event);
   if (!auth.ok) return auth.response;

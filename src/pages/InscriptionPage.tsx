@@ -13,11 +13,13 @@ import {
   ASSO,
   ESSAIS_LABEL,
   MODE_CARTE,
+  MODULES,
   PAIEMENTS_BUREAU,
   PAIEMENT_NOM,
   PAYMENT_MODES,
   TARIF_LABEL,
 } from '../data/asso';
+import ContactDirect from '../components/ContactDirect';
 import { SEASON_LABEL } from '../data/CONFIG';
 import { usePageMeta } from '../hooks/usePageMeta';
 import {
@@ -434,6 +436,8 @@ export default function InscriptionPage() {
               </Link>
             </div>
           </div>
+        ) : !MODULES.adhesion ? (
+          <ContactDirect motif="adhesion" />
         ) : (
           <form
             onSubmit={handleSubmit}

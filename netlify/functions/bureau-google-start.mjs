@@ -3,7 +3,7 @@
  * Session bureau requise → URL OAuth (compte asso).
  */
 
-import { handleOptions, json, requireAuth } from './_bureau-lib.mjs';
+import { handleOptions, json, moduleOff, requireAuth } from './_bureau-lib.mjs';
 import {
   buildConsentUrl,
   createGoogleOAuthState,
@@ -12,6 +12,8 @@ import {
 
 export async function handler(event) {
   if (event.httpMethod === 'OPTIONS') return handleOptions();
+  const off = moduleOff('mail');
+  if (off) return off;
   if (event.httpMethod !== 'GET') {
     return json(405, { error: 'Method not allowed' });
   }

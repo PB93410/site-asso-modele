@@ -6,7 +6,8 @@
 
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { google } from 'googleapis';
-import { ASSO, PAYMENT_MODES, SITE_URL } from '../../asso.derive.js';
+import { ASSO, MODULES, PAYMENT_MODES, SITE_URL } from '../../asso.derive.js';
+import { DEMO, demoSheets } from './_demo.mjs';
 
 export { SEASON_PREFIX, nextAdherentNumero } from './_cartes-store.mjs';
 
@@ -190,7 +191,22 @@ export function extractToken(event) {
  * Jeton valide et rôle autorisé. Défaut : admin seulement.
  * Renvoie { ok: true, role } ou { ok: false, response }.
  */
+const MODULE_NOMS = {
+  essais: 'Le formulaire d’essai',
+  adhesion: 'L’inscription en ligne',
+  bureau: 'L’espace bureau',
+  mail: 'Le mail du bureau',
+};
+
+/** Réponse 404 si la fonction est désactivée dans asso.config.js → modules, sinon null. */
+export function moduleOff(name) {
+  if (MODULES[name]) return null;
+  return json(404, { error: `${MODULE_NOMS[name] || 'Cette fonction'} n’est pas activé sur ce site.` });
+}
+
 export function requireAuth(event, { roles = ['admin'] } = {}) {
+  const off = moduleOff('bureau');
+  if (off) return { ok: false, response: off };
   const verified = verifyBureauToken(extractToken(event));
   if (!verified.ok) {
     return {
@@ -282,6 +298,8 @@ export function clientIp(event) {
  */
 export function assertBrowserOrigin(event) {
   const origin = event.headers?.origin || event.headers?.Origin || '';
+  // Démo : données fictives, le site de démo peut avoir une autre adresse que siteUrl.
+  if (DEMO) return { ok: true };
   if (isProductionRuntime()) {
     if (origin !== SITE_ORIGIN) {
       return { ok: false, status: 403, error: 'Origine non autorisée' };
@@ -322,6 +340,10 @@ let _sheetsClient = null;
 
 export async function getSheets() {
   if (_sheetsClient) return _sheetsClient;
+  if (DEMO) {
+    _sheetsClient = demoSheets();
+    return _sheetsClient;
+  }
 
   const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
   if (!raw) {

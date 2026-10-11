@@ -17,6 +17,13 @@ export const MODE_CARTE = ASSO.adhesion.paiementUrl
   ? `Carte (${ASSO.adhesion.paiementNom || 'en ligne'})`
   : '';
 
+/**
+ * Fonctions activées (asso.config.js → modules). Absentes = activées.
+ * Le mail du bureau demande le bureau.
+ */
+export const MODULES = { essais: true, adhesion: true, bureau: true, mail: true, ...(ASSO.modules || {}) };
+if (!MODULES.bureau) MODULES.mail = false;
+
 const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
 /** Modes de paiement proposés dans le formulaire d'inscription et acceptés par /api/adhesion. */

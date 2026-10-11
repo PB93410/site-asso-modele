@@ -1,6 +1,7 @@
-import type { AssoConfig } from './asso.config';
+import type { AssoConfig, AssoModules } from './asso.config';
 
 export declare const ASSO: AssoConfig;
+export declare const MODULES: AssoModules;
 export declare const SITE_URL: string;
 export declare const SAISON_COURTE: string;
 export declare const SEASON_PREFIX: string;

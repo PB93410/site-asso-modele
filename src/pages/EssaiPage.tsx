@@ -2,7 +2,8 @@ import { useMemo, useState, type FormEvent } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { CheckCircle2, Loader2, MessageCircle } from 'lucide-react';
 import { waUrl as clubWaUrl } from '../data/siteData';
-import { ASSO, COURS_ESSAI_LABEL, NB_ESSAIS, TARIF_LABEL } from '../data/asso';
+import { ASSO, COURS_ESSAI_LABEL, MODULES, NB_ESSAIS, TARIF_LABEL } from '../data/asso';
+import ContactDirect from '../components/ContactDirect';
 import { useScheduleFromSheet } from '../hooks/useSheetData';
 import { usePageMeta } from '../hooks/usePageMeta';
 import {
@@ -147,11 +148,13 @@ export default function EssaiPage() {
             <h1 className="font-display font-black text-[28px] md:text-[36px] leading-[1.05] text-brand-black mb-3">
               Venez essayer, sans rien signer.
             </h1>
-            <UnCreneauNote className="mb-3" />
+            {MODULES.essais ? <UnCreneauNote className="mb-3" /> : null}
             <p className="font-body text-[16px] text-brand-gray leading-relaxed">
-              {fromForum
-                ? 'Au stand : prénom, nom et téléphone, puis un créneau ci-dessous si vous le connaissez. Rien à payer le jour de l’essai.'
-                : 'Indiquez votre prénom, votre nom et votre téléphone. Rien à payer le jour de l’essai.'}
+              {!MODULES.essais
+                ? 'Rien à payer le jour de l’essai. Venez en tenue souple, avec une bouteille d’eau.'
+                : fromForum
+                  ? 'Au stand : prénom, nom et téléphone, puis un créneau ci-dessous si vous le connaissez. Rien à payer le jour de l’essai.'
+                  : 'Indiquez votre prénom, votre nom et votre téléphone. Rien à payer le jour de l’essai.'}
             </p>
           </header>
         )}
@@ -248,6 +251,8 @@ export default function EssaiPage() {
               </Link>
             </div>
           </div>
+        ) : !MODULES.essais ? (
+          <ContactDirect motif="essai" />
         ) : (
           <form
             onSubmit={onSubmit}

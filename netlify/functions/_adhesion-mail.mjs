@@ -3,8 +3,7 @@
  * Sheet = seul registre. Ce mail = copie d’alerte (Gmail API), pas Netlify Forms.
  */
 
-import { google } from 'googleapis';
-import { ASSO_GMAIL, getUserGoogleAuth, mimeName, toBase64Url } from './_google-user.mjs';
+import { ASSO_GMAIL, gmailApi, mimeName, toBase64Url } from './_google-user.mjs';
 import { ASSO, SITE_URL } from '../../asso.derive.js';
 
 function dash(value) {
@@ -137,8 +136,7 @@ export async function sendAdhesionNotification(f) {
     prospectMail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(prospectMail) ? prospectMail : ASSO_GMAIL;
 
   try {
-    const auth = getUserGoogleAuth();
-    const gmail = google.gmail({ version: 'v1', auth });
+    const gmail = gmailApi();
     const mime = [
       `From: ${mimeName(ASSO.nom)} <${ASSO_GMAIL}>`,
       `To: ${ASSO_GMAIL}`,

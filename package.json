@@ -6,6 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "demo": "vite --mode demo",
+    "verifier": "node scripts/verifier.mjs",
     "build": "tsc -b && vite build && node scripts/fetch-sheets.mjs && node scripts/postbuild-seo.mjs && node scripts/prerender.mjs && node scripts/validate-schema.mjs",
     "build:fast": "vite build && node scripts/fetch-sheets.mjs && node scripts/postbuild-seo.mjs",
     "preview": "vite preview",

@@ -10,13 +10,12 @@
 
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { google } from 'googleapis';
 import { noteCarteDate } from './carte-marquer.mjs';
 import { carteFiche } from './carte-image.mjs';
 import { renderRecto } from './_carte-recto.mjs';
 import { journalEntry, masquerMail, noteEnvoi } from './_cartes-journal.mjs';
 import { SEASON_PREFIX } from './_cartes-store.mjs';
-import { ASSO_GMAIL, getUserGoogleAuth, googleErrorMessage, mimeName, toBase64Url } from './_google-user.mjs';
+import { ASSO_GMAIL, gmailApi, googleErrorMessage, mimeName, toBase64Url } from './_google-user.mjs';
 import {
   getAdherentsSheetId,
   getAdherentsTab,
@@ -166,7 +165,7 @@ export async function handler(event) {
     const verso = readVersoPng();
     if (!verso) console.error('carte-mail verso introuvable, envoi du recto seul');
 
-    const gmail = google.gmail({ version: 'v1', auth: getUserGoogleAuth() });
+    const gmail = gmailApi();
     await gmail.users.messages.send({
       userId: 'me',
       requestBody: { raw: toBase64Url(buildMime({ to, numero, prenom: fiche.prenom, png, verso })) },
