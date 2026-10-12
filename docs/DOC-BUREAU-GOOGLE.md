@@ -1,6 +1,6 @@
 # Connexion Google — Mail & Agenda bureau
 
-> Facultatif. Sans Google, l’agenda du bureau est rangé sur Netlify avec un abonnement pour les téléphones ([DOC-AGENDA.md](DOC-AGENDA.md)) et le site envoie ses mails par la boîte de l’asso ([DOC-MAIL.md](DOC-MAIL.md)). Cette connexion sert à lire la boîte Gmail dans le bureau, ou à garder l’agenda dans Google Agenda.
+> Facultatif. Sans Google, l’agenda du bureau est rangé sur Netlify avec un abonnement pour les téléphones ([DOC-AGENDA.md](DOC-AGENDA.md)) et le site envoie ses mails par la boîte de l’asso ([DOC-MAIL.md](DOC-MAIL.md)). La boîte mail se lit aussi sans Google, en IMAP ([DOC-MAIL.md](DOC-MAIL.md)). Cette connexion ne sert que pour lire une boîte Gmail par l’API Google, ou garder l’agenda dans Google Agenda.
 
 Document **interne** pour le référent site.  
 **Ne jamais** y coller Client Secret, refresh token, ni mot de passe.

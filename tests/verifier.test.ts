@@ -118,3 +118,25 @@ describe('npm run verifier — envoi des mails', () => {
     expect(erreurs(verifierEnvoi({ MAIL_ENVOI: 'gmail' }, { ...AUCUN, bureau: true }))[0]).toMatch(/GOOGLE_REFRESH_TOKEN/);
   });
 });
+
+describe('npm run verifier — boîte mail du bureau', () => {
+  const MAIL = { essais: false, adhesion: false, bureau: true, mail: true };
+  const BASE = { BUREAU_PASSWORD: 'une phrase assez longue', BUREAU_SECRET: 'x'.repeat(40) };
+
+  it('IMAP avec le mot de passe du SMTP : rien de Google demandé', () => {
+    const r = verifierEnv({ ...BASE, IMAP_HOST: 'ssl0.ovh.net', SMTP_HOST: 'ssl0.ovh.net', SMTP_USER: 'bureau@club.fr', SMTP_PASS: 'p' }, MAIL);
+    expect(erreurs(r)).toEqual([]);
+    expect(r.some((x) => /IMAP ssl0.ovh.net:993, compte bureau@club.fr/.test(x.texte))).toBe(true);
+  });
+
+  it('ni IMAP ni Gmail : erreur claire, et proposition de couper le module', () => {
+    const r = verifierEnv(BASE, MAIL);
+    expect(erreurs(r)).toContain('Boîte mail du bureau non branchée.');
+    expect(r.some((x) => x.aFaire?.includes('mail: false'))).toBe(true);
+  });
+
+  it('Gmail connecté : demande toujours les variables Google', () => {
+    const r = verifierEnv({ ...BASE, GOOGLE_REFRESH_TOKEN: 't' }, MAIL);
+    expect(erreurs(r)).toEqual(expect.arrayContaining(['GOOGLE_CLIENT_ID manquante.', 'GOOGLE_CLIENT_SECRET manquante.']));
+  });
+});

@@ -1,5 +1,5 @@
 /**
- * /bureau/mail — lire + répondre dans le fil (Gmail API via Netlify)
+ * /bureau/mail — lire + répondre dans le fil (boîte de l’asso en IMAP, ou Gmail API, via Netlify)
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';

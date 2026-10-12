@@ -78,7 +78,9 @@ export async function messageBrut(m) {
 /**
  * Envoie un mail depuis l'adresse de l'asso.
  * @param {{ to: string, subject: string, text: string, replyTo?: string,
+ *   inReplyTo?: string, references?: string,
  *   attachments?: { filename: string, content: Buffer, contentType?: string }[] }} mail
+ *   inReplyTo / references : réponse dans le fil d'un message reçu.
  * @returns {Promise<{ mode: string }>}  lève une erreur au message lisible (err.lisible) si l'envoi échoue.
  */
 export async function envoyerMail(mail, env = process.env) {
@@ -96,6 +98,7 @@ export async function envoyerMail(mail, env = process.env) {
     subject: mail.subject,
     text: mail.text,
     attachments: mail.attachments || [],
+    ...(mail.inReplyTo ? { inReplyTo: mail.inReplyTo, references: mail.references || mail.inReplyTo } : {}),
   };
 
   if (mode === 'smtp') {
@@ -127,6 +130,7 @@ export async function envoyerMail(mail, env = process.env) {
         replyTo: { email: replyTo },
         subject: m.subject,
         textContent: m.text,
+        ...(m.inReplyTo ? { headers: { 'In-Reply-To': m.inReplyTo, References: m.references } } : {}),
         ...(m.attachments.length
           ? { attachment: m.attachments.map((a) => ({ name: a.filename, content: Buffer.from(a.content).toString('base64') })) }
           : {}),

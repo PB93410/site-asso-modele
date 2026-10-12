@@ -7,6 +7,7 @@ import { contraste } from '../src/lib/dossier.js';
 import { remplir } from '../src/lib/gabarit.js';
 import { adresseAsso, MODES_ENVOI, modeEnvoi } from '../netlify/functions/_envoi.mjs';
 import { MODES_STOCKAGE, modeStockage } from '../netlify/functions/_stockage.mjs';
+import { modeBoite, reglagesImap } from '../netlify/functions/_boite.mjs';
 
 export { contraste };
 
@@ -181,8 +182,10 @@ export function verifierEnv(env, modules) {
   ];
   const incomplets = new Set();
   const cleSheets = (cle) => /^GOOGLE_SHEET/.test(cle);
+  const boite = modules.mail && modules.bureau !== false ? modeBoite(env, false) : null;
   for (const [mods, cle, aide] of besoins) {
     if (cleSheets(cle) && !besoinSheets) continue;
+    if (mods.includes('mail') && boite !== 'gmail') continue;
     const qui = mods.filter((m) => modules[m]);
     if (!qui.length || a(cle)) continue;
     r.push(erreur(`${cle} manquante.`, aide));
@@ -190,6 +193,18 @@ export function verifierEnv(env, modules) {
   }
   if (besoinSheets && !compteDeService(a('GOOGLE_SERVICE_ACCOUNT_JSON'))) {
     ['essais', 'adhesion', 'bureau'].filter((m) => modules[m]).forEach((m) => incomplets.add(m));
+  }
+  if (modules.mail && modules.bureau !== false) {
+    if (!boite) {
+      r.push(erreur('Boîte mail du bureau non branchée.', 'IMAP de la boîte de l’asso (IMAP_HOST, mot de passe du SMTP) ou compte Gmail connecté : voir docs/DOC-MAIL.md. Sinon : modules.mail: false.'));
+      incomplets.add('mail');
+    } else if (boite === 'imap') {
+      const ri = reglagesImap(env);
+      if (!ri.auth.pass) {
+        r.push(erreur('Mot de passe de la boîte manquant (IMAP_PASS ou SMTP_PASS).', 'Voir docs/DOC-MAIL.md.'));
+        incomplets.add('mail');
+      } else r.push(ok(`Boîte mail du bureau : IMAP ${ri.host}:${ri.port}, compte ${ri.auth.user}.`));
+    }
   }
   if (incomplets.size) {
     const liste = [...incomplets];

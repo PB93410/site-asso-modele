@@ -1,5 +1,5 @@
 /**
- * Mail bureau — Gmail API (lecture + réponse dans le fil)
+ * Mail bureau — boîte de l’asso en IMAP (_boite.mjs) ou Gmail API (lecture + réponse dans le fil)
  * Routes via path :
  *   GET  /api/bureau/mail/list
  *   GET  /api/bureau/mail/:id
@@ -16,6 +16,7 @@ import {
   googleErrorMessage,
   toBase64Url,
 } from './_google-user.mjs';
+import { lireImap, listerImap, messageImap, modeBoite, repondreImap } from './_boite.mjs';
 
 function parseMailPath(event) {
   const candidates = [
@@ -68,6 +69,7 @@ function formatListItem(msg) {
 
 async function handleList(event) {
   const pageToken = event.queryStringParameters?.pageToken || undefined;
+  if (modeBoite() === 'imap') return json(200, await listerImap({ pageToken }));
   const gmail = await gmailClient();
   const list = await gmail.users.messages.list({
     userId: 'me',
@@ -94,6 +96,7 @@ async function handleList(event) {
 }
 
 async function handleGet(id) {
+  if (modeBoite() === 'imap') return json(200, await lireImap(id));
   const gmail = await gmailClient();
   const full = await gmail.users.messages.get({
     userId: 'me',
@@ -137,6 +140,10 @@ async function handleReply(id, body) {
   }
   if (text.length > 20000) {
     return json(400, { error: 'Réponse trop longue.' });
+  }
+  if (modeBoite() === 'imap') {
+    await repondreImap(id, text);
+    return json(200, { ok: true, message: 'Réponse envoyée.' });
   }
 
   const gmail = await gmailClient();
@@ -190,6 +197,9 @@ export async function handler(event) {
 
   const auth = requireAuth(event);
   if (!auth.ok) return auth.response;
+  if (!modeBoite()) {
+    return json(503, { error: 'La boîte mail n’est pas branchée (IMAP ou Gmail) : voir docs/DOC-MAIL.md.' });
+  }
 
   const { parts } = parseMailPath(event);
 
@@ -211,7 +221,11 @@ export async function handler(event) {
     }
     return json(404, { error: 'Route mail inconnue.' });
   } catch (err) {
-    console.error('bureau-mail', err?.message || err);
+    console.error('bureau-mail', err?.code || err?.message || err);
+    if (modeBoite() === 'imap') {
+      const status = err?.lisible && [400, 404, 503].includes(err.code) ? err.code : 502;
+      return json(status, { error: err?.lisible ? err.message : messageImap(err) });
+    }
     return json(502, { error: googleErrorMessage(err) });
   }
 }

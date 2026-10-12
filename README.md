@@ -23,7 +23,7 @@ Issu du site d’une association sportive en production, puis rendu générique.
 - Cartes d’adhérent fabriquées à l’envoi à partir de la fiche (mail ou WhatsApp), journal des envois
 - Édition du planning et des événements sans toucher au code
 - Agenda du bureau, à suivre sur son téléphone (abonnement .ics)
-- Boîte Gmail de l’asso dans le bureau (facultatif), modèles de messages
+- Boîte mail de l’asso lue dans le bureau, IMAP ou Gmail (facultatif), modèles de messages
 
 **Technique** : React 19, Vite, Tailwind CSS, TypeScript · Netlify (hébergement + fonctions) · Google Sheets comme registre (essais, adhérents, planning).
 
@@ -57,7 +57,7 @@ Dans `asso.config.js → modules`, chaque fonction s’active séparément :
 | `essais` | Formulaire d’essai gratuit → tableau Essais du bureau | Rien (données sur Netlify) ; pour l’alerte par mail : SMTP ou Brevo |
 | `adhesion` | Inscription en ligne → tableau Adhérents du bureau | Rien (données sur Netlify) ; pour l’alerte par mail : SMTP ou Brevo |
 | `bureau` | Espace `/bureau` des bénévoles, agenda (abonnement téléphone), export Excel, sauvegarde chaque lundi par mail | Mot de passe + secret |
-| `mail` | Boîte Gmail de l’asso lue dans le bureau | Connexion du compte Google de l’asso |
+| `mail` | Boîte mail de l’asso lue dans le bureau | IMAP de la boîte (mêmes identifiants que l’envoi), ou compte Gmail connecté |
 
 Les données sont rangées sur Netlify, avec le site : aucun compte Google n’est nécessaire. Google Sheets reste possible ([docs/DOC-DONNEES.md](docs/DOC-DONNEES.md)).
 

@@ -46,8 +46,8 @@ const ASSO = {
     adhesion: ${bool(m.adhesion)},
     /** Espace /bureau des bénévoles (essais, encaissements, cartes, planning). */
     bureau: ${bool(m.bureau)},
-    /** Boîte Gmail de l'asso, lue dans le bureau (demande le bureau). L'envoi des alertes et
-     *  des cartes n'en dépend pas (docs/DOC-MAIL.md), l'agenda non plus (docs/DOC-AGENDA.md). */
+    /** Boîte mail de l'asso lue dans le bureau, en IMAP ou Gmail (demande le bureau). L'envoi des
+     *  alertes et des cartes n'en dépend pas (docs/DOC-MAIL.md), l'agenda non plus (docs/DOC-AGENDA.md). */
     mail: ${bool(m.mail)},
   },
 

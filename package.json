@@ -34,6 +34,7 @@
     "@netlify/blobs": "^10.7.13",
     "@resvg/resvg-wasm": "^2.6.2",
     "googleapis": "^144.0.0",
+    "imapflow": "2.1.0",
     "lucide-react": "^0.562.0",
     "nodemailer": "9.1.1",
     "react": "^19.2.0",

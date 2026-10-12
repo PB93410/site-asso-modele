@@ -1278,7 +1278,7 @@ export default function BureauPage() {
                 <span>
                   <span className="block font-semibold text-brand-black">Connecter Google</span>
                   <span className="block text-sm text-slate-500">
-                    Référent — une fois (boîte mail)
+                    Référent — une fois, seulement si la boîte est Gmail
                   </span>
                 </span>
               </Link>

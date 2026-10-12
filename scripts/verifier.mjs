@@ -15,6 +15,7 @@ import { ASSO, MODULES, SAISON_COURTE } from '../asso.derive.js';
 import { valeursTexte } from '../src/lib/gabarit.js';
 import { adresseAsso, messageBrevo, messageSmtp, modeEnvoi } from '../netlify/functions/_envoi.mjs';
 import { modeStockage } from '../netlify/functions/_stockage.mjs';
+import { avecBoite, modeBoite } from '../netlify/functions/_boite.mjs';
 import { compteDeService, ecartsColonnes, verifierConfig, verifierContenu, verifierEnv } from './_verifier.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -123,6 +124,14 @@ async function verifierConnexions(env) {
     }
   }
   r.push(...(await verifierEnvoiEnLigne(env)));
+  if (MODULES.mail && MODULES.bureau && modeBoite(env, false) === 'imap') {
+    try {
+      const n = await avecBoite(async (client) => client.mailbox.exists, env);
+      r.push({ niveau: 'ok', texte: `Boîte mail (IMAP) : connexion acceptée, ${n} message(s) dans la boîte de réception.` });
+    } catch (err) {
+      r.push({ niveau: 'erreur', texte: `Boîte mail (IMAP) : ${err.message}`, aFaire: 'Réglages IMAP de votre fournisseur : docs/DOC-MAIL.md.' });
+    }
+  }
   if (!r.length) r.push({ niveau: 'attention', texte: 'Aucune connexion à tester (variables absentes ou fonctions désactivées).' });
   return r;
 }

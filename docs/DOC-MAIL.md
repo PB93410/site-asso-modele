@@ -56,7 +56,34 @@ Ce que fait déjà le module `mail` (lecture de la boîte et de l'agenda dans /b
 
 ---
 
-## Laquelle est utilisée ?
+## Lire la boîte dans le bureau (module `mail`)
+
+Le bureau peut afficher la boîte de réception de l'asso et y répondre (**Bureau → Autre → Mail**), sans ouvrir le webmail. Avec n'importe quel fournisseur, en **IMAP** :
+
+| Variable | Valeur |
+|---|---|
+| `IMAP_HOST` | serveur de réception (tableau ci-dessous) |
+| `IMAP_PORT` | `993` (par défaut) |
+| `IMAP_USER`, `IMAP_PASS` | facultatifs : par défaut, ceux du SMTP (c'est la même boîte) |
+
+| Fournisseur | `IMAP_HOST` |
+|---|---|
+| OVH (MX Plan) | `ssl0.ovh.net` |
+| Gandi | `mail.gandi.net` |
+| Infomaniak | `mail.infomaniak.com` |
+| Orange | `imap.orange.fr` |
+| Free | `imap.free.fr` |
+| Gmail | `imap.gmail.com` (mot de passe d'application, comme pour le SMTP) |
+
+Comme pour le SMTP, vérifiez les réglages dans l'aide du fournisseur.
+
+- La boîte de réception seulement, 20 messages par page, du plus récent au plus ancien ; le texte des messages, sans les pièces jointes.
+- Les réponses partent par l'envoi réglé plus haut (SMTP, Brevo ou Gmail), dans le fil de la conversation. Le message d'origine est marqué « répondu », et une copie de la réponse est rangée dans le dossier « Envoyés » de la boîte (`IMAP_COPIE_ENVOYES=non` pour ne pas la ranger).
+- Rien n'est supprimé ni déplacé dans la boîte.
+
+Sans IMAP, la boîte peut aussi être une boîte Gmail connectée ([DOC-BUREAU-GOOGLE.md](DOC-BUREAU-GOOGLE.md)). Pour forcer : `MAIL_BOITE=imap` ou `gmail`. `npm run verifier` teste la connexion IMAP.
+
+## Quel envoi est utilisé ?
 
 La première réglée, dans cet ordre : SMTP (`SMTP_HOST`), Brevo (`BREVO_API_KEY`), Gmail (`GOOGLE_REFRESH_TOKEN`). Pour forcer : `MAIL_ENVOI=smtp`, `brevo`, `gmail`, ou `aucun` pour ne rien envoyer.
 
