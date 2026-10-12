@@ -56,12 +56,12 @@ export default function BureauSheetLinks({
   const btn =
     variant === 'bar'
       ? 'inline-flex items-center justify-center gap-1.5 min-h-[44px] px-3 rounded-xl border border-black/10 bg-white text-sm font-semibold text-brand-black hover:border-orange-primary hover:text-orange-primary'
-      : 'inline-flex items-center justify-center gap-2 min-h-[48px] px-4 rounded-xl bg-orange-primary text-white font-semibold text-[15px] hover:bg-orange-primary/90 w-full sm:w-auto';
+      : 'inline-flex items-center justify-center gap-2 min-h-[44px] px-4 rounded-xl bg-white ring-1 ring-black/10 hover:bg-black/[0.03] text-brand-black font-semibold text-sm w-full sm:w-auto';
 
   const relancesBtn =
     variant === 'bar'
       ? 'inline-flex items-center justify-center gap-1.5 min-h-[44px] px-3 rounded-xl bg-[#25D366] text-white text-sm font-semibold'
-      : 'inline-flex items-center justify-center gap-2 min-h-[48px] px-4 rounded-xl bg-[#25D366] text-white font-semibold text-[15px] w-full sm:w-auto';
+      : 'inline-flex items-center justify-center gap-2 min-h-[44px] px-4 rounded-xl bg-[#25D366]/10 hover:bg-[#25D366]/15 text-[#128C4B] font-semibold text-sm w-full sm:w-auto';
 
   const links = (
     <>
@@ -103,9 +103,9 @@ export default function BureauSheetLinks({
 
   const google = Boolean(essaisUrl || adherentsUrl);
   return (
-    <div className="rounded-xl border border-black/10 p-4 space-y-3 bg-white">
-      <h3 className="font-display font-bold text-base text-brand-black">{google ? 'Tableaux Google' : 'Tableaux'}</h3>
-      <p className="text-sm text-brand-gray leading-relaxed">
+    <div className="rounded-2xl bg-white ring-1 ring-black/[0.06] shadow-[0_1px_2px_rgba(17,17,16,0.04)] p-4 space-y-3">
+      <h3 className="font-semibold text-brand-black">{google ? 'Tableaux Google' : 'Tableaux'}</h3>
+      <p className="text-sm text-slate-500 leading-relaxed">
         Relances (conversion {TARIF_LABEL}, rappel à 7 jours) : bouton vert. Onglets À payer et
         Essais = ce qu’il reste à faire.{' '}
         {google
@@ -114,7 +114,7 @@ export default function BureauSheetLinks({
       </p>
       <div className="flex flex-wrap gap-2">
         {links}
-        <ExportExcel className={google ? 'inline-flex items-center justify-center gap-2 min-h-[48px] px-4 rounded-xl border border-black/10 bg-white font-semibold text-[15px] text-brand-black w-full sm:w-auto' : btn} />
+        <ExportExcel className={`${btn} ${google ? '' : 'bg-brand-olive text-white ring-0 hover:bg-brand-olive-hover'}`} />
       </div>
     </div>
   );

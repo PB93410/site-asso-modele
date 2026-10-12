@@ -25,6 +25,7 @@ import {
   UserRound,
   ArrowLeftRight,
   LogOut,
+  Link2,
 } from 'lucide-react';
 import BureauAide from '../components/BureauAide';
 import { clearBureauToken, getBureauRole, getBureauToken, setBureauRole, setBureauToken } from '../components/BureauAuthGate';
@@ -34,6 +35,8 @@ import BureauEssaisTab from '../components/bureau/BureauEssaisTab';
 import BureauPersonSheet from '../components/bureau/BureauPersonSheet';
 import BureauRelancesTab from '../components/bureau/BureauRelancesTab';
 import BureauTodayTab, { type CreneauDuJour } from '../components/bureau/BureauTodayTab';
+import { EnTete, MenuGroupe, MenuLigne, Retour } from '../components/bureau/ui';
+import { bouton } from '../components/bureau/styles';
 import BureauSheetLinks from '../components/BureauSheetLinks';
 import BureauSiteEditor from '../components/BureauSiteEditor';
 import { useScheduleFromSheet } from '../hooks/useSheetData';
@@ -263,7 +266,9 @@ function sheetRangeUrl(base: string, row: number) {
 function formatDemandeShort(raw: string) {
   const s = String(raw || '').trim();
   if (!s) return '';
-  const m = s.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})/);
+  // JJ/MM/AAAA (saisie manuelle) ou AAAA-MM-JJ… (formulaire du site).
+  const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  const m = iso ? [s, iso[3], iso[2], iso[1]] : s.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})/);
   if (!m) return s;
   const d = new Date(Number(m[3].length === 2 ? `20${m[3]}` : m[3]), Number(m[2]) - 1, Number(m[1]), 12);
   if (Number.isNaN(d.getTime())) return s;
@@ -774,13 +779,13 @@ export default function BureauPage() {
   if (!token) {
     return (
       <div data-bureau-root className="min-h-screen bg-brand-cream flex items-center justify-center p-4">
-        <div className="w-full max-w-sm bg-white rounded-2xl shadow-lg border border-black/10 p-6 sm:p-8">
+        <div className="w-full max-w-sm bg-white rounded-3xl ring-1 ring-black/[0.06] shadow-xl shadow-black/[0.04] p-6 sm:p-8">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center">
-              <Shield className="w-6 h-6 text-emerald-700" />
+<div className="w-12 h-12 rounded-2xl bg-brand-olive text-white font-display font-bold text-sm flex items-center justify-center" aria-hidden="true">
+              {ASSO.sigle.slice(0, 3)}
             </div>
             <div>
-              <h1 className="font-display font-bold text-xl text-slate-900">Espace Bureau</h1>
+              <h1 className="font-display font-bold text-xl text-brand-black">Espace bureau</h1>
               <p className="text-sm text-slate-500">{ASSO.nom}</p>
             </div>
           </div>
@@ -790,21 +795,22 @@ export default function BureauPage() {
               choisissez Ce soir ou Bureau. Le mode d’emploi est dans Autre → Aide (côté bureau).
             </p>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              <label htmlFor="bureau-mdp" className="block text-sm font-medium text-slate-700 mb-1.5">
                 Mot de passe du bureau
               </label>
               <input
+                id="bureau-mdp"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoFocus
                 autoComplete="current-password"
-                className="w-full rounded-xl border border-slate-300 px-4 py-3.5 text-base focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full rounded-xl border-0 ring-1 ring-black/10 bg-white px-4 py-3.5 text-base focus:outline-none focus:ring-2 focus:ring-brand-olive"
                 placeholder="Le mot de passe que vous a donné le bureau"
               />
             </div>
             {loginError && (
-              <div className="flex items-start gap-2 text-red-600 text-sm bg-red-50 rounded-lg px-3 py-2">
+              <div role="alert" className="flex items-start gap-2 text-red-800 text-sm bg-red-50 ring-1 ring-red-100 rounded-xl px-3 py-2">
                 <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
                 <span>{loginError}</span>
               </div>
@@ -812,7 +818,7 @@ export default function BureauPage() {
             <button
               type="submit"
               disabled={loggingIn || !password}
-              className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white font-semibold py-3.5 text-base min-h-[48px]"
+              className="w-full rounded-xl bg-brand-olive hover:bg-brand-olive-hover disabled:opacity-60 text-white font-semibold py-3.5 text-base min-h-[48px]"
             >
               {loggingIn ? 'Ouverture…' : 'Entrer'}
             </button>
@@ -1291,106 +1297,32 @@ export default function BureauPage() {
         )}
 
         {tab === 'more' && moreKind === 'menu' && porte === 'admin' && (
-          <div className="space-y-3">
-            <h2 className="font-display font-bold text-lg">Autre</h2>
-            <p className="text-sm text-slate-600">
-              Horaires du site, événements, mode d’emploi, tableaux, mail et agenda.
-            </p>
-            <BureauSheetLinks
-              essaisUrl={essaisSheetUrl}
-              adherentsUrl={adherentsSheetUrl}
-              variant="card"
-            />
-            <button
-              type="button"
-              onClick={() => {
-                setTab('essais');
-                setEssaisVue('nouveaux');
-              }}
-              className="w-full flex items-center gap-3 rounded-2xl bg-white border border-black/10 p-4 text-left min-h-[56px]"
-            >
-              <Phone className="w-5 h-5 text-brand-olive shrink-0" aria-hidden="true" />
-              <span>
-                <span className="block font-semibold text-brand-black">Essais</span>
-                <span className="block text-sm text-slate-500">Nouveaux, semaine, par personne</span>
-              </span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setMoreKind('cartes')}
-              className="w-full flex items-center gap-3 rounded-2xl bg-white border border-black/10 p-4 text-left min-h-[56px]"
-            >
-              <CreditCard className="w-5 h-5 text-brand-olive shrink-0" aria-hidden="true" />
-              <span>
-                <span className="block font-semibold text-brand-black">Cartes adhérents</span>
-                <span className="block text-sm text-slate-500">
-                  Envoyer la carte WhatsApp, une personne à la fois
-                  {cartesList.length > 0
-                    ? ` · ${cartesList.filter((i) => !String(i.carte || '').trim()).length} à préparer`
-                    : ''}
-                </span>
-              </span>
-            </button>
-            <Link
-              to="/bureau/agenda"
-              className="w-full flex items-center gap-3 rounded-2xl bg-white border border-black/10 p-4 text-left min-h-[56px]"
-            >
-              <Calendar className="w-5 h-5 text-orange-primary shrink-0" aria-hidden="true" />
-              <span>
-                <span className="block font-semibold text-brand-black">Agenda</span>
-                <span className="block text-sm text-slate-500">
-                  Agenda unique du bureau, aussi sur les téléphones
-                </span>
-              </span>
-            </Link>
-            {MODULES.mail ? (
-              <>
-              <Link
-                to="/bureau/mail?filter=adhesions"
-                className="w-full flex items-center gap-3 rounded-2xl bg-white border border-black/10 p-4 text-left min-h-[56px]"
-              >
-                <Mail className="w-5 h-5 text-orange-primary shrink-0" aria-hidden="true" />
-                <span>
-                  <span className="block font-semibold text-brand-black">Mail</span>
-                  <span className="block text-sm text-slate-500">
-                    Adhésions et paiements en ligne (pas les relevés d’essai)
-                  </span>
-                </span>
-              </Link>
-              <Link
-                to="/bureau/connexion-google"
-                className="w-full flex items-center gap-3 rounded-2xl bg-white border border-dashed border-black/15 p-4 text-left min-h-[56px]"
-              >
-                <Shield className="w-5 h-5 text-brand-gray shrink-0" aria-hidden="true" />
-                <span>
-                  <span className="block font-semibold text-brand-black">Connecter Google</span>
-                  <span className="block text-sm text-slate-500">
-                    Référent — une fois, seulement si la boîte est Gmail
-                  </span>
-                </span>
-              </Link>
-              </>
-            ) : null}
-            {[
-              { id: 'planning' as const, label: 'Horaires', hint: 'Ce que voit le site', icon: Clock },
-              { id: 'events' as const, label: 'Événements', hint: 'Affichés sur le site', icon: CalendarDays },
-              { id: 'aide' as const, label: 'Aide', hint: 'Mode d’emploi, QR, textes', icon: Shield },
-            ].map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => {
-                  setMoreKind(item.id);
-                }}
-                className="w-full flex items-center gap-3 rounded-2xl bg-white border border-black/10 p-4 text-left min-h-[56px]"
-              >
-                <item.icon className="w-5 h-5 text-brand-olive shrink-0" />
-                <span>
-                  <span className="block font-semibold">{item.label}</span>
-                  <span className="block text-sm text-slate-500">{item.hint}</span>
-                </span>
-              </button>
-            ))}
+          <div className="space-y-6">
+            <EnTete titre="Autre" aide="Le site, les cartes, l’agenda, les tableaux et l’aide." />
+            <MenuGroupe titre="Adhérents">
+              <MenuLigne
+                icone={CreditCard}
+                label="Cartes adhérents"
+                aide="Envoyer la carte, une personne à la fois"
+                compte={cartesAPreparer}
+                onClick={() => setMoreKind('cartes')}
+              />
+            </MenuGroupe>
+            <MenuGroupe titre="Le site">
+              <MenuLigne icone={Clock} label="Horaires" aide="Ce que voit le site" onClick={() => setMoreKind('planning')} />
+              <MenuLigne icone={CalendarDays} label="Événements" aide="Affichés sur le site" onClick={() => setMoreKind('events')} />
+            </MenuGroupe>
+            <MenuGroupe titre="Bureau">
+              <MenuLigne icone={Calendar} label="Agenda" aide="Agenda unique du bureau, aussi sur les téléphones" to="/bureau/agenda" />
+              {MODULES.mail ? (
+                <MenuLigne icone={Mail} label="Mail" aide="Adhésions et paiements en ligne" to="/bureau/mail?filter=adhesions" />
+              ) : null}
+              <MenuLigne icone={Shield} label="Aide" aide="Mode d’emploi, QR, textes" onClick={() => setMoreKind('aide')} />
+              {MODULES.mail ? (
+                <MenuLigne icone={Link2} label="Connecter Google" aide="Référent, une fois, seulement si la boîte est Gmail" to="/bureau/connexion-google" discret />
+              ) : null}
+            </MenuGroupe>
+            <BureauSheetLinks essaisUrl={essaisSheetUrl} adherentsUrl={adherentsSheetUrl} variant="card" />
           </div>
         )}
 
@@ -1441,39 +1373,21 @@ export default function BureauPage() {
 
         {tab === 'more' && moreKind === 'planning' && token && porte === 'admin' && (
           <div className="space-y-3">
-            <button
-              type="button"
-              onClick={() => setMoreKind('menu')}
-              className="text-sm font-semibold text-brand-olive"
-            >
-              ← Autre
-            </button>
+            <Retour onClick={() => setMoreKind('menu')} />
             <BureauSiteEditor kind="planning" token={token} onToast={showToast} />
           </div>
         )}
 
         {tab === 'more' && moreKind === 'events' && token && porte === 'admin' && (
           <div className="space-y-3">
-            <button
-              type="button"
-              onClick={() => setMoreKind('menu')}
-              className="text-sm font-semibold text-brand-olive"
-            >
-              ← Autre
-            </button>
+            <Retour onClick={() => setMoreKind('menu')} />
             <BureauSiteEditor kind="events" token={token} onToast={showToast} />
           </div>
         )}
 
         {tab === 'more' && moreKind === 'aide' && token && porte === 'admin' && (
           <div className="space-y-3">
-            <button
-              type="button"
-              onClick={() => setMoreKind('menu')}
-              className="text-sm font-semibold text-brand-olive"
-            >
-              ← Autre
-            </button>
+            <Retour onClick={() => setMoreKind('menu')} />
             <BureauAide
               ntfyUrl={ntfyUrl}
               essaisSheetUrl={essaisSheetUrl}
@@ -1509,22 +1423,29 @@ export default function BureauPage() {
       ) : null}
 
       {confirmPayItem ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-black/40">
           <div
             role="dialog"
             aria-modal="true"
             aria-labelledby="pay-mark-title"
-            className="w-full max-w-sm rounded-2xl bg-white border border-[#E8E6E1] p-4 space-y-4"
+            className="w-full sm:max-w-sm rounded-t-3xl sm:rounded-2xl bg-white p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] sm:pb-5 space-y-4 shadow-xl"
           >
-            <p id="pay-mark-title" className="font-semibold text-base text-brand-black leading-snug">
-              Passer {confirmPayItem.nom} {confirmPayItem.prenom} à jour sur la feuille Adhérents ?
-            </p>
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="mx-auto w-10 h-1.5 rounded-full bg-black/10 sm:hidden" aria-hidden="true" />
+            <div className="flex items-center gap-3">
+              <span className="w-11 h-11 rounded-2xl bg-brand-olive-soft text-brand-olive inline-flex items-center justify-center shrink-0">
+                <Wallet className="w-5 h-5" aria-hidden="true" />
+              </span>
+              <p id="pay-mark-title" className="font-semibold text-base text-brand-black leading-snug">
+                Passer {confirmPayItem.prenom} {confirmPayItem.nom} à jour ?
+              </p>
+            </div>
+            <p className="text-sm text-slate-500">L’adhésion sera notée comme payée sur la feuille Adhérents.</p>
+            <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 disabled={busyRow === `adh-${confirmPayItem.row}`}
                 onClick={() => setConfirmPayItem(null)}
-                className="flex-1 h-11 min-h-[44px] px-3 rounded-xl border border-[#E8E6E1] bg-white font-semibold text-sm"
+                className={bouton.secondaire}
               >
                 Annuler
               </button>
@@ -1532,7 +1453,7 @@ export default function BureauPage() {
                 type="button"
                 disabled={busyRow === `adh-${confirmPayItem.row}`}
                 onClick={() => void validateAdhesion(confirmPayItem)}
-                className="flex-1 h-11 min-h-[44px] px-3 rounded-xl bg-orange-primary text-white font-semibold text-sm disabled:opacity-60"
+                className={bouton.principal}
               >
                 {busyRow === `adh-${confirmPayItem.row}` ? 'Enregistrement…' : 'Confirmer'}
               </button>

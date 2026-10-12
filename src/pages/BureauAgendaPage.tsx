@@ -23,9 +23,9 @@ function AbonnementAgenda({ lien }: { lien: string }) {
     }
   };
   return (
-    <details className="rounded-2xl bg-white border border-brand-gray-light p-4">
+    <details className="rounded-2xl bg-white ring-1 ring-black/[0.06] shadow-[0_1px_2px_rgba(17,17,16,0.04)] p-4">
       <summary className="flex items-center gap-2 font-semibold cursor-pointer min-h-[44px]">
-        <Smartphone className="w-5 h-5 text-orange-primary shrink-0" aria-hidden="true" />
+        <Smartphone className="w-5 h-5 text-brand-olive shrink-0" aria-hidden="true" />
         Voir cet agenda sur mon téléphone
       </summary>
       <div className="mt-3 space-y-3 text-sm text-brand-gray leading-relaxed">
@@ -35,7 +35,7 @@ function AbonnementAgenda({ lien }: { lien: string }) {
         </p>
         <a
           href={webcal}
-          className="inline-flex items-center justify-center gap-2 min-h-[48px] px-4 rounded-xl bg-orange-primary text-white font-semibold w-full sm:w-auto"
+          className="inline-flex items-center justify-center gap-2 min-h-[48px] px-4 rounded-xl bg-brand-olive hover:bg-brand-olive-hover text-white font-semibold w-full sm:w-auto"
         >
           Ajouter à mon agenda (iPhone, Mac)
         </a>
@@ -48,7 +48,7 @@ function AbonnementAgenda({ lien }: { lien: string }) {
           <button
             type="button"
             onClick={copier}
-            className="inline-flex items-center justify-center min-h-[44px] px-3 rounded-xl border border-black/10 bg-white font-semibold text-brand-black"
+            className="inline-flex items-center justify-center min-h-[44px] px-3 rounded-xl ring-1 ring-black/10 bg-white hover:bg-black/[0.03] font-semibold text-brand-black"
           >
             {copie ? 'Lien copié ✔' : 'Copier le lien'}
           </button>
@@ -394,7 +394,7 @@ export default function BureauAgendaPage() {
   }
 
   const fieldClass =
-    'w-full rounded-xl border border-brand-gray-light bg-white px-4 py-3 text-base min-h-[48px] focus:outline-none focus:ring-2 focus:ring-orange-primary';
+    'w-full rounded-xl ring-1 ring-black/10 bg-white px-4 py-3 text-base min-h-[48px] focus:outline-none focus:ring-2 focus:ring-brand-olive';
 
   const filters: { id: AgendaFilter; label: string }[] = [
     { id: 'ponctuel', label: 'Ponctuel' },
@@ -406,18 +406,18 @@ export default function BureauAgendaPage() {
     <BureauAuthGate title="Bureau" subtitle="Agenda unique du bureau">
       <BureauSeanceReserve>
       <div className="min-h-screen bg-brand-cream text-brand-black">
-        <header className="sticky top-0 z-10 border-b border-brand-gray-light bg-brand-cream/95">
+        <header className="sticky top-0 z-30 border-b border-black/[0.06] bg-brand-cream/90 backdrop-blur">
           <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
             <Link
               to="/bureau?tab=more"
-              className="text-sm font-semibold text-orange-primary min-h-[44px] inline-flex items-center"
+              className="text-sm font-semibold text-brand-olive min-h-[44px] inline-flex items-center"
             >
               ← Autre
             </Link>
             <button
               type="button"
               onClick={openCreate}
-              className="inline-flex items-center gap-1.5 min-h-[44px] px-3 rounded-xl bg-orange-primary text-white font-semibold text-sm"
+              className="inline-flex items-center gap-1.5 min-h-[44px] px-3 rounded-xl bg-brand-olive hover:bg-brand-olive-hover text-white font-semibold text-sm"
             >
               <Plus className="w-4 h-4" aria-hidden="true" />
               Nouvel événement
@@ -427,11 +427,11 @@ export default function BureauAgendaPage() {
 
         <main className="max-w-3xl mx-auto px-4 py-6 space-y-5">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-orange-primary/10 flex items-center justify-center">
-              <Calendar className="w-6 h-6 text-orange-primary" aria-hidden="true" />
+            <div className="w-12 h-12 rounded-2xl bg-brand-olive-soft flex items-center justify-center">
+              <Calendar className="w-6 h-6 text-brand-olive" aria-hidden="true" />
             </div>
             <div>
-              <h1 className="font-display font-bold text-2xl">Agenda</h1>
+              <h1 className="font-display font-bold text-2xl text-brand-black">Agenda</h1>
               <p className="text-sm text-brand-gray">Cours et dates du club · heure de Paris</p>
             </div>
           </div>
@@ -440,7 +440,7 @@ export default function BureauAgendaPage() {
             <div className="rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm px-4 py-3 space-y-2" role="alert">
               <p>{error}</p>
               {/GOOGLE_REFRESH_TOKEN|connecter|expir/i.test(error) ? (
-                <Link to="/bureau/connexion-google" className="font-semibold underline text-orange-primary">
+                <Link to="/bureau/connexion-google" className="font-semibold underline text-brand-olive">
                   Connecter le compte asso
                 </Link>
               ) : null}
@@ -463,7 +463,7 @@ export default function BureauAgendaPage() {
                   onClick={() => setFilter(f.id)}
                   className={`h-10 min-h-[40px] flex-1 basis-0 min-w-0 rounded-full text-sm font-semibold border ${
                     active
-                      ? 'bg-orange-primary text-white border-orange-primary'
+                      ? 'bg-brand-olive text-white border-brand-olive'
                       : 'bg-white text-brand-gray border-brand-gray-light'
                   }`}
                 >
@@ -473,11 +473,11 @@ export default function BureauAgendaPage() {
             })}
           </div>
 
-          <section className="rounded-2xl bg-white border border-brand-gray-light p-3 sm:p-4">
+          <section className="rounded-2xl bg-white ring-1 ring-black/[0.06] shadow-[0_1px_2px_rgba(17,17,16,0.04)] p-3 sm:p-4">
             <div className="flex items-center justify-between gap-2 mb-3">
               <button
                 type="button"
-                className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-xl border border-brand-gray-light"
+                className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-xl ring-1 ring-black/10 bg-white hover:bg-black/[0.03]"
                 aria-label="Mois précédent"
                 onClick={() =>
                   setCursor((c) => {
@@ -491,7 +491,7 @@ export default function BureauAgendaPage() {
               <h2 className="font-display font-bold text-lg capitalize">{monthLabel}</h2>
               <button
                 type="button"
-                className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-xl border border-brand-gray-light"
+                className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-xl ring-1 ring-black/10 bg-white hover:bg-black/[0.03]"
                 aria-label="Mois suivant"
                 onClick={() =>
                   setCursor((c) => {
@@ -532,9 +532,9 @@ export default function BureauAgendaPage() {
                       let cell =
                         'min-h-[44px] min-w-0 w-full rounded-xl text-sm font-semibold border-2 px-0.5 py-1 flex flex-col items-center justify-center';
                       if (selected) {
-                        cell += ' bg-orange-primary text-white border-orange-primary';
+                        cell += ' bg-brand-olive text-white border-brand-olive';
                       } else if (isToday) {
-                        cell += ' bg-orange-light text-orange-primary border-transparent';
+                        cell += ' bg-brand-olive-soft text-brand-olive border-transparent';
                       } else if (showCours) {
                         cell += ' bg-[rgba(92,107,74,0.12)] text-brand-black border-transparent';
                       } else {
@@ -553,7 +553,7 @@ export default function BureauAgendaPage() {
                           {isToday ? (
                             <span
                               className={`block text-[10px] font-bold leading-tight mt-0.5 ${
-                                selected ? 'text-white' : 'text-orange-primary'
+                                selected ? 'text-white' : 'text-brand-olive'
                               }`}
                             >
                               Auj.
@@ -564,7 +564,7 @@ export default function BureauAgendaPage() {
                               {showPonctuel ? (
                                 <span
                                   className={`block w-1.5 h-1.5 rounded-full ${
-                                    selected ? 'bg-white' : 'bg-orange-primary'
+                                    selected ? 'bg-white' : 'bg-brand-olive'
                                   }`}
                                 />
                               ) : null}
@@ -587,7 +587,7 @@ export default function BureauAgendaPage() {
             {filter === 'tout' ? (
               <p className="mt-3 flex flex-wrap gap-3 text-xs text-brand-gray">
                 <span className="inline-flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-orange-primary" aria-hidden="true" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand-olive" aria-hidden="true" />
                   Ponctuel
                 </span>
                 <span className="inline-flex items-center gap-1.5">
@@ -620,7 +620,7 @@ export default function BureauAgendaPage() {
             <h2 className="font-display font-bold text-lg flex flex-wrap items-center gap-2">
               {formatDayLong(selectedDate)}
               {selectedDate === today ? (
-                <span className="inline-flex items-center rounded-full bg-orange-primary text-white text-[11px] font-bold px-2 py-0.5 normal-case">
+                <span className="inline-flex items-center rounded-full bg-brand-olive text-white text-[11px] font-bold px-2 py-0.5 normal-case">
                   Auj.
                 </span>
               ) : null}
@@ -646,7 +646,7 @@ export default function BureauAgendaPage() {
           </section>
 
           {formOpen ? (
-            <section className="rounded-2xl bg-white border border-brand-gray-light p-4 space-y-3">
+            <section className="rounded-2xl bg-white ring-1 ring-black/[0.06] shadow-[0_1px_2px_rgba(17,17,16,0.04)] p-4 space-y-3">
               <h2 className="font-display font-bold text-lg">
                 {editing ? 'Modifier l’événement' : 'Nouvel événement'}
               </h2>
@@ -713,7 +713,7 @@ export default function BureauAgendaPage() {
                   type="button"
                   disabled={saving}
                   onClick={() => void saveForm()}
-                  className="min-h-[48px] px-5 rounded-xl bg-orange-primary text-white font-semibold disabled:opacity-50"
+                  className="min-h-[48px] px-5 rounded-xl bg-brand-olive hover:bg-brand-olive-hover text-white font-semibold disabled:opacity-50"
                 >
                   {saving ? 'Enregistrement…' : 'Enregistrer'}
                 </button>
@@ -723,7 +723,7 @@ export default function BureauAgendaPage() {
                     setFormOpen(false);
                     setEditing(null);
                   }}
-                  className="min-h-[48px] px-5 rounded-xl border border-brand-gray-light font-semibold"
+                  className="min-h-[48px] px-5 rounded-xl ring-1 ring-black/10 bg-white hover:bg-black/[0.03] font-semibold"
                 >
                   Annuler
                 </button>
@@ -759,17 +759,17 @@ function AgendaCard({
     badge === 'Cours'
       ? 'bg-brand-olive-soft text-brand-olive'
       : badge === 'Bureau'
-        ? 'bg-orange-primary/10 text-orange-primary'
+        ? 'bg-brand-olive-soft text-brand-olive'
         : 'bg-brand-cream text-brand-gray border border-brand-gray-light';
   const lieu = formatLocation(ev.location);
   const bar = past
     ? 'border-l-brand-gray-light'
     : course
       ? 'border-l-brand-olive'
-      : 'border-l-orange-primary';
+      : 'border-l-brand-olive';
   const shell = past
-    ? 'rounded-2xl bg-brand-cream border border-brand-gray-light border-l-[4px]'
-    : 'rounded-2xl bg-white border border-brand-gray-light border-l-[4px]';
+    ? 'rounded-2xl bg-brand-cream ring-1 ring-black/[0.06] border-l-[4px]'
+    : 'rounded-2xl bg-white ring-1 ring-black/[0.06] shadow-[0_1px_2px_rgba(17,17,16,0.04)] border-l-[4px]';
 
   return (
     <li className={`${shell} ${bar} p-4 space-y-2 list-none`}>
@@ -797,7 +797,7 @@ function AgendaCard({
           <button
             type="button"
             onClick={() => onEdit(ev)}
-            className="min-h-[44px] px-4 rounded-xl border border-brand-gray-light text-brand-olive font-semibold text-sm"
+            className="min-h-[44px] px-4 rounded-xl ring-1 ring-black/10 bg-white hover:bg-black/[0.03] text-brand-olive font-semibold text-sm"
           >
             Modifier la série
           </button>
@@ -814,7 +814,7 @@ function AgendaCard({
           <button
             type="button"
             onClick={() => onEdit(ev)}
-            className="min-h-[44px] px-4 rounded-xl border border-brand-gray-light font-semibold text-sm"
+            className="min-h-[44px] px-4 rounded-xl ring-1 ring-black/10 bg-white hover:bg-black/[0.03] font-semibold text-sm"
           >
             Modifier
           </button>

@@ -919,7 +919,7 @@ export default function BureauMailPage() {
     return (
       <li key={folder.id}>
         <article
-          className={`rounded-2xl bg-white border border-brand-gray-light border-l-[4px] ${bar} px-4 py-3 space-y-1.5`}
+          className={`rounded-2xl bg-white ring-1 ring-black/[0.06] shadow-[0_1px_2px_rgba(17,17,16,0.04)] border-l-[4px] ${bar} px-4 py-3 space-y-1.5`}
         >
           <div className="flex flex-wrap items-center gap-2">
             {showEnAttente ? (
@@ -958,7 +958,7 @@ export default function BureauMailPage() {
                 href={folder.sheetUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-1.5 h-11 min-h-[44px] px-3 rounded-xl border border-brand-gray-light bg-white font-semibold text-sm max-[700px]:w-full"
+                className="inline-flex items-center justify-center gap-1.5 h-11 min-h-[44px] px-3 rounded-xl ring-1 ring-black/10 bg-white hover:bg-black/[0.03] font-semibold text-sm max-[700px]:w-full"
               >
                 Ouvrir la feuille
                 <ExternalLink className="w-4 h-4" aria-hidden="true" />
@@ -982,7 +982,7 @@ export default function BureauMailPage() {
                 href={folder.sheetUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-1.5 h-11 min-h-[44px] px-3 rounded-xl border border-brand-gray-light bg-white font-semibold text-sm max-[700px]:w-full"
+                className="inline-flex items-center justify-center gap-1.5 h-11 min-h-[44px] px-3 rounded-xl ring-1 ring-black/10 bg-white hover:bg-black/[0.03] font-semibold text-sm max-[700px]:w-full"
               >
                 Ouvrir la fiche
                 <ExternalLink className="w-4 h-4" aria-hidden="true" />
@@ -991,7 +991,7 @@ export default function BureauMailPage() {
             {showVerify ? (
               <Link
                 to="/bureau?porte=admin&tab=adhesions"
-                className="inline-flex items-center justify-center h-11 min-h-[44px] px-3 rounded-xl border border-brand-gray-light bg-white font-semibold text-sm max-[700px]:w-full"
+                className="inline-flex items-center justify-center h-11 min-h-[44px] px-3 rounded-xl ring-1 ring-black/10 bg-white hover:bg-black/[0.03] font-semibold text-sm max-[700px]:w-full"
               >
                 À payer
               </Link>
@@ -999,7 +999,7 @@ export default function BureauMailPage() {
             <button
               type="button"
               onClick={() => void openMessage(folder.primary.item.id, folder)}
-              className="h-11 min-h-[44px] px-3 rounded-xl border border-brand-gray-light bg-white font-semibold text-sm text-brand-gray max-[700px]:w-full"
+              className="h-11 min-h-[44px] px-3 rounded-xl ring-1 ring-black/10 bg-white hover:bg-black/[0.03] font-semibold text-sm text-brand-gray max-[700px]:w-full"
             >
               Voir le fil
             </button>
@@ -1013,11 +1013,11 @@ export default function BureauMailPage() {
     <BureauAuthGate title="Bureau" subtitle="Boîte mail de l’association">
       <BureauSeanceReserve>
       <div className="min-h-screen bg-brand-cream text-brand-black" data-bureau-root>
-        <header className="sticky top-0 z-10 border-b border-brand-gray-light bg-brand-cream/95">
+        <header className="sticky top-0 z-30 border-b border-black/[0.06] bg-brand-cream/90 backdrop-blur">
           <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-3 flex-nowrap">
             <Link
               to="/bureau?tab=more"
-              className="text-sm font-semibold text-orange-primary min-h-[44px] inline-flex items-center shrink-0"
+              className="text-sm font-semibold text-brand-olive min-h-[44px] inline-flex items-center shrink-0"
             >
               ← Autre
             </Link>
@@ -1043,7 +1043,7 @@ export default function BureauMailPage() {
             ) : (
               <button
                 type="button"
-                className="text-sm font-semibold text-orange-primary min-h-[44px] shrink-0"
+                className="text-sm font-semibold text-brand-olive min-h-[44px] shrink-0"
                 onClick={() => {
                   setSelected(null);
                   setSelectedFolder(null);
@@ -1058,8 +1058,8 @@ export default function BureauMailPage() {
         <main className="max-w-3xl mx-auto px-4 py-6 space-y-4">
           {!selected && !detailLoading ? (
             <div className="flex items-start gap-3">
-              <div className="w-12 h-12 rounded-xl bg-orange-primary/10 flex items-center justify-center shrink-0">
-                <Mail className="w-6 h-6 text-orange-primary" aria-hidden="true" />
+              <div className="w-12 h-12 rounded-2xl bg-brand-olive-soft flex items-center justify-center shrink-0">
+                <Mail className="w-6 h-6 text-brand-olive" aria-hidden="true" />
               </div>
               <div className="min-w-0">
                 <h1 className="font-display font-bold text-2xl leading-tight">Mail</h1>
@@ -1072,7 +1072,7 @@ export default function BureauMailPage() {
             <div className="rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm px-4 py-3 space-y-2" role="alert">
               <p>{error}</p>
               {/GOOGLE_REFRESH_TOKEN|connecter|expir/i.test(error) ? (
-                <Link to="/bureau/connexion-google" className="font-semibold underline text-orange-primary">
+                <Link to="/bureau/connexion-google" className="font-semibold underline text-brand-olive">
                   Connecter le compte asso
                 </Link>
               ) : null}
@@ -1094,7 +1094,7 @@ export default function BureauMailPage() {
                           onClick={() => void openMessage(m.item.id, selectedFolder)}
                           className={`min-h-[44px] px-3 rounded-xl text-sm font-semibold border ${
                             m.item.id === selected.id
-                              ? 'bg-orange-primary text-white border-orange-primary'
+                              ? 'bg-brand-olive text-white border-brand-olive'
                               : 'bg-white border-brand-gray-light'
                           }`}
                         >
@@ -1103,19 +1103,19 @@ export default function BureauMailPage() {
                       ))}
                     </div>
                   ) : null}
-                  <article className="rounded-2xl bg-white border border-brand-gray-light p-4 space-y-3">
+                  <article className="rounded-2xl bg-white ring-1 ring-black/[0.06] shadow-[0_1px_2px_rgba(17,17,16,0.04)] p-4 space-y-3">
                     <h2 className="font-display font-bold text-lg leading-snug">{selected.subject}</h2>
                     <p className="text-sm text-brand-gray">
                       <span className="font-semibold text-brand-black">De :</span> {selected.from}
                     </p>
                     <p className="text-sm text-brand-gray">{formatListDate(selected.date, todayYmd)}</p>
-                    <pre className="whitespace-pre-wrap font-body text-base text-brand-black leading-relaxed pt-2 border-t border-brand-gray-light">
+                    <pre className="whitespace-pre-wrap font-body text-base text-brand-black leading-relaxed pt-3 border-t border-black/[0.06]">
                       {selected.text || '(Message sans texte lisible)'}
                     </pre>
                   </article>
 
                   {sentOk ? (
-                    <p className="rounded-xl bg-orange-primary/10 text-brand-black text-sm font-semibold px-4 py-3">
+                    <p className="rounded-xl bg-brand-olive-soft text-brand-black text-sm font-semibold px-4 py-3">
                       Réponse envoyée.
                     </p>
                   ) : null}
@@ -1129,14 +1129,14 @@ export default function BureauMailPage() {
                       value={reply}
                       onChange={(e) => setReply(e.target.value)}
                       rows={6}
-                      className="w-full rounded-xl border border-brand-gray-light bg-white px-4 py-3 text-base min-h-[120px] focus:outline-none focus:ring-2 focus:ring-orange-primary"
+                      className="w-full rounded-xl ring-1 ring-black/10 bg-white px-4 py-3 text-base min-h-[120px] focus:outline-none focus:ring-2 focus:ring-brand-olive"
                       placeholder="Votre réponse au nom de l’association…"
                     />
                     <button
                       type="button"
                       disabled={sending || !reply.trim()}
                       onClick={() => void sendReply()}
-                      className="w-full min-h-[48px] rounded-xl bg-orange-primary text-white font-semibold text-base disabled:opacity-50"
+                      className="w-full min-h-[48px] rounded-xl bg-brand-olive hover:bg-brand-olive-hover text-white font-semibold text-base disabled:opacity-50"
                     >
                       {sending ? 'Envoi…' : 'Envoyer'}
                     </button>
@@ -1149,7 +1149,7 @@ export default function BureauMailPage() {
               <div
                 role="tablist"
                 aria-label="Filtrer les messages"
-                className="flex flex-wrap gap-1 rounded-2xl border border-brand-gray-light bg-white p-1"
+                className="flex flex-wrap gap-1 rounded-2xl bg-black/[0.04] p-1"
               >
                 {FILTERS.map((f) => {
                   const active = filter === f.id;
@@ -1161,7 +1161,7 @@ export default function BureauMailPage() {
                       aria-selected={active}
                       onClick={() => setFilter(f.id)}
                       className={`min-h-[44px] px-3 rounded-xl text-sm font-semibold ${
-                        active ? 'bg-orange-primary text-white' : 'text-brand-gray hover:bg-brand-cream'
+                        active ? 'bg-white text-brand-black shadow-sm ring-1 ring-black/5' : 'text-slate-600 hover:text-brand-black'
                       }`}
                     >
                       {f.label}
@@ -1183,7 +1183,7 @@ export default function BureauMailPage() {
                   type="button"
                   disabled={loadingMore}
                   onClick={() => void loadMore()}
-                  className="w-full min-h-[48px] rounded-xl border border-brand-gray-light bg-white font-semibold"
+                  className="w-full min-h-[48px] rounded-xl ring-1 ring-black/10 bg-white hover:bg-black/[0.03] font-semibold"
                 >
                   {loadingMore ? 'Chargement…' : 'Messages suivants'}
                 </button>
@@ -1198,7 +1198,7 @@ export default function BureauMailPage() {
               role="dialog"
               aria-modal="true"
               aria-labelledby="mail-mark-title"
-              className="w-full max-w-sm rounded-2xl bg-white border border-brand-gray-light p-4 space-y-4"
+              className="w-full max-w-sm rounded-2xl bg-white p-5 space-y-4 shadow-xl"
             >
               <p id="mail-mark-title" className="font-semibold text-base text-brand-black leading-snug">
                 Passer {confirmFolder.title} à jour sur la feuille Adhérents ?
@@ -1211,7 +1211,7 @@ export default function BureauMailPage() {
                   type="button"
                   disabled={markingId === confirmFolder.id}
                   onClick={() => setConfirmFolder(null)}
-                  className="flex-1 h-11 min-h-[44px] px-3 rounded-xl border border-brand-gray-light bg-white font-semibold text-sm"
+                  className="flex-1 h-11 min-h-[44px] px-3 rounded-xl ring-1 ring-black/10 bg-white hover:bg-black/[0.03] font-semibold text-sm"
                 >
                   Annuler
                 </button>
@@ -1219,7 +1219,7 @@ export default function BureauMailPage() {
                   type="button"
                   disabled={markingId === confirmFolder.id}
                   onClick={() => void markAJour(confirmFolder)}
-                  className="flex-1 h-11 min-h-[44px] px-3 rounded-xl bg-orange-primary text-white font-semibold text-sm disabled:opacity-60"
+                  className="flex-1 h-11 min-h-[44px] px-3 rounded-xl bg-brand-olive hover:bg-brand-olive-hover text-white font-semibold text-sm disabled:opacity-60"
                 >
                   {markingId === confirmFolder.id ? 'Enregistrement…' : 'Confirmer'}
                 </button>

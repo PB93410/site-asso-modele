@@ -15,6 +15,9 @@ import {
   type RelancesQueue,
 } from '../../lib/bureauRelancesQueue';
 import { ASSO, TARIF_LABEL } from '../../data/asso';
+import { ChevronDown, MessageCircle } from 'lucide-react';
+import { EnTete, Initiales, Segments, Vide } from './ui';
+import { bouton, carte } from './styles';
 
 type FicheAdherent = AdherentInput & {
   mail?: string;
@@ -126,14 +129,10 @@ function RelanceTable({
   onOpenPerson: (tel: string, prenom: string) => void;
 }) {
   if (rows.length === 0) {
-    return (
-      <p className="text-sm text-brand-gray rounded-xl border border-black/10 bg-white px-4 py-5">
-        Personne dans cette file pour le moment.
-      </p>
-    );
+    return <Vide icone={MessageCircle} titre="Personne dans cette file" aide="Revenez après les prochains cours." />;
   }
   return (
-    <ul className="divide-y divide-black/10 rounded-xl border border-black/10 bg-white overflow-hidden">
+    <ul className={`${carte} divide-y divide-black/[0.06] overflow-hidden`}>
       {rows.map((r) => {
         const k = rowKey(r);
         const href = relanceHref(r);
@@ -146,7 +145,6 @@ function RelanceTable({
           : '';
         const meta = [
           r.cours,
-          r.tel,
           r.statutEssais,
           r.dateLabel ? `essai ${r.dateLabel}` : '',
           when,
@@ -158,40 +156,35 @@ function RelanceTable({
           .filter(Boolean)
           .join(' · ');
         return (
-          <li key={k} className="p-4 sm:p-5">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          <li key={k} className="p-4 space-y-3">
+            <div className="flex items-start gap-3">
+              <Initiales prenom={r.prenom} nom={r.nom} />
               <div className="flex-1 min-w-0">
-                <p className="font-display font-bold text-lg text-brand-black">
-                  <PersonNameButton
-                    prenom={r.prenom}
-                    nom={r.nom}
-                    tel={r.tel}
-                    onOpen={onOpenPerson}
-                    className="font-display text-lg font-bold text-brand-black text-left hover:underline"
-                  />
+                <p className="font-semibold text-base text-brand-black leading-snug">
+                  <PersonNameButton prenom={r.prenom} nom={r.nom} tel={r.tel} onOpen={onOpenPerson} />
                 </p>
-                <p className="text-sm text-brand-gray">{meta}</p>
+                <p className="text-sm text-slate-500">{meta}</p>
+                {r.tel ? <p className="text-sm text-slate-500 tabular-nums">{r.tel}</p> : null}
               </div>
-              <div className="flex flex-wrap gap-2">
-                {href ? (
-                  <a
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center min-h-[48px] px-5 rounded-full bg-[#25D366] text-white font-semibold text-[15px]"
-                  >
-                    WhatsApp
-                  </a>
-                ) : null}
-                <button
-                  type="button"
-                  disabled={notedToday || markingKey === k}
-                  onClick={() => onSent(r)}
-                  className="inline-flex items-center justify-center min-h-[48px] px-4 rounded-full border border-black/15 font-semibold text-[15px] disabled:opacity-60"
-                >
-                  {notedToday ? 'Message envoyé' : 'Message envoyé ?'}
-                </button>
-              </div>
+              {notedToday ? (
+                <span className="shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold bg-emerald-100 text-emerald-900">Envoyé</span>
+              ) : null}
+            </div>
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+              {href ? (
+                <a href={href} target="_blank" rel="noopener noreferrer" className={bouton.whatsapp}>
+                  <MessageCircle className="w-4 h-4" aria-hidden="true" />
+                  WhatsApp
+                </a>
+              ) : null}
+              <button
+                type="button"
+                disabled={notedToday || markingKey === k}
+                onClick={() => onSent(r)}
+                className={`${bouton.secondaire} ${href ? '' : 'col-span-2'}`}
+              >
+                {notedToday ? 'Noté' : 'J’ai envoyé'}
+              </button>
             </div>
           </li>
         );
@@ -217,6 +210,7 @@ export default function BureauRelancesTab({
   const [copied, setCopied] = useState(false);
   const [markingKey, setMarkingKey] = useState('');
   const [markError, setMarkError] = useState('');
+  const [file, setFile] = useState<'p1' | 'p2' | 'skip'>('p1');
   const todayYmd = parisTodayYmd();
   const queue = useMemo(
     () => (ready ? classifyRelances(essais, adhesions, adherentsAJour) : null),
@@ -268,171 +262,133 @@ export default function BureauRelancesTab({
 
   const body = (
     <>
-      <div className="rounded-xl border border-orange-primary/40 bg-white px-4 py-4 space-y-3">
-        <p className="text-sm font-semibold text-brand-black">Deux outils, pas le même geste</p>
-        <ul className="text-sm text-brand-black leading-relaxed list-disc pl-5 space-y-1.5">
-          <li>
-            <strong>Ici</strong> : envoyer le WhatsApp (P1 conversion, P2 rappel à 7 jours).
-            « Message envoyé » note le message dans la Sheet, pour tout le bureau.
-          </li>
-          <li>
-            <strong>Onglet Essais</strong> : Venu / Absent / Relancé — ça écrit la Sheet.
-          </li>
-          <li>
-            <strong>À payer</strong> : les {TARIF_LABEL} reçus — « J’ai reçu l’argent ».
-          </li>
-        </ul>
-        <p className="text-sm text-brand-gray">
-          Skip = déjà à jour dans Adhérents. Ne pas relancer.
+      <EnTete
+        titre="Relances"
+        aide={<>Un WhatsApp à la fois, depuis le {CLUB_PHONE_DISPLAY}. Puis « J’ai envoyé » : tout le bureau le voit.</>}
+      />
+
+      <Segments
+        label="Files de relance"
+        valeur={file}
+        onChange={setFile}
+        options={[
+          { id: 'p1', label: 'Après cours', compte: counts.p1 },
+          { id: 'p2', label: 'Plus tard', compte: counts.p2 },
+          { id: 'skip', label: 'Adhérents', compte: counts.skip },
+        ]}
+      />
+
+      {loading && !queue ? <p className="text-sm text-slate-500 px-1">Chargement…</p> : null}
+      {shownError ? (
+        <p role="alert" className="text-sm text-red-800 bg-red-50 ring-1 ring-red-100 rounded-2xl px-4 py-3">
+          {shownError}
         </p>
-        <p className="text-sm font-semibold text-brand-black">
-          P1 {counts.p1} · P2 {counts.p2} · Skip {counts.skip}
-        </p>
-        {loading ? (
-          <p className="text-sm text-brand-gray">Chargement du registre…</p>
-        ) : null}
-        {shownError ? (
-          <p className="text-sm text-brand-black rounded-lg bg-brand-cream border border-black/10 px-3 py-2">
-            {shownError}
+      ) : null}
+
+      {queue && file === 'p1' ? (
+        <section className="space-y-2">
+          <p className="text-sm text-slate-500 px-1">
+            Venu·e à un cours : proposer l’adhésion ({TARIF_LABEL}). Si la personne paie : À payer.
           </p>
-        ) : null}
-        <div className="flex flex-wrap items-center gap-2">
+          <RelanceTable rows={queue.p1} todayYmd={todayYmd} markingKey={markingKey} onSent={(card) => void markSent(card)} onOpenPerson={openPerson} />
+        </section>
+      ) : null}
+      {queue && file === 'p2' ? (
+        <section className="space-y-2">
+          <p className="text-sm text-slate-500 px-1">Pas venu·e : absent, essai depuis 3 jours, ou relance depuis 7 jours.</p>
+          <RelanceTable rows={queue.p2} todayYmd={todayYmd} markingKey={markingKey} onSent={(card) => void markSent(card)} onOpenPerson={openPerson} />
+        </section>
+      ) : null}
+      {queue && file === 'skip' ? (
+        <section className="space-y-2">
+          <p className="text-sm text-slate-500 px-1">À jour dans Adhérents : ne pas relancer.</p>
+          {queue.skip.length === 0 ? (
+            <Vide titre="Personne ici" />
+          ) : (
+            <ul className={`${carte} divide-y divide-black/[0.06] overflow-hidden`}>
+              {queue.skip.map((sk) => (
+                <li key={rowKey(sk)} className="p-4 flex items-start gap-3">
+                  <Initiales prenom={sk.prenom} nom={sk.nom} />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-brand-black">
+                      <PersonNameButton prenom={sk.prenom} nom={sk.nom} tel={sk.tel} onOpen={openPerson} />
+                    </p>
+                    <p className="text-sm text-slate-500">
+                      {[sk.statutAdherents ? `${sk.statutAdherents}${sk.modeAdherents ? ` · ${sk.modeAdherents}` : ''}` : '', sk.skipReason, sk.tel]
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      ) : null}
+
+      <details className={`${carte} px-4 py-3 group`}>
+        <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between min-h-[40px] text-sm font-semibold text-brand-black">
+          Aide et bilan
+          <ChevronDown className="w-5 h-5 text-slate-400 group-open:rotate-180 transition-transform" aria-hidden="true" />
+        </summary>
+        <ul className="mt-2 text-sm text-slate-600 leading-relaxed list-disc pl-5 space-y-1.5">
+          <li>
+            <strong>Ici</strong> : le WhatsApp de relance. « J’ai envoyé » le note pour tout le bureau.
+          </li>
+          <li>
+            <strong>Essais</strong> : Venu, Absent, Relancé.
+          </li>
+          <li>
+            <strong>À payer</strong> : les {TARIF_LABEL} reçus, « J’ai reçu l’argent ».
+          </li>
+          <li>Un bouton = une conversation. Pas d’envoi groupé. La liste est recalculée à chaque ouverture.</li>
+        </ul>
+        <div className="flex flex-wrap gap-2 pt-3">
+          <button type="button" onClick={() => void copyBilan()} disabled={!queue} className={bouton.secondaire}>
+            {copied ? 'Bilan copié' : 'Copier le bilan'}
+          </button>
           {embedded ? null : (
             <>
-              <Link
-                to="/bureau?porte=admin&tab=essais"
-                className="inline-flex items-center justify-center min-h-[44px] px-4 rounded-full bg-brand-olive text-white font-semibold text-[15px]"
-              >
-                Onglet Essais
+              <Link to="/bureau?porte=admin&tab=essais" className={bouton.secondaire}>
+                Essais
               </Link>
-              <Link
-                to="/bureau?porte=admin&tab=adhesions"
-                className="inline-flex items-center justify-center min-h-[44px] px-4 rounded-full border border-brand-black font-semibold text-[15px] text-brand-black bg-white"
-              >
+              <Link to="/bureau?porte=admin&tab=adhesions" className={bouton.secondaire}>
                 À payer
               </Link>
             </>
           )}
-          <button
-            type="button"
-            onClick={() => void copyBilan()}
-            disabled={!queue}
-            className="inline-flex items-center justify-center min-h-[44px] px-4 rounded-full border border-brand-black font-semibold text-[15px] text-brand-black bg-white disabled:opacity-50"
-          >
-            Copier le bilan
-          </button>
-          {copied ? (
-            <span className="text-sm font-semibold text-brand-olive">Bilan copié</span>
+          {essaisSheetUrl ? (
+            <a href={essaisSheetUrl} target="_blank" rel="noopener noreferrer" className={bouton.secondaire}>
+              Tableau Essais
+            </a>
           ) : null}
         </div>
-        {essaisSheetUrl ? (
-          <p className="text-sm text-brand-gray">
-            <a
-              href={essaisSheetUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline underline-offset-2 hover:text-brand-black"
-            >
-              Sheet Essais
-            </a>
-          </p>
-        ) : null}
-      </div>
-
-      <p className="text-sm text-brand-gray leading-relaxed">
-        Envoi manuel depuis le {CLUB_PHONE_DISPLAY}. Un bouton = un fil. Pas d’envoi groupé.
-        File recalculée à chaque ouverture (À jour dans Adhérents = Skip).
-      </p>
-
-      {queue ? (
-        <>
-          <section className="space-y-3">
-            <h1 className="font-display font-black text-2xl">
-              P1 — Conversion {TARIF_LABEL} · {counts.p1} restant{counts.p1 > 1 ? 's' : ''}
-            </h1>
-            <p className="text-sm text-brand-gray">
-              Après un cours (Venu dans Essais). Message B. Si elle paie : onglet À payer.
-            </p>
-            <RelanceTable
-              rows={queue.p1}
-              todayYmd={todayYmd}
-              markingKey={markingKey}
-              onSent={(card) => void markSent(card)}
-              onOpenPerson={openPerson}
-            />
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="font-display font-black text-2xl">
-              P2 — Plus tard · {counts.p2} restant{counts.p2 > 1 ? 's' : ''}
-            </h2>
-            <p className="text-sm text-brand-gray">
-              Pas venu : Absent, essai depuis 3 jours, ou relance depuis 7 jours. Message C.
-            </p>
-            <RelanceTable
-              rows={queue.p2}
-              todayYmd={todayYmd}
-              markingKey={markingKey}
-              onSent={(card) => void markSent(card)}
-              onOpenPerson={openPerson}
-            />
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="font-display font-black text-2xl">Skip — ne pas relancer</h2>
-            <ul className="rounded-xl border border-black/10 bg-white divide-y divide-black/10">
-              {queue.skip.length === 0 ? (
-                <li className="p-4 text-sm text-brand-gray">Personne en skip.</li>
-              ) : (
-                queue.skip.map((s) => (
-                  <li key={rowKey(s)} className="p-4">
-                    <p className="font-semibold">
-                      <PersonNameButton prenom={s.prenom} nom={s.nom} tel={s.tel} onOpen={openPerson} />
-                    </p>
-                    <p className="text-sm text-brand-gray">
-                      {[
-                        s.statutAdherents
-                          ? `${s.statutAdherents}${s.modeAdherents ? ` · ${s.modeAdherents}` : ''}`
-                          : '',
-                        s.skipReason,
-                        s.tel,
-                      ]
-                        .filter(Boolean)
-                        .join(' · ')}
-                    </p>
-                  </li>
-                ))
-              )}
-            </ul>
-          </section>
-        </>
-      ) : null}
+      </details>
     </>
   );
 
   if (embedded) {
-    return <div className="space-y-10">{body}</div>;
+    return <div className="space-y-5">{body}</div>;
   }
 
   return (
     <div className="min-h-screen bg-brand-cream text-brand-black">
-      <header className="bg-brand-black text-white px-4 py-4">
+      <header className="sticky top-0 z-30 bg-brand-cream/90 backdrop-blur border-b border-black/[0.06] px-4 py-2">
         <div className="max-w-3xl mx-auto flex items-center justify-between gap-3">
-          <Link to="/bureau" className="text-sm font-semibold text-white/80 hover:text-white">
+          <Link to="/bureau" className="inline-flex items-center min-h-[44px] px-2 -ml-2 rounded-xl text-sm font-semibold text-brand-olive hover:bg-brand-olive-soft">
             ← Bureau
           </Link>
-          <p className="font-display font-bold">Relances</p>
           <button
             type="button"
             onClick={() => void reload()}
             disabled={loading}
-            className="text-sm font-semibold text-white/80 hover:text-white disabled:opacity-50 min-h-[44px] px-2"
+            className={`${bouton.secondaire} px-3`}
           >
             Actualiser
           </button>
         </div>
       </header>
-      <main className="max-w-3xl mx-auto px-4 py-8 space-y-10">{body}</main>
+      <main className="max-w-3xl mx-auto px-4 py-6 space-y-5">{body}</main>
     </div>
   );
 }

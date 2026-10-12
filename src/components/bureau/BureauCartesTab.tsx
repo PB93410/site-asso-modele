@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { CreditCard, Mail, MessageCircle } from 'lucide-react';
+import { CreditCard, Mail, MessageCircle, Search } from 'lucide-react';
 import { CARTE_VERSO_URL, SEASON_LABEL, SEASON_PREFIX } from '../../data/CONFIG';
 import { formatTelFr, nationalFrTel } from '../../lib/bureauSearch';
 import { ASSO } from '../../data/asso';
+import { EnTete, Initiales, Vide } from './ui';
+import { bouton, carte } from './styles';
 
 export type CarteAdherent = {
   row: number;
@@ -269,24 +271,17 @@ export default function BureauCartesTab({
   }
 
   return (
-    <div className="space-y-3">
-      {onBack ? (
-        <button type="button" onClick={onBack} className="text-sm font-semibold text-brand-olive">
-          ← Autre
-        </button>
-      ) : null}
-      <h2 className="font-display font-bold text-lg">Cartes adhérents</h2>
-      <p className="text-base text-brand-gray">
-        Une personne à la fois. S’il y a un e-mail, la carte part par mail. Sinon, WhatsApp.
-        La carte est fabriquée à l’envoi, à partir de la fiche.
-      </p>
+    <div className="space-y-5">
+      <EnTete
+        titre="Cartes adhérents"
+        aide="Une personne à la fois. S’il y a un e-mail, la carte part par mail, sinon par WhatsApp. Elle est fabriquée à l’envoi, à partir de la fiche."
+        onRetour={onBack}
+      />
       {items.length === 0 && !loading ? (
-        <div className="rounded-2xl bg-brand-cream border border-[#E8E6E1] px-4 py-8 text-center text-brand-olive">
-          <CreditCard className="w-10 h-10 mx-auto mb-2" aria-hidden="true" />
-          <p className="font-medium text-base">
-            {qPeople ? 'Personne avec ce nom ou ce numéro' : 'Aucun adhérent À jour pour l’instant'}
-          </p>
-        </div>
+        <Vide
+          icone={qPeople ? Search : CreditCard}
+          titre={qPeople ? 'Personne avec ce nom ou ce numéro' : 'Aucun adhérent À jour pour l’instant'}
+        />
       ) : null}
       {items.map((item) => {
         const numero = String(item.numero || '').trim();
@@ -301,44 +296,40 @@ export default function BureauCartesTab({
         const deja = String(item.carte || '').trim();
         const underError = blocked || (info?.kind === 'err' ? info.text : null);
         return (
-          <article
-            key={item.row}
-            className="rounded-2xl bg-white border border-[#E8E6E1] px-4 py-3 space-y-1.5"
-          >
-            <h3 className="font-semibold text-base text-brand-black leading-snug">
-              {item.nom} {item.prenom}
-            </h3>
-            <p className="text-base text-brand-gray">
-              {numero || '—'}
-              {telLabel ? ` · ${telLabel}` : ''}
-            </p>
-            {mail ? <p className="text-sm text-brand-gray break-all">{mail}</p> : null}
-            {String(item.carte || '').trim() ? (
-              <p className="text-sm text-brand-olive">Prête le {String(item.carte).trim()}</p>
-            ) : null}
-            {parMail && confirming ? (
-              <div className="space-y-2">
-                <p className="text-sm text-brand-black">
-                  {deja
-                    ? `Carte déjà partie le ${deja}. La renvoyer à cette adresse ?`
-                    : 'Envoyer la carte à cette adresse ?'}
+          <article key={item.row} className={`${carte} p-4 space-y-3`}>
+            <div className="flex items-start gap-3">
+              <Initiales prenom={item.prenom} nom={item.nom} />
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-base text-brand-black leading-snug">
+                  {item.nom} {item.prenom}
+                </h3>
+                <p className="text-sm text-slate-500 tabular-nums">
+                  {numero || '—'}
+                  {telLabel ? ` · ${telLabel}` : ''}
                 </p>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    disabled={isBusy}
-                    onClick={() => void envoyerMail(item)}
-                    className="inline-flex items-center justify-center gap-2 h-11 min-h-[44px] px-4 rounded-xl bg-orange-primary text-white font-semibold text-sm disabled:opacity-50"
-                  >
+                {mail ? <p className="text-sm text-slate-500 break-all">{mail}</p> : null}
+              </div>
+              {deja ? (
+                <span className="shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold bg-emerald-100 text-emerald-900">
+                  Envoyée le {deja}
+                </span>
+              ) : (
+                <span className="shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold bg-amber-100 text-amber-900">
+                  À envoyer
+                </span>
+              )}
+            </div>
+            {parMail && confirming ? (
+              <div className="rounded-xl bg-brand-cream p-3 space-y-2">
+                <p className="text-sm text-brand-black">
+                  {deja ? `Carte déjà partie le ${deja}. La renvoyer à cette adresse ?` : 'Envoyer la carte à cette adresse ?'}
+                </p>
+                <div className="grid grid-cols-2 gap-2 sm:flex">
+                  <button type="button" disabled={isBusy} onClick={() => void envoyerMail(item)} className={bouton.principal}>
                     <Mail className="w-4 h-4 shrink-0" aria-hidden="true" />
                     {isBusy ? 'Envoi…' : deja ? 'Renvoyer' : 'Confirmer'}
                   </button>
-                  <button
-                    type="button"
-                    disabled={isBusy}
-                    onClick={() => setConfirmRow(null)}
-                    className="inline-flex items-center justify-center h-11 min-h-[44px] px-4 rounded-xl border border-[#E8E6E1] text-brand-black font-semibold text-sm"
-                  >
+                  <button type="button" disabled={isBusy} onClick={() => setConfirmRow(null)} className={bouton.secondaire}>
                     Annuler
                   </button>
                 </div>
@@ -349,30 +340,20 @@ export default function BureauCartesTab({
                 type="button"
                 disabled={Boolean(blocked) || isBusy}
                 onClick={() => void ouvrirMail(item)}
-                className="inline-flex items-center justify-center gap-2 w-full sm:w-auto h-11 min-h-[44px] px-4 rounded-xl bg-orange-primary text-white font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className={`${deja ? bouton.secondaire : bouton.principal} w-full sm:w-auto disabled:cursor-not-allowed`}
               >
                 <Mail className="w-4 h-4 shrink-0" aria-hidden="true" />
                 {deja ? 'Renvoyer par mail' : 'Envoyer par mail'}
               </button>
             ) : null}
             {!parMail && waAsking ? (
-              <div className="space-y-2">
+              <div className="rounded-xl bg-brand-cream p-3 space-y-2">
                 <p className="text-sm text-brand-black">{MSG_WA_ASK}</p>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    disabled={isBusy}
-                    onClick={() => void confirmerWhatsApp(item)}
-                    className="inline-flex items-center justify-center h-11 min-h-[44px] px-4 rounded-xl bg-orange-primary text-white font-semibold text-sm disabled:opacity-50"
-                  >
+                <div className="grid grid-cols-2 gap-2 sm:flex">
+                  <button type="button" disabled={isBusy} onClick={() => void confirmerWhatsApp(item)} className={bouton.principal}>
                     {isBusy ? 'Enregistrement…' : 'Oui, c’est parti'}
                   </button>
-                  <button
-                    type="button"
-                    disabled={isBusy}
-                    onClick={() => pasEnvoyeWhatsApp(item)}
-                    className="inline-flex items-center justify-center h-11 min-h-[44px] px-4 rounded-xl border border-[#E8E6E1] text-brand-black font-semibold text-sm"
-                  >
+                  <button type="button" disabled={isBusy} onClick={() => pasEnvoyeWhatsApp(item)} className={bouton.secondaire}>
                     Non
                   </button>
                 </div>
@@ -383,15 +364,19 @@ export default function BureauCartesTab({
                 type="button"
                 disabled={Boolean(blocked) || isBusy}
                 onClick={() => void envoyerCarte(item)}
-                className="inline-flex items-center justify-center gap-2 w-full sm:w-auto h-11 min-h-[44px] px-4 rounded-xl border-2 border-[#25D366] text-[#25D366] bg-transparent font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className={`${bouton.whatsapp} w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed`}
               >
                 <MessageCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
                 {isBusy ? 'Préparation…' : deja ? 'Renvoyer la carte' : 'Envoyer la carte'}
               </button>
             ) : null}
-            {underError ? <p className="text-sm text-orange-primary">{underError}</p> : null}
-            {info?.kind === 'ok' ? <p className="text-sm text-brand-olive">{info.text}</p> : null}
-            {info?.kind === 'cancel' ? <p className="text-sm text-brand-gray">{info.text}</p> : null}
+            {underError ? (
+              <p role="alert" className="text-sm font-medium text-orange-primary">
+                {underError}
+              </p>
+            ) : null}
+            {info?.kind === 'ok' ? <p className="text-sm font-medium text-brand-olive">{info.text}</p> : null}
+            {info?.kind === 'cancel' ? <p className="text-sm text-slate-500">{info.text}</p> : null}
           </article>
         );
       })}

@@ -1,6 +1,8 @@
-import { CheckCircle2, ExternalLink, MessageCircle } from 'lucide-react';
+import { ExternalLink, MessageCircle, Search, Wallet } from 'lucide-react';
 import { formatTelFr } from '../../lib/bureauSearch';
 import { PersonNameButton } from './BureauPersonSheet';
+import { EnTete, Initiales, Vide } from './ui';
+import { bouton, carte } from './styles';
 
 type AdhesionItem = {
   row: number;
@@ -41,71 +43,63 @@ export default function BureauAdhesionsTab<T extends AdhesionItem>({
   onOpenPerson,
 }: Props<T>) {
   return (
-    <div className="space-y-3">
-      <h2 className="font-display font-bold text-lg">À payer</h2>
-      <p className="text-base text-slate-600">Un paiement en ligne ne passe pas tout seul en À jour.</p>
-      {pendingVisible.length === 0 && !loading && (
-        <div className="rounded-2xl bg-brand-cream border border-[#E8E6E1] px-4 py-8 text-center text-brand-olive">
-          <CheckCircle2 className="w-10 h-10 mx-auto mb-2" />
-          <p className="font-medium text-base">
-            {qPeople ? 'Personne avec ce nom ou ce numéro' : 'Rien à encaisser pour le moment'}
-          </p>
-        </div>
-      )}
+    <div className="space-y-5">
+      <EnTete titre="À payer" aide="Un paiement en ligne ne passe pas tout seul en À jour : confirmez-le ici quand l’argent est arrivé." />
+      {pendingVisible.length === 0 && !loading ? (
+        qPeople ? (
+          <Vide icone={Search} titre="Personne avec ce nom ou ce numéro" />
+        ) : (
+          <Vide icone={Wallet} titre="Rien à encaisser pour le moment" aide="Les nouvelles adhésions apparaissent ici." />
+        )
+      ) : null}
       {pendingVisible.map((item) => {
         const isBusy = busyRow === `adh-${item.row}`;
         const telLabel = formatTelFr(item.tel);
         const wa = telLabel ? waUrl(item.tel, msgRelancePaiement(item.prenom)) : null;
         const sheetHref = sheetRangeUrl(adherentsSheetUrl, item.row);
-        const meta = [item.mode, item.montant, formatDemandeShort(item.dateDemande)]
-          .filter(Boolean)
-          .join(' · ');
+        const cheque = String(item.mode || '').startsWith('Chèque');
         return (
-          <article
-            key={item.row}
-            className="rounded-2xl bg-white border border-[#E8E6E1] border-l-[4px] border-l-orange-primary px-4 py-3 space-y-1.5"
-          >
-            <h3 className="font-semibold text-base text-brand-black leading-snug">
-              <PersonNameButton prenom={item.prenom} nom={item.nom} tel={item.tel} onOpen={onOpenPerson} />
-            </h3>
-            {String(item.mode || '').startsWith('Chèque') ? (
-              <p className="text-sm text-brand-gray">
-                {item.detail?.trim() ? item.detail.trim() : 'n° non saisi'}
-              </p>
-            ) : null}
-            {meta ? <p className="text-base text-brand-gray">{meta}</p> : null}
-            {telLabel ? <p className="text-base text-brand-gray">{telLabel}</p> : null}
-            <div className="flex flex-wrap items-center gap-2 pt-0.5 max-[700px]:grid max-[700px]:grid-cols-2">
-              {wa ? (
-                <a
-                  href={wa}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-1.5 h-11 min-h-[44px] px-3 rounded-xl border border-[#25D366] bg-transparent text-[#25D366] font-semibold text-sm max-[700px]:w-full"
-                >
-                  <MessageCircle className="w-4 h-4" aria-hidden="true" />
-                  WhatsApp
-                </a>
+          <article key={item.row} className={`${carte} p-4 space-y-3`}>
+            <div className="flex items-start gap-3">
+              <Initiales prenom={item.prenom} nom={item.nom} />
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-base text-brand-black leading-snug">
+                  <PersonNameButton prenom={item.prenom} nom={item.nom} tel={item.tel} onOpen={onOpenPerson} />
+                </h3>
+                <p className="text-sm text-slate-500">
+                  {[item.mode, cheque ? item.detail?.trim() || 'n° non saisi' : '', formatDemandeShort(item.dateDemande)]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </p>
+                {telLabel ? <p className="text-sm text-slate-500 tabular-nums">{telLabel}</p> : null}
+              </div>
+              {item.montant ? (
+                <span className="shrink-0 font-display font-bold text-lg text-brand-black tabular-nums">
+                  {/€/.test(item.montant) ? item.montant : `${item.montant} €`}
+                </span>
               ) : null}
-              {sheetHref ? (
-                <a
-                  href={sheetHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-1.5 h-11 min-h-[44px] px-3 rounded-xl border border-[#E8E6E1] bg-white font-semibold text-sm max-[700px]:w-full"
-                >
-                  Ouvrir la feuille
-                  <ExternalLink className="w-4 h-4" aria-hidden="true" />
-                </a>
-              ) : null}
+            </div>
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
               <button
                 type="button"
                 disabled={isBusy}
                 onClick={() => onAskPay(item)}
-                className="h-11 min-h-[44px] px-3 rounded-xl bg-brand-olive hover:bg-brand-olive-hover text-white font-semibold text-sm disabled:opacity-60 max-[700px]:w-full"
+                className={`${bouton.principal} col-span-2`}
               >
                 {isBusy ? 'Enregistrement…' : 'J’ai reçu l’argent'}
               </button>
+              {wa ? (
+                <a href={wa} target="_blank" rel="noopener noreferrer" className={`${bouton.whatsapp} ${sheetHref ? '' : 'col-span-2'}`}>
+                  <MessageCircle className="w-4 h-4" aria-hidden="true" />
+                  Relancer
+                </a>
+              ) : null}
+              {sheetHref ? (
+                <a href={sheetHref} target="_blank" rel="noopener noreferrer" className={`${bouton.secondaire} ${wa ? '' : 'col-span-2'}`}>
+                  Feuille
+                  <ExternalLink className="w-4 h-4" aria-hidden="true" />
+                </a>
+              ) : null}
             </div>
           </article>
         );

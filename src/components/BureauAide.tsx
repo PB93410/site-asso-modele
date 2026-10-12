@@ -1,4 +1,4 @@
-import { Check, Copy } from 'lucide-react';
+import { Check, Copy, ChevronDown } from 'lucide-react';
 import { BUREAU_MESSAGES } from '../data/bureauMessages';
 
 import BureauSheetLinks from './BureauSheetLinks';
@@ -20,11 +20,11 @@ export default function BureauAide({
   copyMessage,
 }: Props) {
   return (
-    <div className="rounded-2xl bg-white border border-slate-200 p-4 sm:p-5 space-y-8">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h2 className="font-display font-bold text-lg">Mode d’emploi du bureau</h2>
-          <p className="text-sm text-slate-600 mt-1">
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-start justify-between gap-3 px-1">
+        <div className="flex-1 min-w-0">
+          <h2 className="font-display font-bold text-2xl text-brand-black">Mode d’emploi</h2>
+          <p className="text-sm text-slate-500 mt-1 leading-relaxed">
             Tout se fait ici. Vous n’ouvrez pas Excel. WhatsApp s’ouvre tout seul quand
             vous appuyez sur un bouton vert.
           </p>
@@ -33,14 +33,19 @@ export default function BureauAide({
           type="button"
           data-print-hide
           onClick={() => window.print()}
-          className="shrink-0 rounded-xl border border-slate-300 px-3 py-2.5 text-sm font-semibold text-slate-800 min-h-[44px]"
+          className="inline-flex items-center justify-center gap-1.5 h-11 min-h-[44px] px-4 rounded-xl bg-white ring-1 ring-black/10 hover:bg-black/[0.03] text-brand-black font-semibold text-sm shrink-0"
         >
           Imprimer
         </button>
       </div>
 
-      <section className="space-y-2">
-        <h3 className="font-display font-bold text-base">En une minute</h3>
+      <div className="rounded-2xl bg-white ring-1 ring-black/[0.06] shadow-[0_1px_2px_rgba(17,17,16,0.04)] divide-y divide-black/[0.06] overflow-hidden">
+      <details className="group px-4 sm:px-5 py-1" open>
+        <summary className="list-none [&::-webkit-details-marker]:hidden cursor-pointer flex items-center justify-between gap-3 min-h-[56px] font-semibold text-brand-black">
+          <span>En une minute</span>
+          <ChevronDown className="w-5 h-5 text-slate-400 shrink-0 group-open:rotate-180 transition-transform" aria-hidden="true" />
+        </summary>
+        <div className="space-y-2 pb-4">
         <ul className="text-sm text-slate-700 space-y-1.5 list-disc pl-5 leading-relaxed">
           <li>
             Quelqu’un veut essayer → QR ci-dessous, ou formulaire{' '}
@@ -61,10 +66,15 @@ export default function BureauAide({
             Tableau complet ou la boîte Gmail → <strong>Autre</strong>.
           </li>
         </ul>
-      </section>
+      </div>
+      </details>
 
-      <section className="space-y-2">
-        <h3 className="font-display font-bold text-base">Ouvrir l’espace</h3>
+      <details className="group px-4 sm:px-5 py-1">
+        <summary className="list-none [&::-webkit-details-marker]:hidden cursor-pointer flex items-center justify-between gap-3 min-h-[56px] font-semibold text-brand-black">
+          <span>Ouvrir l’espace</span>
+          <ChevronDown className="w-5 h-5 text-slate-400 shrink-0 group-open:rotate-180 transition-transform" aria-hidden="true" />
+        </summary>
+        <div className="space-y-2 pb-4">
         <ol className="list-decimal pl-5 text-sm text-slate-700 space-y-1.5 leading-relaxed">
           <li>
             Allez sur{' '}
@@ -75,10 +85,15 @@ export default function BureauAide({
           <li>Mot de passe du bureau (le même pour tout le monde) → Entrer.</li>
           <li>Gardez le téléphone chargé. En cas de liste vide : Actualiser (en haut).</li>
         </ol>
-      </section>
+      </div>
+      </details>
 
-      <section className="space-y-2">
-        <h3 className="font-display font-bold text-base">Les onglets</h3>
+      <details className="group px-4 sm:px-5 py-1">
+        <summary className="list-none [&::-webkit-details-marker]:hidden cursor-pointer flex items-center justify-between gap-3 min-h-[56px] font-semibold text-brand-black">
+          <span>Les onglets</span>
+          <ChevronDown className="w-5 h-5 text-slate-400 shrink-0 group-open:rotate-180 transition-transform" aria-hidden="true" />
+        </summary>
+        <div className="space-y-2 pb-4">
         <dl className="text-sm text-slate-700 space-y-2 leading-relaxed">
           <div>
             <dt className="font-semibold text-slate-900">Accueil</dt>
@@ -104,10 +119,15 @@ export default function BureauAide({
             <dd>Horaires, événements, aide, tableaux, mail.</dd>
           </div>
         </dl>
-      </section>
+      </div>
+      </details>
 
-      <section className="space-y-2">
-        <h3 className="font-display font-bold text-base">Au gymnase (saisie sur place)</h3>
+      <details className="group px-4 sm:px-5 py-1">
+        <summary className="list-none [&::-webkit-details-marker]:hidden cursor-pointer flex items-center justify-between gap-3 min-h-[56px] font-semibold text-brand-black">
+          <span>Au gymnase (saisie sur place)</span>
+          <ChevronDown className="w-5 h-5 text-slate-400 shrink-0 group-open:rotate-180 transition-transform" aria-hidden="true" />
+        </summary>
+        <div className="space-y-2 pb-4">
         <ol className="list-decimal pl-5 text-sm text-slate-700 space-y-1.5 leading-relaxed">
           <li>
             <strong>Idéal :</strong> la personne scanne le QR et remplit l’essai toute
@@ -118,10 +138,15 @@ export default function BureauAide({
             avec la personne. Ensuite le bouton WhatsApp.
           </li>
         </ol>
-      </section>
+      </div>
+      </details>
 
-      <section className="space-y-2">
-        <h3 className="font-display font-bold text-base">Demandes d’essai — les trois listes</h3>
+      <details className="group px-4 sm:px-5 py-1">
+        <summary className="list-none [&::-webkit-details-marker]:hidden cursor-pointer flex items-center justify-between gap-3 min-h-[56px] font-semibold text-brand-black">
+          <span>Demandes d’essai — les trois listes</span>
+          <ChevronDown className="w-5 h-5 text-slate-400 shrink-0 group-open:rotate-180 transition-transform" aria-hidden="true" />
+        </summary>
+        <div className="space-y-2 pb-4">
         <p className="text-sm text-slate-700 leading-relaxed">
           Chaque fiche a un bouton vert WhatsApp (le texte est déjà écrit) et, si besoin,
           Appeler.
@@ -146,10 +171,15 @@ export default function BureauAide({
           Pour retrouver quelqu’un : barre <strong>Rechercher</strong> (prénom, nom ou
           téléphone), y compris les fiches déjà classées.
         </p>
-      </section>
+      </div>
+      </details>
 
-      <section className="space-y-2">
-        <h3 className="font-display font-bold text-base">Quand les {TARIF_LABEL} arrivent</h3>
+      <details className="group px-4 sm:px-5 py-1">
+        <summary className="list-none [&::-webkit-details-marker]:hidden cursor-pointer flex items-center justify-between gap-3 min-h-[56px] font-semibold text-brand-black">
+          <span>Quand les {TARIF_LABEL} arrivent</span>
+          <ChevronDown className="w-5 h-5 text-slate-400 shrink-0 group-open:rotate-180 transition-transform" aria-hidden="true" />
+        </summary>
+        <div className="space-y-2 pb-4">
         <ol className="list-decimal pl-5 text-sm text-slate-700 space-y-1.5 leading-relaxed">
           <li>Onglet À payer.</li>
           <li>
@@ -165,19 +195,29 @@ export default function BureauAide({
             Relance douce : bouton « Rappeler pour payer » (WhatsApp), ou page Relances.
           </li>
         </ol>
-      </section>
+      </div>
+      </details>
 
-      <section className="space-y-2">
-        <h3 className="font-display font-bold text-base">Horaires et événements du site</h3>
+      <details className="group px-4 sm:px-5 py-1">
+        <summary className="list-none [&::-webkit-details-marker]:hidden cursor-pointer flex items-center justify-between gap-3 min-h-[56px] font-semibold text-brand-black">
+          <span>Horaires et événements du site</span>
+          <ChevronDown className="w-5 h-5 text-slate-400 shrink-0 group-open:rotate-180 transition-transform" aria-hidden="true" />
+        </summary>
+        <div className="space-y-2 pb-4">
         <p className="text-sm text-slate-700 leading-relaxed">
           Choisissez, puis Enregistrer. Une confirmation s’affiche. Le site public se met
           à jour tout seul (quelques minutes). Pas besoin du référent. En cas de doute,
           n’enregistrez pas.
         </p>
-      </section>
+      </div>
+      </details>
 
-      <section className="space-y-2">
-        <h3 className="font-display font-bold text-base">Bip sur le téléphone (une fois)</h3>
+      <details className="group px-4 sm:px-5 py-1">
+        <summary className="list-none [&::-webkit-details-marker]:hidden cursor-pointer flex items-center justify-between gap-3 min-h-[56px] font-semibold text-brand-black">
+          <span>Bip sur le téléphone (une fois)</span>
+          <ChevronDown className="w-5 h-5 text-slate-400 shrink-0 group-open:rotate-180 transition-transform" aria-hidden="true" />
+        </summary>
+        <div className="space-y-2 pb-4">
         <ol className="list-decimal pl-5 text-sm text-slate-700 space-y-1.5 leading-relaxed">
           <li>Installez l’appli <strong>ntfy</strong> (magasin d’applications).</li>
           <li>
@@ -189,10 +229,15 @@ export default function BureauAide({
           Le bip indique un prénom, un cours et une date — pas le numéro de téléphone.
           Sans l’appli, rien ne sonne : regardez Demande essai de temps en temps.
         </p>
-      </section>
+      </div>
+      </details>
 
-      <section className="space-y-2">
-        <h3 className="font-display font-bold text-base">Boîte mail (5 minutes par jour)</h3>
+      <details className="group px-4 sm:px-5 py-1">
+        <summary className="list-none [&::-webkit-details-marker]:hidden cursor-pointer flex items-center justify-between gap-3 min-h-[56px] font-semibold text-brand-black">
+          <span>Boîte mail (5 minutes par jour)</span>
+          <ChevronDown className="w-5 h-5 text-slate-400 shrink-0 group-open:rotate-180 transition-transform" aria-hidden="true" />
+        </summary>
+        <div className="space-y-2 pb-4">
         <p className="text-sm text-slate-700 leading-relaxed">
           Compte <strong>{ASSO.email}</strong> — pages <strong>Mail</strong> et{' '}
           <strong>Agenda</strong> dans Autre (dans le bureau, sans ouvrir Gmail). Les essais
@@ -221,10 +266,15 @@ export default function BureauAide({
           Après l’action : Archiver (ne pas laisser 80 non-lus). Répondre seulement depuis
           cette adresse, jamais depuis une boîte perso. Textes mail : plus bas, « Copier ».
         </p>
-      </section>
+      </div>
+      </details>
 
-      <section className="space-y-2">
-        <h3 className="font-display font-bold text-base">Si ça coince</h3>
+      <details className="group px-4 sm:px-5 py-1">
+        <summary className="list-none [&::-webkit-details-marker]:hidden cursor-pointer flex items-center justify-between gap-3 min-h-[56px] font-semibold text-brand-black">
+          <span>Si ça coince</span>
+          <ChevronDown className="w-5 h-5 text-slate-400 shrink-0 group-open:rotate-180 transition-transform" aria-hidden="true" />
+        </summary>
+        <div className="space-y-2 pb-4">
         <ul className="text-sm text-slate-700 space-y-1.5 list-disc pl-5 leading-relaxed">
           <li>Liste vide alors qu’il devrait y avoir du monde → Actualiser.</li>
           <li>
@@ -235,10 +285,13 @@ export default function BureauAide({
           <li>WhatsApp ne s’ouvre pas → numéro manquant ou mal saisi. Appeler à la place.</li>
           <li>Une erreur bizarre → Internet, puis Actualiser. Sinon le référent.</li>
         </ul>
-      </section>
+      </div>
+      </details>
 
-      <div className="rounded-xl border border-slate-200 p-4 space-y-3">
-        <h3 className="font-display font-bold text-base">QR essai — à afficher</h3>
+      </div>
+
+      <div className="rounded-2xl bg-white ring-1 ring-black/[0.06] shadow-[0_1px_2px_rgba(17,17,16,0.04)] p-4 sm:p-5 space-y-3">
+        <h3 className="font-semibold text-brand-black">QR essai — à afficher</h3>
         <p className="text-sm text-slate-600">
           Scanne → {SITE_URL}/essai. Déposez votre QR code dans public/assets/qr-essai.png.
         </p>
@@ -255,7 +308,7 @@ export default function BureauAide({
         <a
           href="/assets/qr-essai.png"
           download="qr-essai.png"
-          className="inline-flex items-center rounded-xl border border-slate-300 px-3 py-2.5 text-sm font-semibold text-slate-800 min-h-[44px]"
+          className="inline-flex items-center justify-center gap-1.5 h-11 min-h-[44px] px-4 rounded-xl bg-white ring-1 ring-black/10 hover:bg-black/[0.03] text-brand-black font-semibold text-sm"
         >
           Télécharger le QR
         </a>
@@ -266,7 +319,7 @@ export default function BureauAide({
               href={ntfyUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-emerald-700 underline font-medium break-all"
+              className="text-brand-olive underline font-medium break-all"
             >
               Ouvrir le canal d’alerte
             </a>
@@ -278,31 +331,31 @@ export default function BureauAide({
         )}
       </div>
 
-      <div>
-        <h3 className="font-display font-bold text-base">Textes à copier (mail, groupe, mairie…)</h3>
-        <p className="text-sm text-slate-600 mt-1 mb-3">
+      <div className="space-y-3">
+        <h3 className="font-display font-bold text-xl text-brand-black px-1">Textes à copier</h3>
+        <p className="text-sm text-slate-500 px-1 leading-relaxed">
           Les trois premiers : réponses depuis {ASSO.email}. Pour une personne
           précise, préférez les boutons verts des fiches (prénom et créneau déjà dedans).
         </p>
         <div className="space-y-3">
           {BUREAU_MESSAGES.map((m) => (
-            <div key={m.id} className="rounded-xl border border-slate-200 p-3 space-y-2">
+            <div key={m.id} className="rounded-2xl bg-white ring-1 ring-black/[0.06] shadow-[0_1px_2px_rgba(17,17,16,0.04)] p-4 space-y-2">
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <p className="font-semibold text-slate-900">{m.title}</p>
+                  <p className="font-semibold text-brand-black">{m.title}</p>
                   <p className="text-xs text-slate-500">{m.when}</p>
                 </div>
                 <button
                   type="button"
                   data-print-hide
                   onClick={() => copyMessage(m.id, m.body)}
-                  className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 text-white font-semibold px-3 py-2.5 text-sm min-h-[44px]"
+                  className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-brand-olive hover:bg-brand-olive-hover text-white font-semibold px-3 py-2.5 text-sm min-h-[44px]"
                 >
                   {copiedId === m.id ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                   {copiedId === m.id ? 'Copié' : 'Copier'}
                 </button>
               </div>
-              <pre className="whitespace-pre-wrap font-body text-xs text-slate-600 bg-slate-50 rounded-lg p-3 max-h-32 overflow-y-auto">
+              <pre className="whitespace-pre-wrap font-body text-sm text-slate-600 bg-brand-cream rounded-xl p-3 max-h-40 overflow-y-auto">
                 {m.body}
               </pre>
             </div>

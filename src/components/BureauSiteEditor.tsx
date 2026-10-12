@@ -56,7 +56,7 @@ function Chip({
       type="button"
       onClick={onClick}
       className={`min-h-[40px] px-3 rounded-xl text-sm font-medium border ${
-        active ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white border-slate-200 text-slate-700'
+        active ? 'bg-brand-olive text-white border-brand-olive' : 'bg-white border-black/10 text-slate-700 hover:border-black/20'
       }`}
     >
       {children}
@@ -127,25 +127,25 @@ export default function BureauSiteEditor({
   }
 
   if (loading) {
-    return <p className="text-sm text-slate-500 py-8">Chargement…</p>;
+    return <p className="text-sm text-slate-500 py-8 px-1" aria-busy="true">Chargement…</p>;
   }
 
   if (kind === 'planning') {
     return (
       <div className="space-y-4">
-        <h2 className="font-display font-bold text-lg">Horaires des cours</h2>
-        <p className="text-sm text-slate-600">
+        <h2 className="font-display font-bold text-2xl text-brand-black px-1">Horaires des cours</h2>
+        <p className="text-sm text-slate-500 px-1 leading-relaxed">
           Choisissez jour, cours et salle. Écrivez l’heure comme 13h30 – 14h30. Puis
           Enregistrer — pas besoin d’appeler le référent.
         </p>
         {schedule.map((row, i) => (
-          <div key={i} className="rounded-2xl bg-white border border-slate-200 p-4 space-y-3">
+          <div key={i} className="rounded-2xl bg-white ring-1 ring-black/[0.06] shadow-[0_1px_2px_rgba(17,17,16,0.04)] p-4 space-y-3">
             <div className="flex justify-between gap-2">
               <p className="font-semibold text-slate-900">Créneau {i + 1}</p>
               <button
                 type="button"
                 onClick={() => setSchedule((s) => s.filter((_, j) => j !== i))}
-                className="text-sm text-red-700"
+                className="inline-flex items-center gap-1 min-h-[40px] px-2 rounded-xl text-sm font-medium text-red-700 hover:bg-red-50"
               >
                 Retirer
               </button>
@@ -165,7 +165,7 @@ export default function BureauSiteEditor({
                 setSchedule((s) => s.map((r, j) => (j === i ? { ...r, time: e.target.value } : r)))
               }
               placeholder="13h30 – 14h30"
-              className="w-full rounded-xl border border-slate-300 px-3 py-3 text-base"
+              className="w-full rounded-xl border-0 ring-1 ring-black/10 bg-white px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-olive"
             />
             <div className="flex flex-wrap gap-1.5">
               {COURSES.map((c) => (
@@ -191,7 +191,7 @@ export default function BureauSiteEditor({
                 setSchedule((s) => s.map((r, j) => (j === i ? { ...r, note: e.target.value } : r)))
               }
               placeholder="Note (facultatif) — ex. dès le 19 sept."
-              className="w-full rounded-xl border border-slate-300 px-3 py-3 text-base"
+              className="w-full rounded-xl border-0 ring-1 ring-black/10 bg-white px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-olive"
             />
           </div>
         ))}
@@ -203,7 +203,7 @@ export default function BureauSiteEditor({
               { day: 'Lundi', time: '', course: COURSES[0] ?? '', location: LOCATIONS[0] ?? '', note: '' },
             ])
           }
-          className="w-full rounded-xl border border-dashed border-slate-300 py-3 text-sm font-medium text-slate-700 inline-flex items-center justify-center gap-2"
+          className="w-full rounded-2xl border-2 border-dashed border-black/10 hover:border-brand-olive hover:text-brand-olive py-3 min-h-[48px] text-sm font-semibold text-slate-600 inline-flex items-center justify-center gap-2"
         >
           <Plus className="w-4 h-4" />
           Ajouter un créneau
@@ -212,7 +212,7 @@ export default function BureauSiteEditor({
           type="button"
           disabled={saving}
           onClick={save}
-          className="w-full rounded-xl bg-emerald-600 text-white font-semibold py-3.5 min-h-[48px]"
+          className="w-full rounded-xl bg-brand-olive hover:bg-brand-olive-hover text-white font-semibold py-3.5 min-h-[48px] disabled:opacity-60"
         >
           {saving ? 'Enregistrement…' : 'Enregistrer — ça ira sur le site'}
         </button>
@@ -222,15 +222,15 @@ export default function BureauSiteEditor({
 
   return (
     <div className="space-y-4">
-      <h2 className="font-display font-bold text-lg">Événements à afficher</h2>
-      <p className="text-sm text-slate-600">
+      <h2 className="font-display font-bold text-2xl text-brand-black px-1">Événements à afficher</h2>
+      <p className="text-sm text-slate-500 px-1 leading-relaxed">
         Portes ouvertes, reprise, repas… Un titre, un jour, un mois. Puis Enregistrer.
       </p>
       {events.map((ev, i) => (
-        <div key={i} className="rounded-2xl bg-white border border-slate-200 p-4 space-y-3">
+        <div key={i} className="rounded-2xl bg-white ring-1 ring-black/[0.06] shadow-[0_1px_2px_rgba(17,17,16,0.04)] p-4 space-y-3">
           <div className="flex justify-between gap-2">
             <p className="font-semibold">{ev.title || `Date ${i + 1}`}</p>
-            <button type="button" onClick={() => setEvents((s) => s.filter((_, j) => j !== i))} className="text-sm text-red-700">
+            <button type="button" onClick={() => setEvents((s) => s.filter((_, j) => j !== i))} className="inline-flex items-center gap-1 min-h-[40px] px-2 rounded-xl text-sm font-medium text-red-700 hover:bg-red-50">
               <Trash2 className="w-4 h-4" />
             </button>
           </div>
@@ -238,20 +238,20 @@ export default function BureauSiteEditor({
             value={ev.title}
             onChange={(e) => setEvents((s) => s.map((r, j) => (j === i ? { ...r, title: e.target.value } : r)))}
             placeholder="Titre (ex. Séance portes ouvertes)"
-            className="w-full rounded-xl border border-slate-300 px-3 py-3 text-base"
+            className="w-full rounded-xl border-0 ring-1 ring-black/10 bg-white px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-olive"
           />
           <div className="grid grid-cols-2 gap-2">
             <input
               value={ev.date}
               onChange={(e) => setEvents((s) => s.map((r, j) => (j === i ? { ...r, date: e.target.value } : r)))}
               placeholder="Jour (6 ou 4-5)"
-              className="rounded-xl border border-slate-300 px-3 py-3 text-base"
+              className="rounded-xl border-0 ring-1 ring-black/10 bg-white px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-olive"
             />
             <input
               value={ev.year}
               onChange={(e) => setEvents((s) => s.map((r, j) => (j === i ? { ...r, year: e.target.value } : r)))}
               placeholder="Année"
-              className="rounded-xl border border-slate-300 px-3 py-3 text-base"
+              className="rounded-xl border-0 ring-1 ring-black/10 bg-white px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-olive"
             />
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -267,7 +267,7 @@ export default function BureauSiteEditor({
             value={ev.time}
             onChange={(e) => setEvents((s) => s.map((r, j) => (j === i ? { ...r, time: e.target.value } : r)))}
             placeholder="Horaire (10h00 – 18h00)"
-            className="w-full rounded-xl border border-slate-300 px-3 py-3 text-base"
+            className="w-full rounded-xl border-0 ring-1 ring-black/10 bg-white px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-olive"
           />
           <div className="flex flex-wrap gap-1.5">
             {LOCATIONS.map((l) => (
@@ -285,7 +285,7 @@ export default function BureauSiteEditor({
             }
             placeholder="Deux phrases pour le site"
             rows={3}
-            className="w-full rounded-xl border border-slate-300 px-3 py-3 text-base"
+            className="w-full rounded-xl border-0 ring-1 ring-black/10 bg-white px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-olive"
           />
           <label className="flex items-center gap-2 text-sm">
             <input
@@ -318,7 +318,7 @@ export default function BureauSiteEditor({
             },
           ])
         }
-        className="w-full rounded-xl border border-dashed border-slate-300 py-3 text-sm font-medium"
+        className="w-full rounded-2xl border-2 border-dashed border-black/10 hover:border-brand-olive hover:text-brand-olive py-3 min-h-[48px] text-sm font-semibold text-slate-600 inline-flex items-center justify-center gap-2"
       >
         Ajouter une date
       </button>
@@ -326,7 +326,7 @@ export default function BureauSiteEditor({
         type="button"
         disabled={saving}
         onClick={save}
-        className="w-full rounded-xl bg-emerald-600 text-white font-semibold py-3.5 min-h-[48px]"
+        className="w-full rounded-xl bg-brand-olive hover:bg-brand-olive-hover text-white font-semibold py-3.5 min-h-[48px] disabled:opacity-60"
       >
         {saving ? 'Enregistrement…' : 'Enregistrer — ça ira sur le site'}
       </button>

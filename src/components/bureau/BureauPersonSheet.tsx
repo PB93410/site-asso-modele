@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { MessageCircle, X } from 'lucide-react';
+import { Initiales } from './ui';
 import { phoneToWa, relanceHref } from '../../data/bureauRelances';
 import { adhesionNeedsMoney, formatTelFr } from '../../lib/bureauSearch';
 import { essaiYmdFromCreneau } from '../../lib/essaiDates';
@@ -159,30 +160,31 @@ export default function BureauPersonSheet<E extends PersonEssai, A extends Perso
   }
 
   return (
-    <div className="fixed inset-0 z-40 flex justify-end bg-black/40">
+    <div className="fixed inset-0 z-40 flex justify-end bg-black/40 backdrop-blur-[1px]">
       <button type="button" aria-label="Fermer la fiche" className="absolute inset-0" onClick={onClose} />
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="person-sheet-title"
-        className="relative flex h-full w-full flex-col bg-brand-cream md:max-w-md md:border-l md:border-black/10 md:shadow-xl"
+        className="relative flex h-full w-full flex-col bg-brand-cream md:max-w-md md:shadow-2xl"
       >
-        <div className="flex items-start justify-between gap-3 border-b border-black/10 bg-white px-4 py-4">
-          <div>
-            <h2 id="person-sheet-title" className="font-display text-xl font-bold text-brand-black">
+        <div className="flex items-start gap-3 border-b border-black/[0.06] bg-white px-4 py-4">
+          <Initiales prenom={sheet.prenom} nom={sheet.nom} />
+          <div className="flex-1 min-w-0">
+            <h2 id="person-sheet-title" className="font-display text-xl font-bold text-brand-black leading-tight">
               {[sheet.prenom, sheet.nom].filter(Boolean).join(' ') || 'Fiche'}
             </h2>
             {telLabel ? (
               chat ? (
-                <a href={`https://wa.me/${chat}`} target="_blank" rel="noopener noreferrer" className="text-base text-brand-olive underline">
+                <a href={`https://wa.me/${chat}`} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-brand-olive underline underline-offset-2 tabular-nums">
                   {telLabel}
                 </a>
               ) : (
-                <p className="text-base text-brand-gray">{telLabel}</p>
+                <p className="text-sm text-slate-500 tabular-nums">{telLabel}</p>
               )
             ) : null}
             {!seance && sheet.mail ? (
-              <a href={`mailto:${sheet.mail}`} className="block text-base text-brand-olive underline">
+              <a href={`mailto:${sheet.mail}`} className="block text-sm text-brand-olive underline underline-offset-2 break-all">
                 {sheet.mail}
               </a>
             ) : null}
@@ -190,19 +192,19 @@ export default function BureauPersonSheet<E extends PersonEssai, A extends Perso
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-11 min-h-[44px] w-11 items-center justify-center rounded-xl border border-black/10"
+            className="inline-flex h-11 min-h-[44px] w-11 items-center justify-center rounded-xl hover:bg-black/[0.05] text-slate-600"
             aria-label="Fermer"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="flex-1 space-y-6 overflow-y-auto px-4 py-4">
+        <div className="flex-1 space-y-5 overflow-y-auto px-4 py-5">
           {!seance ? (
             <section className="space-y-1">
-              <h3 className="font-display text-base font-bold">Adhérent</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500 px-1">Adhérent</h3>
               {adherent ? (
-                <p className="text-base text-brand-gray">
+                <p className="text-sm text-slate-600 rounded-2xl bg-white ring-1 ring-black/[0.06] px-4 py-3">
                   {[
                     adherent.statut,
                     adherent.mode,
@@ -216,15 +218,15 @@ export default function BureauPersonSheet<E extends PersonEssai, A extends Perso
                     .join(' · ') || 'Fiche sans détail'}
                 </p>
               ) : (
-                <p className="text-base text-brand-gray">Pas de fiche adhérent.</p>
+                <p className="text-sm text-slate-600 rounded-2xl bg-white ring-1 ring-black/[0.06] px-4 py-3">Pas de fiche adhérent.</p>
               )}
             </section>
           ) : null}
 
           <section className="space-y-2">
-            <h3 className="font-display text-base font-bold">Essais</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500 px-1">Essais</h3>
             {sheet.essais.length === 0 ? (
-              <p className="text-base text-brand-gray">Aucun essai pour cette personne.</p>
+              <p className="text-sm text-slate-600 rounded-2xl bg-white ring-1 ring-black/[0.06] px-4 py-3">Aucun essai pour cette personne.</p>
             ) : (
               <ul className="space-y-2">
                 {sheet.essais.map((essai) => {
@@ -232,7 +234,7 @@ export default function BureauPersonSheet<E extends PersonEssai, A extends Perso
                   const lineKey = essaiLineKey(essai);
                   const open = !isClosedEssaiLine(essai.statut);
                   return (
-                    <li key={lineKey} className="rounded-xl bg-white px-3 py-2 text-base text-brand-black space-y-2">
+                    <li key={lineKey} className="rounded-2xl bg-white ring-1 ring-black/[0.06] px-4 py-3 text-sm text-brand-black space-y-2">
                       <p>{[lineWhen(essai), String(essai.statut || 'À venir').trim(), nLabel(n)].join(' · ')}</p>
                       {open ? (
                         <>
@@ -241,7 +243,7 @@ export default function BureauPersonSheet<E extends PersonEssai, A extends Perso
                               type="button"
                               disabled={busy}
                               onClick={() => onVenu(essai)}
-                              className="h-11 min-h-[44px] rounded-xl bg-brand-olive px-3 text-sm font-semibold text-white disabled:opacity-60"
+                              className="inline-flex items-center justify-center gap-1.5 h-11 min-h-[44px] px-4 rounded-xl bg-brand-olive hover:bg-brand-olive-hover text-white font-semibold text-sm disabled:opacity-60"
                             >
                               Venu
                             </button>
@@ -249,7 +251,7 @@ export default function BureauPersonSheet<E extends PersonEssai, A extends Perso
                               type="button"
                               disabled={busy}
                               onClick={() => onAbsent(essai)}
-                              className="h-11 min-h-[44px] rounded-xl border border-[#E8E6E1] bg-white px-3 text-sm font-semibold text-brand-black disabled:opacity-60"
+                              className="inline-flex items-center justify-center gap-1.5 h-11 min-h-[44px] px-4 rounded-xl bg-white ring-1 ring-black/10 hover:bg-black/[0.03] text-brand-black font-semibold text-sm disabled:opacity-60"
                             >
                               Absent
                             </button>
@@ -270,7 +272,7 @@ export default function BureauPersonSheet<E extends PersonEssai, A extends Perso
                                   type="button"
                                   disabled={busy}
                                   onClick={() => chooseClore(essai, choice)}
-                                  className="h-11 min-h-[44px] rounded-xl border border-[#E8E6E1] bg-white px-3 text-sm font-semibold text-brand-black disabled:opacity-60"
+                                  className="inline-flex items-center justify-center gap-1.5 h-11 min-h-[44px] px-4 rounded-xl bg-white ring-1 ring-black/10 hover:bg-black/[0.03] text-brand-black font-semibold text-sm disabled:opacity-60"
                                 >
                                   {choice}
                                 </button>
@@ -287,9 +289,9 @@ export default function BureauPersonSheet<E extends PersonEssai, A extends Perso
           </section>
 
           <section className="space-y-2">
-            <h3 className="font-display text-base font-bold">Relances</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500 px-1">Relances</h3>
             {sheet.relances.length === 0 ? (
-              <p className="text-base text-brand-gray">Aucune relance notée.</p>
+              <p className="text-sm text-slate-600 rounded-2xl bg-white ring-1 ring-black/[0.06] px-4 py-3">Aucune relance notée.</p>
             ) : (
               <ul className="space-y-1 text-base text-brand-gray">
                 {sheet.relances.map((relance, index) => (
@@ -302,9 +304,9 @@ export default function BureauPersonSheet<E extends PersonEssai, A extends Perso
           </section>
 
           <section className="space-y-2">
-            <h3 className="font-display text-base font-bold">Notes</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500 px-1">Notes</h3>
             {sheet.notesEssais.length === 0 && (seance || sheet.notesAdherents.length === 0) ? (
-              <p className="text-base text-brand-gray">Pas de note.</p>
+              <p className="text-sm text-slate-600 rounded-2xl bg-white ring-1 ring-black/[0.06] px-4 py-3">Pas de note.</p>
             ) : (
               <div className="space-y-2 text-base text-brand-black whitespace-pre-wrap">
                 {sheet.notesEssais.map((note, index) => (
@@ -320,7 +322,7 @@ export default function BureauPersonSheet<E extends PersonEssai, A extends Perso
           </section>
         </div>
 
-        <div className="space-y-2 border-t border-black/10 bg-white px-4 py-4">
+        <div className="space-y-2 border-t border-black/[0.06] bg-white px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
           {waHref ? (
             <a
               href={waHref}
@@ -331,7 +333,7 @@ export default function BureauPersonSheet<E extends PersonEssai, A extends Perso
                   onWhatsAppConfirm?.(action);
                 }
               }}
-              className="inline-flex h-11 min-h-[44px] items-center gap-1.5 rounded-xl border border-[#25D366] px-3 text-sm font-semibold text-[#25D366]"
+              className="inline-flex items-center justify-center gap-1.5 h-11 min-h-[44px] px-4 rounded-xl bg-[#25D366]/10 hover:bg-[#25D366]/15 text-[#128C4B] font-semibold text-sm"
             >
               <MessageCircle className="h-4 w-4" aria-hidden="true" />
               WhatsApp
@@ -342,7 +344,7 @@ export default function BureauPersonSheet<E extends PersonEssai, A extends Perso
               type="button"
               disabled={busy}
               onClick={() => onPaid(adherent)}
-              className="h-11 min-h-[44px] rounded-xl bg-brand-olive px-3 text-sm font-semibold text-white disabled:opacity-60"
+              className="inline-flex items-center justify-center gap-1.5 h-11 min-h-[44px] px-4 rounded-xl bg-brand-olive hover:bg-brand-olive-hover text-white font-semibold text-sm disabled:opacity-60"
             >
               J’ai reçu l’argent
             </button>
@@ -352,7 +354,7 @@ export default function BureauPersonSheet<E extends PersonEssai, A extends Perso
               href={sheetHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-11 min-h-[44px] items-center rounded-xl border border-black/10 px-3 text-sm font-semibold text-brand-black"
+              className="inline-flex items-center justify-center gap-1.5 h-11 min-h-[44px] px-4 rounded-xl bg-white ring-1 ring-black/10 hover:bg-black/[0.03] text-brand-black font-semibold text-sm disabled:opacity-60"
             >
               Ouvrir dans le Sheet
             </a>

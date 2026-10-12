@@ -43,7 +43,7 @@ function LigneAction({ a, derniere }: { a: Action; derniere: boolean }) {
     <button
       type="button"
       onClick={a.onClick}
-      className={`w-full flex items-center gap-3 px-4 min-h-[64px] text-left hover:bg-black/[0.02] ${derniere ? '' : 'border-b border-black/[0.06]'}`}
+      className={`w-full flex items-center gap-3 px-4 py-3 min-h-[64px] text-left hover:bg-black/[0.02] ${derniere ? '' : 'border-b border-black/[0.06]'}`}
     >
       <span className="w-10 h-10 rounded-xl bg-brand-olive-soft text-brand-olive inline-flex items-center justify-center shrink-0">
         <a.icone className="w-5 h-5" />

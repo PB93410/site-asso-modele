@@ -4,7 +4,7 @@
  */
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { AlertCircle, Shield } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { ASSO } from '../data/asso';
 
 const TOKEN_KEY = 'asso-bureau-token';
@@ -99,14 +99,14 @@ export default function BureauAuthGate({
 
   if (!token) {
     return (
-      <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-lg border border-slate-200 p-6 sm:p-8">
+      <div className="min-h-screen bg-brand-cream flex items-center justify-center p-4">
+        <div className="w-full max-w-sm bg-white rounded-3xl ring-1 ring-black/[0.06] shadow-xl shadow-black/[0.04] p-6 sm:p-8">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center">
-              <Shield className="w-6 h-6 text-emerald-700" aria-hidden="true" />
+<div className="w-12 h-12 rounded-2xl bg-brand-olive text-white font-display font-bold text-sm flex items-center justify-center" aria-hidden="true">
+              {ASSO.sigle.slice(0, 3)}
             </div>
             <div>
-              <h1 className="font-display font-bold text-xl text-slate-900">{title}</h1>
+              <h1 className="font-display font-bold text-xl text-brand-black">{title}</h1>
               <p className="text-sm text-slate-500">{subtitle}</p>
             </div>
           </div>
@@ -122,12 +122,12 @@ export default function BureauAuthGate({
                 onChange={(e) => setPassword(e.target.value)}
                 autoFocus
                 autoComplete="current-password"
-                className="w-full rounded-xl border border-slate-300 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full rounded-xl border-0 ring-1 ring-black/10 bg-white px-4 py-3.5 text-base focus:outline-none focus:ring-2 focus:ring-brand-olive"
                 placeholder="••••••••"
               />
             </div>
             {loginError && (
-              <div className="flex items-start gap-2 text-red-600 text-sm bg-red-50 rounded-lg px-3 py-2" role="alert">
+              <div className="flex items-start gap-2 text-red-800 text-sm bg-red-50 ring-1 ring-red-100 rounded-xl px-3 py-2" role="alert">
                 <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" aria-hidden="true" />
                 <span>{loginError}</span>
               </div>
@@ -135,7 +135,7 @@ export default function BureauAuthGate({
             <button
               type="submit"
               disabled={loggingIn || !password}
-              className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white font-semibold py-3.5"
+              className="w-full rounded-xl bg-brand-olive hover:bg-brand-olive-hover disabled:opacity-60 text-white font-semibold py-3.5 text-base min-h-[48px]"
             >
               {loggingIn ? 'Connexion…' : 'Entrer'}
             </button>
