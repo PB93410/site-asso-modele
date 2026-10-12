@@ -272,6 +272,30 @@
   to = "/index.html"
   status = 200
 
+[[redirects]]
+  from = "/api/liste-attente"
+  to = "/.netlify/functions/liste-attente"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/wallet"
+  to = "/.netlify/functions/wallet"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/rapport"
+  to = "/.netlify/functions/rapport"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/liste-attente/place"
+  to = "/index.html"
+  status = 200
+  force = true
+
 # ──────────────────────────────────────────────
 # Headers sécurité + performance
 # ──────────────────────────────────────────────
@@ -438,6 +462,30 @@
   [headers.values]
     Cache-Control = "no-store, private"
     X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/api/liste-attente"
+  [headers.values]
+    Cache-Control = "no-store, private"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/api/wallet"
+  [headers.values]
+    Cache-Control = "no-store, private"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/api/rapport"
+  [headers.values]
+    Cache-Control = "no-store, private"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/liste-attente/place"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store"
 
 [[headers]]
   for = "/presence"

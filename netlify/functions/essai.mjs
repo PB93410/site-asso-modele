@@ -26,9 +26,10 @@ import {
 import { buildDateEssaiCell, formatEssaiDateLabel } from './_essai-dates.mjs';
 import { notifyBureauNewLead } from './_notify-bureau.mjs';
 import { sendEssaiNotification } from './_essai-mail.mjs';
-import { SITE_URL } from '../../asso.derive.js';
+import { MODULES, SITE_URL } from '../../asso.derive.js';
 import { brancherStockage, modeStockage } from './_stockage.mjs';
 import { versV2 } from './_v2.mjs';
+import { etatPlace, inscrireFile } from './_liste-attente.mjs';
 
 const CORS = {
   'Access-Control-Allow-Origin': SITE_URL,
@@ -163,6 +164,23 @@ async function handler(event) {
         return isEssaiCountableStatut(pickRow(r, 'STATUT', 'Statut'));
       });
       nEssai = counted.length + 1;
+    }
+
+    if (MODULES.listeAttente && cours) {
+      const place = await etatPlace({ type: 'essai', cours, creneau });
+      if (place.complet) {
+        const file = await inscrireFile(
+          { type: 'essai', cours, creneau, prenom, nom, tel: telephone, mail: email },
+          event,
+        );
+        return publicJson(200, {
+          ok: true,
+          listeAttente: true,
+          rang: file.rang,
+          dateLabel,
+          message: 'Ce créneau est complet. Vous êtes sur la liste d’attente.',
+        });
+      }
     }
 
     const fields = {

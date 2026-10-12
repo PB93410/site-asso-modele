@@ -26,6 +26,8 @@ import {
   ArrowLeftRight,
   LogOut,
   Link2,
+  FileText,
+  ListOrdered,
 } from 'lucide-react';
 import BureauAide from '../components/BureauAide';
 import { clearBureauToken, getBureauRole, getBureauToken, setBureauRole, setBureauToken } from '../components/BureauAuthGate';
@@ -1319,6 +1321,12 @@ export default function BureauPage() {
               ) : null}
               {MODULES.alertes ? (
                 <MenuLigne icone={AlertCircle} label="Alertes cours" aide="Annuler ou déplacer une séance, prévenir les inscrits" to="/bureau/alertes" />
+              ) : null}
+              {MODULES.listeAttente ? (
+                <MenuLigne icone={ListOrdered} label="Liste d’attente" aide="Cours complets, places à proposer" to="/bureau/liste-attente" />
+              ) : null}
+              {MODULES.rapport ? (
+                <MenuLigne icone={FileText} label="Rapport annuel" aide="AG et subvention : effectifs, essais, communes" to="/bureau/rapport" />
               ) : null}
               {MODULES.mail ? (
                 <MenuLigne icone={Mail} label="Mail" aide="Adhésions et paiements en ligne" to="/bureau/mail?filter=adhesions" />

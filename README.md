@@ -61,6 +61,10 @@ Dans `asso.config.js → modules`, chaque fonction s’active séparément :
 | `presences` | Pointage par QR (un code par séance et par jour), stats au bureau, relance des absents | Bureau + secret déjà en place. **Désactivé par défaut.** |
 | `quiz` | Page « Quel cours pour moi ? » (6 questions, recommandation, lien essai ou adhésion) | Rien. **Désactivé par défaut.** |
 | `alertes` | Annulation / changement : bandeau sur le site, mail aux inscrits, notification sur le téléphone | Bureau. Envoi de mail (SMTP, Brevo ou Gmail). Notification : `VAPID_PUBLIC_KEY` et `VAPID_PRIVATE_KEY` (facultatif). **Désactivé par défaut.** |
+| `listeAttente` | Capacité par cours / créneau ; file d’attente ; place proposée (mail + WhatsApp) avec un délai | Bureau + secret. Mail si le module `mail` / SMTP est branché. **Désactivé par défaut.** |
+| `wallet` | Carte adhérent dans Apple Wallet (.pkpass) et Google Wallet | Bureau. En prod : certificats (voir ci-dessous). En démo : aperçu non signé, boutons visibles. **Désactivé par défaut.** |
+| `financement` | Aides Pass'Sport, chèques ANCV, comité d’entreprise sur le formulaire d’adhésion ; reste à payer noté sur la fiche | Module `adhesion`. Montants dans `asso.config.js → financement`. **Désactivé par défaut.** |
+| `rapport` | Rapport annuel (AG, subvention) : effectifs, conversion essais, présences si activées, âges, communes ; PDF et CSV | Bureau. **Désactivé par défaut.** |
 
 Les données sont rangées sur Netlify, avec le site : aucun compte Google n’est nécessaire. Google Sheets reste possible ([docs/DOC-DONNEES.md](docs/DOC-DONNEES.md)).
 
@@ -127,7 +131,7 @@ Si le site est relié à GitHub, Netlify lance lui-même `npm run build` à chaq
 
 Le dépôt ne contient **aucune donnée d’adhérent**. Les inscriptions et essais vont dans le stockage du bureau (Netlify ou Google Sheets), jamais dans le code. `.gitignore` bloque les `.csv`/`.xlsx` hors `public/data/`, les clés et les cartes générées. Adaptez la page Confidentialité (`src/sections/LegalSection.tsx`) à vos traitements réels.
 
-### Trois fonctions facultatives (RGPD)
+### Fonctions facultatives (RGPD)
 
 Elles sont **éteintes** tant que vous ne les cochez pas (`asso.config.js` → `modules`, ou le questionnaire). En démo (`npm run demo`), tout reste fictif : aucun mail ni notification ne part vraiment.
 
@@ -139,6 +143,23 @@ Les réponses ne quittent pas le navigateur. Rien n’est stocké.
 
 **Alertes (`modules.alertes`)**  
 Inscription sur `/alertes` : **e-mail + case à cocher**. Lien de retrait dans chaque mail et sur `/alertes/desabo`. Notification sur le téléphone seulement si la personne l’accepte (et si des clés VAPID sont posées). Conservation : **jusqu’au retrait**, ou **2 ans** sans envoi. Base : consentement. Le quiz et le bandeau public n’affichent aucun nom.
+
+**Liste d’attente (`modules.listeAttente`)**  
+Si le créneau ou le cours est complet : prénom, nom, téléphone, e-mail, cours, rang. Une place libre : mail (si l’envoi est branché) + lien WhatsApp comme les relances, et un **lien personnel limité dans le temps** (`/liste-attente/place`). Conservation : jusqu’à acceptation, expiration, ou fin de saison. Les lignes « test » ne comptent pas dans la capacité.
+
+**Wallet (`modules.wallet`)**  
+Le bureau fabrique une carte à partir de la fiche (nom, numéro, prochain cours ; alerte de dernière minute si `alertes` est allumé). En démo : fichier `.pkpass` **non signé** et boutons visibles. En prod, variables d’environnement (ne jamais les commiter) :
+
+- Apple : `APPLE_PASS_TYPE_ID`, `APPLE_PASS_TEAM_ID`, `APPLE_PASS_CERT` (PEM du certificat Pass Type ID), `APPLE_PASS_KEY` (clé privée PEM), éventuellement `APPLE_PASS_WWDR` (certificat intermédiaire Apple).
+- Google : `GOOGLE_WALLET_SA_JSON` (compte de service Wallet), `GOOGLE_WALLET_ISSUER_ID`.
+
+Sans ces clés, les boutons restent visibles et l’aperçu n’est pas signé.
+
+**Aides (`modules.financement`)**  
+Sur `/inscription` : cases Pass'Sport / ANCV / comité d’entreprise, montants plafonnés dans `asso.config.js → financement`. Le **reste à payer** est écrit dans `MONTANT` et les aides dans `NOTES` / `DETAIL` de la fiche. Aucun paiement n’est prélevé ici.
+
+**Rapport (`modules.rapport`)**  
+Totaux sans noms (adhérents à jour, conversion essai → adhésion, pointages si `presences`, tranches d’âge, communes). PDF et CSV depuis `/bureau/rapport`. Les lignes « test » sont exclues.
 
 Mode d’emploi bénévoles : [docs/MODE-EMPLOI-BUREAU.md](docs/MODE-EMPLOI-BUREAU.md).
 

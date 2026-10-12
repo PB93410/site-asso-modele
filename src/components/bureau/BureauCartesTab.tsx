@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { CreditCard, Mail, MessageCircle, Search } from 'lucide-react';
 import { CARTE_VERSO_URL, SEASON_LABEL, SEASON_PREFIX } from '../../data/CONFIG';
 import { formatTelFr, nationalFrTel } from '../../lib/bureauSearch';
-import { ASSO } from '../../data/asso';
+import { ASSO, MODULES } from '../../data/asso';
+import { getBureauToken } from '../BureauAuthGate';
 import { EnTete, Initiales, Vide } from './ui';
 import { bouton, carte } from './styles';
 
@@ -374,6 +375,49 @@ export default function BureauCartesTab({
               <p role="alert" className="text-sm font-medium text-orange-primary">
                 {underError}
               </p>
+            ) : null}
+            {MODULES.wallet && numero && isAJourCarte(item.statut) ? (
+              <div className="flex flex-wrap gap-2">
+                <a
+                  className={`${bouton.secondaire} min-h-[44px]`}
+                  href={`/api/wallet?action=pkpass&numero=${encodeURIComponent(numero)}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const t = getBureauToken();
+                    fetch(`/api/wallet?action=pkpass&numero=${encodeURIComponent(numero)}`, {
+                      headers: t ? { Authorization: `Bearer ${t}` } : {},
+                    })
+                      .then((res) => res.blob())
+                      .then((blob) => {
+                        const a = document.createElement('a');
+                        a.href = URL.createObjectURL(blob);
+                        a.download = `${numero}.pkpass`;
+                        a.click();
+                      })
+                      .catch(() => {});
+                  }}
+                >
+                  Apple Wallet
+                </a>
+                <button
+                  type="button"
+                  className={bouton.secondaire}
+                  onClick={() => {
+                    const t = getBureauToken();
+                    fetch(`/api/wallet?action=google&numero=${encodeURIComponent(numero)}`, {
+                      headers: t ? { Authorization: `Bearer ${t}` } : {},
+                    })
+                      .then((res) => res.json())
+                      .then((d) => {
+                        if (d.url) window.open(d.url, '_blank', 'noopener');
+                        else setRowInfo((prev) => ({ ...prev, [item.row]: { kind: 'ok', text: 'Aperçu Google Wallet (démo, non signé).' } }));
+                      })
+                      .catch(() => {});
+                  }}
+                >
+                  Google Wallet
+                </button>
+              </div>
             ) : null}
             {info?.kind === 'ok' ? <p className="text-sm font-medium text-brand-olive">{info.text}</p> : null}
             {info?.kind === 'cancel' ? <p className="text-sm text-slate-500">{info.text}</p> : null}

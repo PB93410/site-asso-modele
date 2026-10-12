@@ -106,6 +106,25 @@ Le bip indique un prénom, un cours et une date — **pas** le numéro. Sans l�
 
 Les adhérents s’inscrivent eux-mêmes (e-mail + case à cocher). Ils se retirent par le lien du mail.
 
+## Liste d’attente, si la fonction est activée
+
+1. Quand un essai ou un cours est complet, la personne est mise en file (elle le voit après l’envoi).
+2. **Autre → Liste d’attente**. Vous voyez qui attend, pour quel cours, et son rang.
+3. Une place se libère (essai annulé / absent, ou adhésion en arrêt) : la première personne est prévenue toute seule (mail si l’envoi est branché). Le bouton **Prévenir** ouvre aussi WhatsApp, comme les relances.
+4. Elle a un délai (souvent 48 h) pour cliquer « J’accepte la place ». Ensuite, confirmez le créneau comme d’habitude.
+
+## Carte Wallet, si la fonction est activée
+
+Dans **Cartes**, pour un adhérent à jour : boutons **Apple Wallet** et **Google Wallet**. En démo, la carte n’est pas vraiment signée : c’est un aperçu. En prod, le référent pose les certificats (README).
+
+## Aides (Pass'Sport, ANCV, CE), si la fonction est activée
+
+Sur le formulaire d’inscription, la personne indique ses aides. Le **reste à payer** arrive sur la fiche (colonne montant + notes). Vérifiez les justificatifs au bureau.
+
+## Rapport annuel, si la fonction est activée
+
+**Autre → Rapport annuel**. Effectifs, essais devenus adhésions, présences (si le pointage est allumé), âges et communes. **Aucun nom.** Téléchargez le PDF ou le CSV pour l’AG ou la mairie.
+
 ---
 
 ## Si ça coince

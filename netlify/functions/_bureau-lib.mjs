@@ -355,6 +355,7 @@ export function ongletVierge(id, tab) {
     if (tab === 'PRESENCES') return [['DATE', 'SESSION', 'COURS', 'HORAIRE', 'NUMERO', 'PRENOM', 'NOM', 'MAIL', 'HEURE']];
     if (tab === 'ALERTES') return [['ID', 'DATE', 'SESSION', 'COURS', 'TYPE', 'MESSAGE', 'CREEE_LE', 'EXPIRE_LE']];
     if (tab === 'ALERTES_ABOS') return [['MAIL', 'CONSENT', 'DATE', 'TOKEN', 'PUSH', 'ACTIF']];
+    if (tab === 'LISTE_ATTENTE') return [['ID', 'DATE', 'TYPE', 'CRENEAU', 'COURS', 'PRENOM', 'NOM', 'TEL', 'MAIL', 'RANG', 'STATUT', 'TOKEN', 'NOTIFIE_LE', 'EXPIRE_LE', 'NOTES']];
     return [];
   }
   return [];

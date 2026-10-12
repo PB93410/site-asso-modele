@@ -36,6 +36,9 @@ export async function ongletsBureau() {
     onglets.push({ nom: 'Alertes', lignes: await readSheetValues(getSiteSheetId(), 'ALERTES') });
     onglets.push({ nom: 'Alertes-abonnés', lignes: await readSheetValues(getSiteSheetId(), 'ALERTES_ABOS') });
   }
+  if (MODULES.listeAttente) {
+    onglets.push({ nom: 'Liste-attente', lignes: await readSheetValues(getSiteSheetId(), 'LISTE_ATTENTE') });
+  }
   return onglets;
 }
 

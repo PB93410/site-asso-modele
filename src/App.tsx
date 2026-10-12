@@ -17,6 +17,9 @@ const BureauGoogleConnectPage = lazy(() => import('./pages/BureauGoogleConnectPa
 const BureauRelancesPage = lazy(() => import('./pages/BureauRelancesPage'));
 const BureauPresencesPage = lazy(() => import('./pages/BureauPresencesPage'));
 const BureauAlertesPage = lazy(() => import('./pages/BureauAlertesPage'));
+const BureauListeAttentePage = lazy(() => import('./pages/BureauListeAttentePage'));
+const BureauRapportPage = lazy(() => import('./pages/BureauRapportPage'));
+const ListeAttentePlacePage = lazy(() => import('./pages/ListeAttentePlacePage'));
 const QuizPage = lazy(() => import('./pages/QuizPage'));
 const PresencePage = lazy(() => import('./pages/PresencePage'));
 const AlertesPage = lazy(() => import('./pages/AlertesPage'));
@@ -143,6 +146,8 @@ export default function App() {
                 <Route path="/bureau/relances" element={<BureauRelancesPage />} />
                 {MODULES.presences ? <Route path="/bureau/presences" element={<BureauPresencesPage />} /> : null}
                 {MODULES.alertes ? <Route path="/bureau/alertes" element={<BureauAlertesPage />} /> : null}
+                {MODULES.listeAttente ? <Route path="/bureau/liste-attente" element={<BureauListeAttentePage />} /> : null}
+                {MODULES.rapport ? <Route path="/bureau/rapport" element={<BureauRapportPage />} /> : null}
                 <Route path="/bureau" element={<BureauPage />} />
                 {CartesApercuPage ? (
                   <Route path="/bureau/apercu-cartes" element={<CartesApercuPage />} />
@@ -155,6 +160,7 @@ export default function App() {
             <Route path="/presence" element={<PresencePage />} />
             <Route path="/alertes/desabo" element={<AlertesDesaboPage />} />
             <Route path="/alertes" element={<AlertesPage />} />
+            <Route path="/liste-attente/place" element={<ListeAttentePlacePage />} />
             <Route path="/inscription" element={<InscriptionPage />} />
             <Route path="/tarifs" element={<TarifsPage />} />
             <Route path="/essai" element={<EssaiPage />} />

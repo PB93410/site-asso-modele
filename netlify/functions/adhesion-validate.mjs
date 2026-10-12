@@ -29,6 +29,8 @@ import {
 } from './_bureau-lib.mjs';
 import { brancherStockage } from './_stockage.mjs';
 import { versV2 } from './_v2.mjs';
+import { MODULES } from '../../asso.derive.js';
+import { notifierSuivant } from './_liste-attente.mjs';
 
 /** NUMERO seulement s’il est vraiment en colonne S (index 18). */
 function numeroHeaderIfColumnS(headers, colIndices) {
@@ -174,12 +176,27 @@ async function handler(event) {
 
     await updateRowByHeaders(sheetId, tab, row, updates, headers, colIndices);
 
+    let listeAttente = null;
+    if (MODULES.listeAttente && statut === 'Arrêt') {
+      const notes = pickRow(target, 'NOTES', 'Notes');
+      const m = String(notes || '').match(/Cours:\s*([^|]+)/i);
+      const cours = (m ? m[1] : '').split(',')[0].trim();
+      if (cours && cours !== 'Non précisé') {
+        try {
+          listeAttente = await notifierSuivant({ type: 'adhesion', cours }, event);
+        } catch (err) {
+          console.error('adhesion-validate liste attente', err?.message || err);
+        }
+      }
+    }
+
     return json(200, {
       ok: true,
       row,
       updates,
       numero,
       message: `${pickRow(target, 'PRENOM', 'Prénom', 'Prenom')} ${pickRow(target, 'NOM', 'Nom')} → ${statut}`,
+      listeAttente,
     });
   } catch (err) {
     console.error('adhesion-validate error', err);

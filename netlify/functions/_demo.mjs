@@ -258,6 +258,18 @@ function alertesSeed() {
   ];
 }
 
+function listeAttenteSeed() {
+  const today = parisToday();
+  const plan = planningRows().slice(1);
+  const row = plan[0] || ['Lundi', '13h30 – 14h30', 'Gym Douce', ''];
+  const creneau = `${row[0]} ${row[1]} · ${row[2]}`;
+  const [nom, prenom] = PERSONNES[0];
+  return [
+    ['ID', 'DATE', 'TYPE', 'CRENEAU', 'COURS', 'PRENOM', 'NOM', 'TEL', 'MAIL', 'RANG', 'STATUT', 'TOKEN', 'NOTIFIE_LE', 'EXPIRE_LE', 'NOTES'],
+    ['la-demo-1', iso(today, '08:00:00'), 'essai', creneau, row[2], prenom, nom, tel(0), mail(prenom, nom), '1', 'attente', 'demo-token-liste-attente-0001', '', '', ''],
+  ];
+}
+
 function siteSeed() {
   const ev = parseCsv(readProjectFile('public/data/evenements.csv'));
   return new Map([
@@ -266,6 +278,7 @@ function siteSeed() {
     ['PRESENCES', presencesSeed()],
     ['ALERTES', alertesSeed()],
     ['ALERTES_ABOS', [['MAIL', 'CONSENT', 'DATE', 'TOKEN', 'PUSH', 'ACTIF']]],
+    ['LISTE_ATTENTE', listeAttenteSeed()],
   ]);
 }
 

@@ -23,6 +23,11 @@ describe('npm run sheets:creer — plan', () => {
     expect(planClasseurs(ASSO, { essais: false, adhesion: false, bureau: false }, SITE)).toEqual([]);
   });
 
+  it('ajoute LISTE_ATTENTE si le module est allumé', () => {
+    const p = planClasseurs(ASSO, { ...TOUS, listeAttente: true }, SITE);
+    expect(p.at(-1)?.onglets.map((o) => o.titre)).toContain('LISTE_ATTENTE');
+  });
+
   it('respecte les noms d’onglets personnalisés', () => {
     const p = planClasseurs(ASSO, TOUS, SITE, { GOOGLE_SHEET_ESSAIS_NAME: 'Demandes' });
     expect(p[0].onglets[0].titre).toBe('Demandes');

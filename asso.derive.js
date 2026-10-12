@@ -20,7 +20,7 @@ export const MODE_CARTE = ASSO.adhesion.paiementUrl
 /**
  * Fonctions activées (asso.config.js → modules).
  * essais, adhesion, bureau, mail : absentes = activées.
- * presences, quiz, alertes : absentes = désactivées.
+ * presences, quiz, alertes, listeAttente, wallet, financement, rapport : absentes = désactivées.
  * Le mail du bureau demande le bureau.
  */
 export const MODULES = {
@@ -31,6 +31,10 @@ export const MODULES = {
   presences: false,
   quiz: false,
   alertes: false,
+  listeAttente: false,
+  wallet: false,
+  financement: false,
+  rapport: false,
   ...(ASSO.modules || {}),
 };
 if (!MODULES.bureau) MODULES.mail = false;

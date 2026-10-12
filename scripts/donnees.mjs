@@ -46,6 +46,9 @@ export function cibles(noms, env = {}, modules = MODULES) {
     out.push({ excel: 'Alertes', id: 'site', tab: 'ALERTES', google: site });
     out.push({ excel: 'Alertes-abonnés', id: 'site', tab: 'ALERTES_ABOS', google: site });
   }
+  if (modules.listeAttente) {
+    out.push({ excel: 'Liste-attente', id: 'site', tab: 'LISTE_ATTENTE', google: site });
+  }
   return out;
 }
 

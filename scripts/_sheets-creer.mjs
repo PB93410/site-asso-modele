@@ -43,6 +43,9 @@ export function planClasseurs(asso, modules, site, env = {}) {
       onglets.push({ titre: 'ALERTES', lignes: [['ID', 'DATE', 'SESSION', 'COURS', 'TYPE', 'MESSAGE', 'CREEE_LE', 'EXPIRE_LE']] });
       onglets.push({ titre: 'ALERTES_ABOS', lignes: [['MAIL', 'CONSENT', 'DATE', 'TOKEN', 'PUSH', 'ACTIF']] });
     }
+    if (modules.listeAttente) {
+      onglets.push({ titre: 'LISTE_ATTENTE', lignes: [['ID', 'DATE', 'TYPE', 'CRENEAU', 'COURS', 'PRENOM', 'NOM', 'TEL', 'MAIL', 'RANG', 'STATUT', 'TOKEN', 'NOTIFIE_LE', 'EXPIRE_LE', 'NOTES']] });
+    }
     plan.push({
       cle: 'GOOGLE_SITE_SHEET_ID',
       titre: `${nom} — Contenu du site`,

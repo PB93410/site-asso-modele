@@ -22,10 +22,29 @@ export interface AssoModules {
   quiz: boolean;
   /** Alertes de dernière minute. Absent = désactivé. */
   alertes: boolean;
+  /** File d’attente. Absent = désactivé. */
+  listeAttente: boolean;
+  /** Carte Apple / Google Wallet. Absent = désactivé. */
+  wallet: boolean;
+  /** Aides sur l’adhésion. Absent = désactivé. */
+  financement: boolean;
+  /** Rapport annuel. Absent = désactivé. */
+  rapport: boolean;
+}
+
+export interface AssoListeAttente {
+  capaciteDefaut: number;
+  delaiReponseHeures: number;
+}
+
+export interface AssoFinancement {
+  passSport: number;
+  ancvMax: number;
+  comiteEntreprise: number;
 }
 
 export interface AssoConfig {
-  /** Fonctions activées. essais / adhesion / bureau / mail : absentes = on. presences / quiz / alertes : absentes = off. */
+  /** Fonctions activées. essais / adhesion / bureau / mail : absentes = on. Autres modules : absentes = off. */
   modules?: Partial<AssoModules>;
   nom: string;
   nomCourt: string;
@@ -59,6 +78,8 @@ export interface AssoConfig {
     paiementUrl: string;
     autresPaiements: string[];
   };
+  listeAttente: AssoListeAttente;
+  financement: AssoFinancement;
   saison: { label: string; reprise: string; finCampagneEssai: string };
   couleurs: { primaire: string; primaireHover: string; secondaire: string; secondaireHover: string };
   logo: string;

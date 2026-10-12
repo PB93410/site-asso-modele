@@ -29,6 +29,7 @@ import {
   postalCodeError,
 } from '../lib/formValidation';
 import { buildHowToJoinSchema } from '../lib/schema';
+import { aidesProposees, calculerReste, libelleAides } from '../lib/financement';
 
 const COURSES = [
   'Gym Douce',
@@ -168,6 +169,10 @@ export default function InscriptionPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(alreadyOk);
+  const [listeAttente, setListeAttente] = useState(false);
+  const [passSport, setPassSport] = useState(false);
+  const [ancv, setAncv] = useState('');
+  const [ce, setCe] = useState('');
   const [paidByCarte, setPaidByCarte] = useState(alreadyOk && wantsCarte);
   const [step, setStep] = useState(1);
   const [paiementReady, setPaiementReady] = useState(false);
@@ -304,6 +309,9 @@ export default function InscriptionPage() {
         cours: form.cours.join(', ') || 'Non précisé',
         message: form.message.trim(),
         'bot-field': form['bot-field'],
+        ...(MODULES.financement
+          ? { pass_sport: passSport ? 'oui' : '', ancv, ce }
+          : {}),
       };
 
       const res = await fetch('/api/adhesion', {
@@ -318,6 +326,7 @@ export default function InscriptionPage() {
 
       const carte = form.mode_paiement.startsWith('Carte');
       setPaidByCarte(carte);
+      setListeAttente(Boolean(data.listeAttente));
       setSuccess(true);
       window.history.replaceState(
         null,
@@ -380,7 +389,9 @@ export default function InscriptionPage() {
               {firstName ? `Merci ${firstName} !` : 'Merci !'}
             </h2>
             <p className="font-body font-semibold text-[17px] text-brand-olive mb-3">
-              Votre demande est bien arrivée au bureau.
+              {listeAttente
+                ? 'Ce cours est complet. Vous êtes sur la liste d’attente : le bureau vous prévient si une place se libère.'
+                : 'Votre demande est bien arrivée au bureau.'}
             </p>
             <ol className="font-body text-[14px] text-brand-gray space-y-2 mb-5 text-left max-w-md mx-auto list-decimal list-inside">
               <li>Le bureau relit votre demande (souvent le jour même).</li>
@@ -746,6 +757,8 @@ export default function InscriptionPage() {
                   </p>
                 </div>
 
+                {MODULES.financement ? <BlocAides passSport={passSport} setPassSport={setPassSport} ancv={ancv} setAncv={setAncv} ce={ce} setCe={setCe} inputClass={inputClass} /> : null}
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {MODE_CARTE ? (
                   <button
@@ -906,5 +919,69 @@ export default function InscriptionPage() {
         )}
       </div>
     </main>
+  );
+}
+
+function BlocAides({
+  passSport,
+  setPassSport,
+  ancv,
+  setAncv,
+  ce,
+  setCe,
+  inputClass,
+}: {
+  passSport: boolean;
+  setPassSport: (v: boolean) => void;
+  ancv: string;
+  setAncv: (v: string) => void;
+  ce: string;
+  setCe: (v: string) => void;
+  inputClass: string;
+}) {
+  const p = aidesProposees(ASSO.financement);
+  const calc = calculerReste(ASSO.adhesion.tarif, { passSport, ancv, ce }, ASSO.financement);
+  const l = libelleAides(calc);
+  return (
+    <fieldset className="rounded-2xl bg-white border border-black/10 p-4 space-y-3">
+      <legend className="font-display font-bold text-[18px] text-brand-black px-1">Aides possibles</legend>
+      <p className="font-body text-[14px] text-brand-gray">
+        Cochez ce qui vous concerne. Le bureau vérifiera. Rien n’est prélevé ici.
+      </p>
+      {p.passSport ? (
+        <label className="flex gap-3 items-center min-h-[44px]">
+          <input type="checkbox" className="w-5 h-5" checked={passSport} onChange={(e) => setPassSport(e.target.checked)} />
+          <span className="font-body text-[16px] text-brand-black">Pass&apos;Sport ({p.passSport} €)</span>
+        </label>
+      ) : null}
+      {p.ancvMax ? (
+        <label className="block">
+          <span className="font-semibold text-brand-black">Chèques ANCV (max. {p.ancvMax} €)</span>
+          <input
+            className={`${inputClass} mt-1`}
+            inputMode="numeric"
+            value={ancv}
+            onChange={(e) => setAncv(e.target.value.replace(/\D/g, '').slice(0, 4))}
+            placeholder="0"
+          />
+        </label>
+      ) : null}
+      {p.comiteEntreprise ? (
+        <label className="block">
+          <span className="font-semibold text-brand-black">Aide comité d’entreprise (max. {p.comiteEntreprise} €)</span>
+          <input
+            className={`${inputClass} mt-1`}
+            inputMode="numeric"
+            value={ce}
+            onChange={(e) => setCe(e.target.value.replace(/\D/g, '').slice(0, 4))}
+            placeholder="0"
+          />
+        </label>
+      ) : null}
+      <p className="font-body text-[16px] text-brand-black">
+        Reste à payer : <strong>{calc.reste} €</strong>
+        {l ? <span className="block text-[14px] text-brand-gray mt-1">{l}</span> : null}
+      </p>
+    </fieldset>
   );
 }

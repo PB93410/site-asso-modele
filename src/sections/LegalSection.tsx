@@ -191,6 +191,34 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                     réponses restent dans votre navigateur le temps de la page. Rien n&apos;est envoyé
                     ni enregistré.
                   </li>
+                  <li id="liste-attente">
+                    <strong className="text-brand-black">Liste d&apos;attente</strong> — si la fonction
+                    est activée et que le cours est complet : prénom, nom, téléphone, e-mail, cours
+                    demandé, rang et lien pour accepter une place. Finalité : proposer la première
+                    place libérée. Base : mesures précontractuelles à votre demande (art. 6.1.b).
+                    Conservation : jusqu&apos;à acceptation, expiration du délai, ou fin de saison.
+                    Le lien personnel n&apos;est pas indexé.
+                  </li>
+                  <li id="wallet">
+                    <strong className="text-brand-black">Carte Wallet</strong> — si la fonction est
+                    activée : le bureau peut fabriquer une carte Apple Wallet (.pkpass) ou un lien
+                    Google Wallet à partir de la fiche (nom, numéro, prochain cours, éventuellement
+                    une alerte de dernière minute). Destinataires : Apple ou Google, selon le
+                    téléphone. Base : exécution de l&apos;adhésion (art. 6.1.b).
+                  </li>
+                  <li id="financement">
+                    <strong className="text-brand-black">Aides à la cotisation</strong> — si la
+                    fonction est activée : indication Pass&apos;Sport, montant de chèques ANCV et
+                    aide comité d&apos;entreprise, reste à payer. Noté sur la fiche d&apos;adhésion
+                    pour le bureau. Aucun paiement n&apos;est prélevé ici. Base : exécution de
+                    l&apos;adhésion (art. 6.1.b).
+                  </li>
+                  <li id="rapport">
+                    <strong className="text-brand-black">Rapport annuel</strong> — si la fonction est
+                    activée : totaux (adhérents, essais, présences, âges, communes) pour l&apos;AG
+                    et les demandes de subvention. Aucun nom n&apos;apparaît dans le PDF ou le CSV.
+                    Base : intérêt légitime (art. 6.1.f) et obligations associatives.
+                  </li>
                 </ul>
               </div>
 
@@ -353,10 +381,30 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                         <td className="p-2">Présence aux séances, relance si longue absence</td>
                         <td className="p-2">Jusqu&apos;à la fin de la saison, puis suppression</td>
                       </tr>
-                      <tr>
+                      <tr className="border-b border-black/[0.06]">
                         <td className="p-2">Abonnement alertes (e-mail, consentement, notification)</td>
                         <td className="p-2">Prévenir d&apos;une annulation ou d&apos;un changement</td>
                         <td className="p-2">Jusqu&apos;au retrait, ou 2 ans sans envoi</td>
+                      </tr>
+                      <tr className="border-b border-black/[0.06]">
+                        <td className="p-2">Liste d&apos;attente (identité, contact, cours, lien)</td>
+                        <td className="p-2">Proposer une place quand un cours se libère</td>
+                        <td className="p-2">Jusqu&apos;à acceptation, expiration, ou fin de saison</td>
+                      </tr>
+                      <tr className="border-b border-black/[0.06]">
+                        <td className="p-2">Carte Wallet (nom, n°, prochain cours)</td>
+                        <td className="p-2">Ajouter la carte adhérent au téléphone</td>
+                        <td className="p-2">Durée de l&apos;adhésion ; la carte reste sur l&apos;appareil</td>
+                      </tr>
+                      <tr className="border-b border-black/[0.06]">
+                        <td className="p-2">Aides (Pass&apos;Sport, ANCV, comité d&apos;entreprise)</td>
+                        <td className="p-2">Calculer le reste à payer, suivi par le bureau</td>
+                        <td className="p-2">Durée de l&apos;adhésion, puis suppression avec la fiche</td>
+                      </tr>
+                      <tr>
+                        <td className="p-2">Rapport annuel (totaux, âges, communes — sans noms)</td>
+                        <td className="p-2">AG et demandes de subvention</td>
+                        <td className="p-2">Selon les obligations associatives et de subvention</td>
                       </tr>
                     </tbody>
                   </table>

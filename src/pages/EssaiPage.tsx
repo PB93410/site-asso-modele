@@ -44,6 +44,7 @@ export default function EssaiPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [listeAttente, setListeAttente] = useState(false);
   const [savedDateLabel, setSavedDateLabel] = useState('');
   const { schedule } = useScheduleFromSheet();
 
@@ -120,6 +121,7 @@ export default function EssaiPage() {
         throw new Error(data.error || 'Envoi impossible');
       }
       setSavedDateLabel(typeof data.dateLabel === 'string' ? data.dateLabel : '');
+      setListeAttente(Boolean(data.listeAttente));
       setSuccess(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch {
@@ -169,8 +171,10 @@ export default function EssaiPage() {
               {prenom.trim() ? `Merci ${prenom.trim()} !` : 'Merci !'}
             </h2>
             <p className="font-body font-semibold text-[17px] text-brand-olive mb-3">
-              Demande envoyée.
-              {NB_ESSAIS > 1
+              {listeAttente
+                ? 'Ce créneau est complet. Vous êtes sur la liste d’attente : le bureau vous prévient si une place se libère.'
+                : 'Demande envoyée.'}
+              {!listeAttente && NB_ESSAIS > 1
                 ? ` C’est le créneau n°1. Il restera ${NB_ESSAIS - 1} essai${NB_ESSAIS > 2 ? 's' : ''}, à réserver ici quand vous voudrez.`
                 : ''}
             </p>

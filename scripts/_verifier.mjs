@@ -212,10 +212,24 @@ export function verifierEnv(env, modules) {
       } else r.push(ok(`Boîte mail du bureau : IMAP ${ri.host}:${ri.port}, compte ${ri.auth.user}.`));
     }
   }
-  if ((modules.presences || modules.alertes) && !modules.bureau && !a('BUREAU_SECRET')) {
-    r.push(erreur('BUREAU_SECRET manquante.', 'Les QR et les liens de désabonnement sont signés avec le même secret que le bureau (32 caractères ou plus).'));
+  if ((modules.presences || modules.alertes || modules.listeAttente || modules.wallet) && !modules.bureau && !a('BUREAU_SECRET')) {
+    r.push(erreur('BUREAU_SECRET manquante.', 'Les QR, les liens de désabonnement et les cartes Wallet sont signés avec le même secret que le bureau (32 caractères ou plus).'));
     if (modules.presences) incomplets.add('presences');
     if (modules.alertes) incomplets.add('alertes');
+    if (modules.listeAttente) incomplets.add('listeAttente');
+    if (modules.wallet) incomplets.add('wallet');
+  }
+  if (modules.wallet && !process.env.DEMO && !a('APPLE_PASS_CERT') && !a('GOOGLE_WALLET_SA_JSON')) {
+    r.push(attention(
+      'Wallet : aucun certificat Apple ni compte Google Wallet.',
+      'En démo ce n’est pas nécessaire. En prod : voir le README (APPLE_PASS_* et GOOGLE_WALLET_*). Les boutons restent visibles.',
+    ));
+  }
+  if (modules.financement) {
+    const f = asso.financement || {};
+    if (!(Number(f.passSport) > 0) && !(Number(f.ancvMax) > 0) && !(Number(f.comiteEntreprise) > 0)) {
+      r.push(attention('Aides : tous les montants sont à 0.', 'Renseignez financement.passSport, ancvMax ou comiteEntreprise dans asso.config.js.'));
+    }
   }
   if (incomplets.size) {
     const liste = [...incomplets];
