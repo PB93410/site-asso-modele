@@ -49,6 +49,12 @@ const ASSO = {
     /** Boîte mail de l'asso lue dans le bureau, en IMAP ou Gmail (demande le bureau). L'envoi des
      *  alertes et des cartes n'en dépend pas (docs/DOC-MAIL.md), l'agenda non plus (docs/DOC-AGENDA.md). */
     mail: ${bool(m.mail)},
+    /** Pointage aux séances par QR (un code par cours et par jour). Page publique + stats au bureau. */
+    presences: ${m.presences === true ? 'true' : 'false'},
+    /** Quiz public « Quel cours pour moi ? » (5 à 7 questions, recommandation, lien essai ou adhésion). */
+    quiz: ${m.quiz === true ? 'true' : 'false'},
+    /** Alertes de dernière minute (annulation / changement) : bandeau sur le site, mail, notification. */
+    alertes: ${m.alertes === true ? 'true' : 'false'},
   },
 
   // ---- Identité ----

@@ -117,6 +117,12 @@ export function verifierConfig(asso, modules, existe, saisonCourte) {
   if (asso.modules?.mail && asso.modules?.bureau === false) {
     r.push(attention('modules.mail est activé mais pas le bureau : le mail est ignoré.'));
   }
+  if (asso.modules?.presences && asso.modules?.bureau === false) {
+    r.push(attention('modules.presences est activé mais pas le bureau : le pointage se fera, sans page de stats.'));
+  }
+  if (asso.modules?.alertes && asso.modules?.bureau === false) {
+    r.push(attention('modules.alertes est activé mais pas le bureau : personne ne pourra publier d’alerte.'));
+  }
   return r;
 }
 
@@ -147,7 +153,7 @@ export function verifierEnv(env, modules) {
     return r;
   }
 
-  const besoinDonnees = modules.essais || modules.adhesion || modules.bureau;
+  const besoinDonnees = modules.essais || modules.adhesion || modules.bureau || modules.presences || modules.alertes;
   const stockage = modeStockage(env, false);
   const besoinSheets = besoinDonnees && stockage === 'google';
   const choixStockage = a('STOCKAGE').toLowerCase();
@@ -206,6 +212,11 @@ export function verifierEnv(env, modules) {
       } else r.push(ok(`Boîte mail du bureau : IMAP ${ri.host}:${ri.port}, compte ${ri.auth.user}.`));
     }
   }
+  if ((modules.presences || modules.alertes) && !modules.bureau && !a('BUREAU_SECRET')) {
+    r.push(erreur('BUREAU_SECRET manquante.', 'Les QR et les liens de désabonnement sont signés avec le même secret que le bureau (32 caractères ou plus).'));
+    if (modules.presences) incomplets.add('presences');
+    if (modules.alertes) incomplets.add('alertes');
+  }
   if (incomplets.size) {
     const liste = [...incomplets];
     r.push(
@@ -243,7 +254,7 @@ export function verifierEnv(env, modules) {
  * @param {{essais: boolean, adhesion: boolean, bureau: boolean}} modules
  */
 export function verifierEnvoi(env, modules) {
-  if (!modules.essais && !modules.adhesion && !modules.bureau) return [];
+  if (!modules.essais && !modules.adhesion && !modules.bureau && !modules.presences && !modules.alertes) return [];
   const a = (k) => String(env[k] || '').trim();
   const r = [];
   const choix = a('MAIL_ENVOI').toLowerCase();

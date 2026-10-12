@@ -58,6 +58,9 @@ Dans `asso.config.js → modules`, chaque fonction s’active séparément :
 | `adhesion` | Inscription en ligne → tableau Adhérents du bureau | Rien (données sur Netlify) ; pour l’alerte par mail : SMTP ou Brevo |
 | `bureau` | Espace `/bureau` des bénévoles, agenda (abonnement téléphone), export Excel, sauvegarde chaque lundi par mail | Mot de passe + secret |
 | `mail` | Boîte mail de l’asso lue dans le bureau | IMAP de la boîte (mêmes identifiants que l’envoi), ou compte Gmail connecté |
+| `presences` | Pointage par QR (un code par séance et par jour), stats au bureau, relance des absents | Bureau + secret déjà en place. **Désactivé par défaut.** |
+| `quiz` | Page « Quel cours pour moi ? » (6 questions, recommandation, lien essai ou adhésion) | Rien. **Désactivé par défaut.** |
+| `alertes` | Annulation / changement : bandeau sur le site, mail aux inscrits, notification sur le téléphone | Bureau. Envoi de mail (SMTP, Brevo ou Gmail). Notification : `VAPID_PUBLIC_KEY` et `VAPID_PRIVATE_KEY` (facultatif). **Désactivé par défaut.** |
 
 Les données sont rangées sur Netlify, avec le site : aucun compte Google n’est nécessaire. Google Sheets reste possible ([docs/DOC-DONNEES.md](docs/DOC-DONNEES.md)).
 
@@ -122,7 +125,22 @@ Si le site est relié à GitHub, Netlify lance lui-même `npm run build` à chaq
 
 ## Données personnelles
 
-Le dépôt ne contient **aucune donnée d’adhérent**. Les inscriptions et essais vont dans vos Google Sheets, jamais dans le code. `.gitignore` bloque les `.csv`/`.xlsx` hors `public/data/`, les clés et les cartes générées. Adaptez la page Confidentialité (`src/sections/LegalSection.tsx`) à vos traitements réels.
+Le dépôt ne contient **aucune donnée d’adhérent**. Les inscriptions et essais vont dans le stockage du bureau (Netlify ou Google Sheets), jamais dans le code. `.gitignore` bloque les `.csv`/`.xlsx` hors `public/data/`, les clés et les cartes générées. Adaptez la page Confidentialité (`src/sections/LegalSection.tsx`) à vos traitements réels.
+
+### Trois fonctions facultatives (RGPD)
+
+Elles sont **éteintes** tant que vous ne les cochez pas (`asso.config.js` → `modules`, ou le questionnaire). En démo (`npm run demo`), tout reste fictif : aucun mail ni notification ne part vraiment.
+
+**Présences (`modules.presences`)**  
+L’adhérent scanne le QR du jour et indique son **numéro ou son e-mail**. On enregistre : date, cours, horaire, numéro, prénom, nom, e-mail, heure. Pas de téléphone, pas d’adresse, pas de géolocalisation. Un seul pointage par personne, par séance et par jour. Conservation : **jusqu’à la fin de la saison**, puis suppression (export Excel avant si besoin). Base : organisation des cours (intérêt légitime / adhésion). Les fiches « test » sont ignorées.
+
+**Quiz (`modules.quiz`)**  
+Les réponses ne quittent pas le navigateur. Rien n’est stocké.
+
+**Alertes (`modules.alertes`)**  
+Inscription sur `/alertes` : **e-mail + case à cocher**. Lien de retrait dans chaque mail et sur `/alertes/desabo`. Notification sur le téléphone seulement si la personne l’accepte (et si des clés VAPID sont posées). Conservation : **jusqu’au retrait**, ou **2 ans** sans envoi. Base : consentement. Le quiz et le bandeau public n’affichent aucun nom.
+
+Mode d’emploi bénévoles : [docs/MODE-EMPLOI-BUREAU.md](docs/MODE-EMPLOI-BUREAU.md).
 
 ## Licence
 

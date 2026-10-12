@@ -16,6 +16,12 @@ export interface AssoModules {
   adhesion: boolean;
   bureau: boolean;
   mail: boolean;
+  /** Pointage par QR. Absent = désactivé. */
+  presences: boolean;
+  /** Quiz « Quel cours pour moi ? ». Absent = désactivé. */
+  quiz: boolean;
+  /** Alertes de dernière minute. Absent = désactivé. */
+  alertes: boolean;
 }
 
 export interface AssoConfig {

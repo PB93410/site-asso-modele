@@ -20,6 +20,8 @@ Tout se fait dans cet espace. Vous n’ouvrez pas Excel. WhatsApp s’ouvre tout
 | Rappeler une personne | Onglet **Essais** |
 | Les la cotisation sont reçus | Onglet **À payer** → « J’ai reçu l’argent » |
 | Tableaux / mail / agenda / horaires | Onglet **Autre** |
+| QR de la séance, qui est venu | **Autre → Présences** (si la fonction est activée) |
+| Annuler ou déplacer un cours | **Autre → Alertes cours** (si la fonction est activée) |
 
 ---
 
@@ -86,6 +88,23 @@ Choisissez, puis **Enregistrer**. Une confirmation s’affiche. Le site public s
 2. Connectez-vous au bureau, onglet Aide → **Ouvrir le canal d’alerte**.
 
 Le bip indique un prénom, un cours et une date — **pas** le numéro. Sans l’appli, rien ne sonne : regardez **Demande essai** de temps en temps.
+
+---
+
+## Présences (QR), si la fonction est activée
+
+1. **Autre → Présences**. Choisissez le jour.
+2. **QR** sur le cours du moment. Les adhérents scannent, tapent leur numéro ou leur e-mail, **Je suis là**.
+3. Un second passage le même jour est refusé.
+4. Plus bas : totaux par cours, et les personnes sans nouvelles depuis 3 semaines. Cochez, **Envoyer un mot** (mail, si l’envoi est branché).
+
+## Alertes de dernière minute, si la fonction est activée
+
+1. **Autre → Alertes cours**. Date, cours, type (annulé / modifié), un court message.
+2. **Publier** : un bandeau apparaît sur le site. Un mail part aux personnes inscrites sur `/alertes`.
+3. **Retirer** enlève le bandeau.
+
+Les adhérents s’inscrivent eux-mêmes (e-mail + case à cocher). Ils se retirent par le lien du mail.
 
 ---
 

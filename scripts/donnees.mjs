@@ -39,6 +39,13 @@ export function cibles(noms, env = {}, modules = MODULES) {
     out.push({ excel: 'Horaires', id: 'site', tab: noms.planning, google: site });
     out.push({ excel: 'Événements', id: 'site', tab: noms.evenements, google: site });
   }
+  if (modules.presences) {
+    out.push({ excel: 'Présences', id: 'site', tab: 'PRESENCES', google: site });
+  }
+  if (modules.alertes) {
+    out.push({ excel: 'Alertes', id: 'site', tab: 'ALERTES', google: site });
+    out.push({ excel: 'Alertes-abonnés', id: 'site', tab: 'ALERTES_ABOS', google: site });
+  }
   return out;
 }
 

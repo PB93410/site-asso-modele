@@ -1,5 +1,5 @@
 import { BANDEAU_END, ESSAI_CTA_UNTIL } from '../data/CONFIG';
-import { ASSO, NB_ESSAIS } from '../data/asso';
+import { ASSO, MODULES, NB_ESSAIS } from '../data/asso';
 
 export default function HeroSection() {
   const now = Date.now();
@@ -78,13 +78,22 @@ export default function HeroSection() {
                 className="font-body text-[14px] text-white"
                 style={{ textShadow: '0 1px 4px rgba(0,0,0,0.45)' }}
               >
-                <a
-                  href="/tarifs"
-                  data-analytics="CTA-Hero-Tarifs-Secondaire"
-                  className="underline underline-offset-2 decoration-white/50 hover:decoration-white font-semibold text-white"
-                >
-                  Voir les tarifs
-                </a>
+                {MODULES.quiz ? (
+                  <a
+                    href="/quiz"
+                    className="underline underline-offset-2 decoration-white/50 hover:decoration-white font-semibold text-white"
+                  >
+                    Quel cours pour moi ?
+                  </a>
+                ) : (
+                  <a
+                    href="/tarifs"
+                    data-analytics="CTA-Hero-Tarifs-Secondaire"
+                    className="underline underline-offset-2 decoration-white/50 hover:decoration-white font-semibold text-white"
+                  >
+                    Voir les tarifs
+                  </a>
+                )}
               </p>
             ) : (
               <p

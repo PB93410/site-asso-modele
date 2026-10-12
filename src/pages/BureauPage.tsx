@@ -1314,6 +1314,12 @@ export default function BureauPage() {
             </MenuGroupe>
             <MenuGroupe titre="Bureau">
               <MenuLigne icone={Calendar} label="Agenda" aide="Agenda unique du bureau, aussi sur les téléphones" to="/bureau/agenda" />
+              {MODULES.presences ? (
+                <MenuLigne icone={CalendarDays} label="Présences" aide="QR du jour, stats, personnes sans nouvelles" to="/bureau/presences" />
+              ) : null}
+              {MODULES.alertes ? (
+                <MenuLigne icone={AlertCircle} label="Alertes cours" aide="Annuler ou déplacer une séance, prévenir les inscrits" to="/bureau/alertes" />
+              ) : null}
               {MODULES.mail ? (
                 <MenuLigne icone={Mail} label="Mail" aide="Adhésions et paiements en ligne" to="/bureau/mail?filter=adhesions" />
               ) : null}

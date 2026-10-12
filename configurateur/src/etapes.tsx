@@ -696,7 +696,9 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
         label="Espace bénévoles"
         aide="Une page protégée par mot de passe : essais à confirmer, encaissements, cartes d’adhérent, horaires du site."
         checked={m.bureau}
-        onChange={(v) => maj('modules', { ...m, bureau: v, mail: v ? m.mail : false })}
+        onChange={(v) =>
+          maj('modules', { ...m, bureau: v, mail: v ? m.mail : false, presences: v ? m.presences : false, alertes: v ? m.alertes : false })
+        }
       />
       {m.bureau ? (
         <Case
@@ -704,6 +706,28 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
           aide="Lire et répondre aux mails de l’asso, partager un agenda. Demande un compte Gmail pour l’association."
           checked={m.mail}
           onChange={(v) => maj('modules.mail', v)}
+        />
+      ) : null}
+      <Case
+        label="Quiz « Quel cours pour moi ? »"
+        aide="Une page publique avec 6 questions (niveau, âge, objectif, disponibilités). Le site propose les cours qui conviennent, puis un essai ou l’inscription."
+        checked={m.quiz}
+        onChange={(v) => maj('modules.quiz', v)}
+      />
+      {m.bureau ? (
+        <Case
+          label="Pointage aux séances par QR"
+          aide="Un code par cours et par jour. L’adhérent scanne et pointe. Le bureau voit les présences et les personnes absentes depuis plusieurs semaines."
+          checked={m.presences}
+          onChange={(v) => maj('modules.presences', v)}
+        />
+      ) : null}
+      {m.bureau ? (
+        <Case
+          label="Alertes de dernière minute"
+          aide="Annuler ou déplacer un cours : un bandeau s’affiche sur le site, un mail part aux personnes inscrites. Notification sur le téléphone si la personne l’a acceptée."
+          checked={m.alertes}
+          onChange={(v) => maj('modules.alertes', v)}
         />
       ) : null}
       <Encadre>Pas sûr ? Cochez seulement « essai gratuit » : c’est ce qui fait venir de nouveaux adhérents.</Encadre>

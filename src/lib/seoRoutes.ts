@@ -5,7 +5,7 @@
  */
 import { ACTIVITY_PAGES } from '../data/activityPages';
 import { BLOG_ARTICLES_LIVE } from '../data/blogLive';
-import { ASSO, AUTOUR_PATH, ESSAIS_LABEL, PAYMENT_MODES, SITE_URL, TARIF_LABEL } from '../data/asso';
+import { ASSO, AUTOUR_PATH, ESSAIS_LABEL, MODULES, PAYMENT_MODES, SITE_URL, TARIF_LABEL } from '../data/asso';
 import { SEASON_LABEL } from '../data/CONFIG';
 import { HOME_DESCRIPTION, HOME_TITLE } from './seoText';
 
@@ -96,6 +96,28 @@ export const ROUTES: SeoRoute[] = [
     priority: '0.9',
     changefreq: 'weekly',
   },
+  ...(MODULES.quiz
+    ? [
+        {
+          path: '/quiz',
+          title: `Quel cours pour moi ? — ${ASSO.nom}`,
+          description: `Six questions pour trouver le cours de ${ASSO.nom} à ${ASSO.ville} qui vous convient.`,
+          priority: '0.6',
+          changefreq: 'monthly' as const,
+        },
+      ]
+    : []),
+  ...(MODULES.alertes
+    ? [
+        {
+          path: '/alertes',
+          title: `Alertes cours — ${ASSO.nom}`,
+          description: `Recevoir un message si un cours de ${ASSO.nom} à ${ASSO.ville} est annulé ou déplacé.`,
+          priority: '0.5',
+          changefreq: 'monthly' as const,
+        },
+      ]
+    : []),
   {
     path: '/mentions-legales',
     title: `Mentions légales — ${ASSO.nom}`,

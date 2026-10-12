@@ -200,6 +200,9 @@ const MODULE_NOMS = {
   adhesion: 'L’inscription en ligne',
   bureau: 'L’espace bureau',
   mail: 'Le mail du bureau',
+  presences: 'Le pointage par QR',
+  quiz: 'Le quiz « Quel cours pour moi ? »',
+  alertes: 'Les alertes de dernière minute',
 };
 
 /** Réponse 404 si la fonction est désactivée dans asso.config.js → modules, sinon null. */
@@ -348,7 +351,11 @@ export function ongletVierge(id, tab) {
   if (id === CLASSEURS.essais) return [ESSAIS_HEADERS];
   if (id === CLASSEURS.site) {
     const fichier = tab === getPlanningTab() ? 'planning' : tab === getEventsTab() ? 'evenements' : '';
-    return fichier ? parseCsv(readProjectFile(`public/data/${fichier}.csv`)) : [];
+    if (fichier) return parseCsv(readProjectFile(`public/data/${fichier}.csv`));
+    if (tab === 'PRESENCES') return [['DATE', 'SESSION', 'COURS', 'HORAIRE', 'NUMERO', 'PRENOM', 'NOM', 'MAIL', 'HEURE']];
+    if (tab === 'ALERTES') return [['ID', 'DATE', 'SESSION', 'COURS', 'TYPE', 'MESSAGE', 'CREEE_LE', 'EXPIRE_LE']];
+    if (tab === 'ALERTES_ABOS') return [['MAIL', 'CONSENT', 'DATE', 'TOKEN', 'PUSH', 'ACTIF']];
+    return [];
   }
   return [];
 }

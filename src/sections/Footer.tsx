@@ -2,7 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import ThemeToggle from '../components/ThemeToggle';
 import { ACTIVITIES, SITE_CONFIG, WHATSAPP_TEMPLATES, waUrl } from '../data/siteData';
 import { ACTIVITY_PAGES } from '../data/activityPages';
-import { ASSO, AUTOUR_PATH, HAS_FEDERATION } from '../data/asso';
+import { ASSO, AUTOUR_PATH, HAS_FEDERATION, MODULES } from '../data/asso';
 
 const footerLinks: { label: string; href: string; isPage?: boolean }[] = [
   { label: 'Cours & horaires', href: '/#horaires' },
@@ -16,6 +16,8 @@ const footerLinks: { label: string; href: string; isPage?: boolean }[] = [
 const discoverLinks: { label: string; href: string; isPage?: boolean }[] = [
   { label: 'Événements de la saison', href: '/#evenements' },
   { label: `Autour de ${ASSO.ville}`, href: AUTOUR_PATH, isPage: true },
+  ...(MODULES.quiz ? [{ label: 'Quel cours pour moi ?', href: '/quiz', isPage: true }] : []),
+  ...(MODULES.alertes ? [{ label: 'Alertes cours', href: '/alertes', isPage: true }] : []),
   { label: 'Mentions légales', href: '/mentions-legales', isPage: true },
   { label: 'Confidentialité', href: '/confidentialite', isPage: true },
 ];

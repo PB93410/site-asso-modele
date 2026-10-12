@@ -228,6 +228,50 @@
   status = 200
   force = true
 
+[[redirects]]
+  from = "/api/presence"
+  to = "/.netlify/functions/presence"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/alertes"
+  to = "/.netlify/functions/alertes"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/presence"
+  to = "/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/alertes/desabo"
+  to = "/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/alertes"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/alertes/"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/quiz"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/quiz/"
+  to = "/index.html"
+  status = 200
+
 # ──────────────────────────────────────────────
 # Headers sécurité + performance
 # ──────────────────────────────────────────────
@@ -382,6 +426,30 @@
   for = "/api/bureau-export"
   [headers.values]
     Cache-Control = "no-store, private"
+
+[[headers]]
+  for = "/api/presence"
+  [headers.values]
+    Cache-Control = "no-store, private"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/api/alertes"
+  [headers.values]
+    Cache-Control = "no-store, private"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/presence"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store"
+
+[[headers]]
+  for = "/alertes/desabo"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store"
 
 [[headers]]
   for = "/api/site-content"

@@ -10,6 +10,8 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { ASSO, SEASON_PREFIX } from '../../asso.derive.js';
+import { sessionId } from '../../src/lib/presence.js';
+import { expireLe } from '../../src/lib/alertes.js';
 import { parseA1, tableurValues } from './_tableur.mjs';
 
 export const DEMO = /^(1|true|oui)$/i.test(String(process.env.DEMO || '').trim());
@@ -218,11 +220,52 @@ function adherentsSeed() {
   return rows;
 }
 
+function presencesSeed() {
+  const today = parisToday();
+  const plan = planningRows().slice(1);
+  const slot = (k, daysAgo) => {
+    const row = plan[k % plan.length] || ['Lundi', '10h00 – 11h00', 'Pilates', ''];
+    const d = addDays(today, -daysAgo);
+    const ymd = d.toISOString().slice(0, 10);
+    const sid = sessionId(row[0], row[1], row[2]);
+    return { ymd, sid, cours: row[2], horaire: row[1] };
+  };
+  const rows = [['DATE', 'SESSION', 'COURS', 'HORAIRE', 'NUMERO', 'PRENOM', 'NOM', 'MAIL', 'HEURE']];
+  // Personnes 8–11 = adhérents à jour (voir adherentsSeed). 8 inactif, 9 et 10 récents, 11 jamais.
+  const pointages = [
+    [9, 0, 1],
+    [9, 0, 8],
+    [10, 1, 6],
+    [8, 2, 28],
+  ];
+  for (const [p, k, ago] of pointages) {
+    const [nom, prenom] = PERSONNES[p];
+    const s = slot(k, ago);
+    rows.push([s.ymd, s.sid, s.cours, s.horaire, `${SEASON_PREFIX}${String(p === 8 ? 1 : p === 9 ? 2 : p === 10 ? 3 : 4).padStart(3, '0')}`, prenom, nom, mail(prenom, nom), '10:05:00']);
+  }
+  return rows;
+}
+
+function alertesSeed() {
+  const today = parisToday();
+  const demain = addDays(today, 1);
+  const ymd = demain.toISOString().slice(0, 10);
+  const plan = planningRows().slice(1);
+  const row = plan[0] || ['Lundi', '13h30 – 14h30', 'Gym Douce', ''];
+  return [
+    ['ID', 'DATE', 'SESSION', 'COURS', 'TYPE', 'MESSAGE', 'CREEE_LE', 'EXPIRE_LE'],
+    ['al-demo-1', ymd, sessionId(row[0], row[1], row[2]), row[2], 'changement', `Séance démo : ${row[2]} se déroule exceptionnellement à la seconde salle.`, iso(today, '09:00:00'), expireLe(ymd)],
+  ];
+}
+
 function siteSeed() {
   const ev = parseCsv(readProjectFile('public/data/evenements.csv'));
   return new Map([
     ['PLANNING', planningRows()],
     ['EVENEMENTS', ev.length ? ev : [['date', 'month', 'year', 'title', 'description', 'time', 'location', 'highlight', 'image', 'type']]],
+    ['PRESENCES', presencesSeed()],
+    ['ALERTES', alertesSeed()],
+    ['ALERTES_ABOS', [['MAIL', 'CONSENT', 'DATE', 'TOKEN', 'PUSH', 'ACTIF']]],
   ]);
 }
 
@@ -253,7 +296,7 @@ export function resetDemo() {
 function tabOf(spreadsheetId, tab) {
   const sheet = workbook().get(spreadsheetId);
   if (!sheet) throw Object.assign(new Error('Requested entity was not found.'), { code: 404 });
-  if (!sheet.has(tab)) throw Object.assign(new Error(`Unable to parse range: ${tab}`), { code: 400 });
+  if (!sheet.has(tab)) sheet.set(tab, [[]]);
   return sheet.get(tab);
 }
 

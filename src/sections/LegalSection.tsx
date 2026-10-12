@@ -121,7 +121,7 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
         </p>
         <Title className={titleClass}>Politique de confidentialité</Title>
         <p className="font-body text-[13px] text-brand-gray -mt-6 mb-8">
-          Dernière mise à jour : 3 septembre 2026
+          Dernière mise à jour : 12 octobre 2026
         </p>
 
         <div className="grid grid-cols-1 gap-8">
@@ -171,6 +171,25 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                     <strong className="text-brand-black">Préférences d&apos;affichage</strong> : thème clair/sombre
                     stocké localement dans votre navigateur (localStorage). Pas de cookie publicitaire
                     ni analytics.
+                  </li>
+                  <li id="presences">
+                    <strong className="text-brand-black">Pointage par QR (/presence)</strong> — si la
+                    fonction est activée : numéro d&apos;adhérent ou e-mail, date, cours et heure.
+                    Finalité : savoir qui était à la séance. Base : intérêt légitime de l&apos;association
+                    (organisation des cours, art. 6.1.f) et exécution de l&apos;adhésion (art. 6.1.b).
+                    Pas de géolocalisation. Un seul enregistrement par personne, par séance et par jour.
+                  </li>
+                  <li id="alertes">
+                    <strong className="text-brand-black">Alertes de cours (/alertes)</strong> — si la
+                    fonction est activée : e-mail, case de consentement, éventuellement un identifiant
+                    de notification du navigateur. Finalité : prévenir d&apos;une annulation ou d&apos;un
+                    changement. Base : consentement (art. 6.1.a), retirable à tout moment (lien dans
+                    chaque mail, page /alertes/desabo).
+                  </li>
+                  <li>
+                    <strong className="text-brand-black">Quiz « Quel cours pour moi ? »</strong> — les
+                    réponses restent dans votre navigateur le temps de la page. Rien n&apos;est envoyé
+                    ni enregistré.
                   </li>
                 </ul>
               </div>
@@ -324,10 +343,20 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                         <td className="p-2">Communication (site, Facebook, Instagram)</td>
                         <td className="p-2">Jusqu&apos;au retrait du consentement ou fin d&apos;usage</td>
                       </tr>
-                      <tr>
+                      <tr className="border-b border-black/[0.06]">
                         <td className="p-2">Thème d&apos;affichage (localStorage)</td>
                         <td className="p-2">Mode clair / sombre</td>
                         <td className="p-2">Jusqu&apos;à suppression par l&apos;utilisateur</td>
+                      </tr>
+                      <tr className="border-b border-black/[0.06]">
+                        <td className="p-2">Pointages QR (n° ou e-mail, cours, date, heure)</td>
+                        <td className="p-2">Présence aux séances, relance si longue absence</td>
+                        <td className="p-2">Jusqu&apos;à la fin de la saison, puis suppression</td>
+                      </tr>
+                      <tr>
+                        <td className="p-2">Abonnement alertes (e-mail, consentement, notification)</td>
+                        <td className="p-2">Prévenir d&apos;une annulation ou d&apos;un changement</td>
+                        <td className="p-2">Jusqu&apos;au retrait, ou 2 ans sans envoi</td>
                       </tr>
                     </tbody>
                   </table>

@@ -162,7 +162,7 @@ export function dossierVide(date = new Date()) {
     coachs: [],
     faq: [],
     apparence: { couleur: '#C45309', secondaire: '#5C6B4A', logo: '', hero: '', heroAlt: '' },
-    modules: { essais: true, adhesion: false, bureau: false, mail: false },
+    modules: { essais: true, adhesion: false, bureau: false, mail: false, presences: false, quiz: false, alertes: false },
     remarques: '',
   };
 }

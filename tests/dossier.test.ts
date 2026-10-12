@@ -76,7 +76,7 @@ describe('dossier', () => {
     expect(c.lieux[1]).toMatchObject({ id: 'dojo-de-saint-fictif', codePostal: '99010', ville: 'Saint-Fictif' });
     expect(c.logo).toBe('/assets/logo-asso.svg');
     expect(c.federation.logo).toBe('/assets/logo-federation.svg');
-    expect(c.modules).toEqual({ essais: true, adhesion: false, bureau: true, mail: false });
+    expect(c.modules).toEqual({ essais: true, adhesion: false, bureau: true, mail: false, presences: false, quiz: false, alertes: false });
   });
 
   it('planning trié par jour puis heure', () => {
