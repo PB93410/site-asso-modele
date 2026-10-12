@@ -14,6 +14,7 @@ import { fileURLToPath } from 'node:url';
 import { ASSO, MODULES, SAISON_COURTE } from '../asso.derive.js';
 import { valeursTexte } from '../src/lib/gabarit.js';
 import { adresseAsso, messageBrevo, messageSmtp, modeEnvoi } from '../netlify/functions/_envoi.mjs';
+import { modeStockage } from '../netlify/functions/_stockage.mjs';
 import { compteDeService, ecartsColonnes, verifierConfig, verifierContenu, verifierEnv } from './_verifier.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -70,7 +71,7 @@ async function verifierConnexions(env) {
   const { ADHERENTS_HEADERS, ESSAIS_HEADERS } = await import('../netlify/functions/_bureau-lib.mjs');
   const email = compteDeService(env.GOOGLE_SERVICE_ACCOUNT_JSON);
 
-  if (email && (MODULES.essais || MODULES.adhesion || MODULES.bureau)) {
+  if (email && modeStockage(env, false) === 'google' && (MODULES.essais || MODULES.adhesion || MODULES.bureau)) {
     const auth = new google.auth.GoogleAuth({
       credentials: JSON.parse(env.GOOGLE_SERVICE_ACCOUNT_JSON),
       scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],

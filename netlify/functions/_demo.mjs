@@ -10,6 +10,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { ASSO, SEASON_PREFIX } from '../../asso.derive.js';
+import { parseA1, tableurValues } from './_tableur.mjs';
 
 export const DEMO = /^(1|true|oui)$/i.test(String(process.env.DEMO || '').trim());
 
@@ -74,7 +75,8 @@ function dayFor(jour, weeksOffset = 0) {
 // Données fictives
 // ---------------------------------------------------------------------------
 
-function readProjectFile(rel) {
+/** Fichier du projet (inclus dans le bundle de la fonction), ou « » s’il manque. */
+export function readProjectFile(rel) {
   const roots = [process.cwd(), process.env.LAMBDA_TASK_ROOT].filter(Boolean);
   for (const root of roots) {
     try {
@@ -248,23 +250,6 @@ export function resetDemo() {
   events = null;
 }
 
-function colIndex(letters) {
-  let n = 0;
-  for (const ch of letters) n = n * 26 + (ch.charCodeAt(0) - 64);
-  return n - 1;
-}
-
-/** « 'Saison 2026-2027'!S12 » → { tab, col, row } (col et row à partir de 0, null si absents). */
-export function parseA1(range) {
-  const m = String(range).match(/^(?:'((?:[^']|'')+)'|([^!]+))!?([A-Z]*)(\d*)(?::([A-Z]*)(\d*))?$/);
-  if (!m) throw new Error(`Plage invalide : ${range}`);
-  return {
-    tab: (m[1] ?? m[2]).replace(/''/g, "'"),
-    col: m[3] ? colIndex(m[3]) : 0,
-    row: m[4] ? Number(m[4]) - 1 : null,
-  };
-}
-
 function tabOf(spreadsheetId, tab) {
   const sheet = workbook().get(spreadsheetId);
   if (!sheet) throw Object.assign(new Error('Requested entity was not found.'), { code: 404 });
@@ -272,52 +257,13 @@ function tabOf(spreadsheetId, tab) {
   return sheet.get(tab);
 }
 
-/** Saisie « USER_ENTERED » : l’apostrophe de tête force le texte et disparaît. */
-const entered = (v) => {
-  const s = String(v ?? '');
-  return s.startsWith("'") ? s.slice(1) : s;
-};
-
-function writeCell(rows, r, c, value) {
-  while (rows.length <= r) rows.push([]);
-  const line = rows[r];
-  while (line.length <= c) line.push('');
-  line[c] = entered(value);
-}
+export { parseA1 };
 
 export function demoSheets() {
-  const values = {
-    async get({ spreadsheetId, range }) {
-      const { tab } = parseA1(range);
-      return { data: { values: tabOf(spreadsheetId, tab).map((r) => [...r]) } };
-    },
-    async append({ spreadsheetId, range, requestBody }) {
-      const { tab } = parseA1(range);
-      const rows = tabOf(spreadsheetId, tab);
-      for (const v of requestBody.values || []) rows.push(v.map(entered));
-      const n = rows.length;
-      return { data: { updates: { updatedRange: `'${tab}'!A${n}:Z${n}` } } };
-    },
-    async update({ spreadsheetId, range, requestBody }) {
-      const { tab, col, row } = parseA1(range);
-      const rows = tabOf(spreadsheetId, tab);
-      (requestBody.values || []).forEach((v, i) => v.forEach((cell, j) => writeCell(rows, (row ?? 0) + i, col + j, cell)));
-      return { data: {} };
-    },
-    async batchUpdate({ spreadsheetId, requestBody }) {
-      for (const d of requestBody.data || []) {
-        await values.update({ spreadsheetId, range: d.range, requestBody: { values: d.values } });
-      }
-      return { data: {} };
-    },
-    async clear({ spreadsheetId, range }) {
-      const { tab, row } = parseA1(range);
-      const rows = tabOf(spreadsheetId, tab);
-      rows.length = Math.min(rows.length, row ?? 0);
-      return { data: {} };
-    },
-  };
-  return { spreadsheets: { values } };
+  return tableurValues({
+    lire: async (id, tab) => tabOf(id, tab),
+    modifier: async (id, tab, fn) => fn(tabOf(id, tab)),
+  });
 }
 
 // ---------------------------------------------------------------------------

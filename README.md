@@ -44,7 +44,7 @@ Ensuite, pour savoir ce qu’il reste à régler :
 npm run verifier
 ```
 
-Il dit en français simple ce qui manque (configuration, variables, accès aux Google Sheets, colonnes, compte Gmail) et comment le corriger.
+Il dit en français simple ce qui manque (configuration, variables, envoi des mails, et si on les utilise : accès aux Google Sheets, colonnes, compte Gmail) et comment le corriger.
 
 ### Monter le site par étapes
 
@@ -53,10 +53,12 @@ Dans `asso.config.js → modules`, chaque fonction s’active séparément :
 | Fonction | Ce qu’elle fait | Ce qu’elle demande |
 |---|---|---|
 | *(toujours)* | Site vitrine : cours, planning, tarifs, contact | Rien |
-| `essais` | Formulaire d’essai gratuit → Google Sheet | Compte de service Google + classeur Essais |
-| `adhesion` | Inscription en ligne → Google Sheet | Compte de service Google + classeur Adhérents |
-| `bureau` | Espace `/bureau` des bénévoles | Mot de passe + secret + les deux classeurs |
+| `essais` | Formulaire d’essai gratuit → tableau Essais du bureau | Rien (données sur Netlify) ; pour l’alerte par mail : SMTP ou Brevo |
+| `adhesion` | Inscription en ligne → tableau Adhérents du bureau | Rien (données sur Netlify) ; pour l’alerte par mail : SMTP ou Brevo |
+| `bureau` | Espace `/bureau` des bénévoles, export Excel, sauvegarde chaque lundi par mail | Mot de passe + secret |
 | `mail` | Boîte mail et agenda de l’asso dans le bureau | Connexion du compte Google de l’asso |
+
+Les données sont rangées sur Netlify, avec le site : aucun compte Google n’est nécessaire. Google Sheets reste possible ([docs/DOC-DONNEES.md](docs/DOC-DONNEES.md)).
 
 Une fonction à `false` disparaît proprement : `/essai` et `/inscription` proposent alors d’appeler, d’écrire ou de venir sur place. On peut publier le jour même et brancher le reste plus tard.
 
@@ -107,6 +109,7 @@ Si le site est relié à GitHub, Netlify lance lui-même `npm run build` à chaq
 
 - [docs/CONFIGURATEUR.md](docs/CONFIGURATEUR.md) — questionnaire en ligne et `npm run installer`
 - [docs/ADAPTER-LE-MODELE.md](docs/ADAPTER-LE-MODELE.md) — reprendre le modèle pour son asso
+- [docs/DOC-DONNEES.md](docs/DOC-DONNEES.md) — où sont les données, export Excel, sauvegarde, restauration, Google Sheets
 - [docs/DOC-MAIL.md](docs/DOC-MAIL.md) — envoi des mails (alertes, cartes) : boîte de l’asso en SMTP, Brevo ou Gmail
 - [docs/DOC-BUREAU-GOOGLE.md](docs/DOC-BUREAU-GOOGLE.md) — brancher Gmail / Agenda / Contacts
 - [docs/DOC-GOOGLE-SHEETS.md](docs/DOC-GOOGLE-SHEETS.md) — planning et événements dans un Google Sheet

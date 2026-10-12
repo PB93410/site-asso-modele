@@ -73,7 +73,7 @@ export function recapitulatif(dossier, config) {
     '- [ ] Relire le site : `npm run demo` (bureau : mot de passe demo), le montrer à l’association',
     '- [ ] Relire contenu/*.json (cours, animateurs, FAQ)',
     ...(config.modules.essais || config.modules.adhesion || config.modules.bureau
-      ? ['- [ ] Google : compte de service + client OAuth, puis `npm run sheets:creer` (docs/ADAPTER-LE-MODELE.md, étape 5)']
+      ? ['- [ ] Données : sur Netlify par défaut, rien à créer (Google Sheets possible : docs/DOC-DONNEES.md)']
       : []),
     ...(config.modules.essais || config.modules.adhesion || config.modules.bureau
       ? ['- [ ] Envoi des mails : boîte de l’asso en SMTP, ou Brevo (docs/DOC-MAIL.md)']

@@ -27,6 +27,7 @@ import {
   telPersonKey,
   updateRowByHeaders,
 } from './_bureau-lib.mjs';
+import { brancherStockage } from './_stockage.mjs';
 
 /** NUMERO seulement s’il est vraiment en colonne S (index 18). */
 function numeroHeaderIfColumnS(headers, colIndices) {
@@ -43,6 +44,7 @@ function numerosOf(rows) {
 }
 
 export async function handler(event) {
+  brancherStockage(event);
   if (event.httpMethod === 'OPTIONS') return handleOptions();
   if (event.httpMethod !== 'POST') {
     return json(405, { error: 'Method not allowed' });

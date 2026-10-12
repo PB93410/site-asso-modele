@@ -14,6 +14,7 @@ import {
   requireAuth,
 } from './_bureau-lib.mjs';
 import { ASSO } from '../../asso.derive.js';
+import { brancherStockage } from './_stockage.mjs';
 
 const DAYS = new Set(['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']);
 /**
@@ -113,6 +114,7 @@ function validateEvents(rows) {
 }
 
 export async function handler(event) {
+  brancherStockage(event);
   if (event.httpMethod === 'OPTIONS') return handleOptions();
 
   const auth = requireAuth(event);

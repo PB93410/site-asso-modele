@@ -17,6 +17,7 @@ import {
   readSheetAsObjects,
   requireAuth,
 } from './_bureau-lib.mjs';
+import { brancherStockage } from './_stockage.mjs';
 
 /** Fiche qui peut recevoir une carte, ou la réponse d’erreur. */
 export function carteFiche(target, numeroAffiche) {
@@ -39,6 +40,7 @@ export function carteFiche(target, numeroAffiche) {
 }
 
 export async function handler(event) {
+  brancherStockage(event);
   if (event.httpMethod === 'OPTIONS') return handleOptions();
   if (event.httpMethod !== 'GET') return json(405, { error: 'Method not allowed' });
 

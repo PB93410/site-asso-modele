@@ -6,6 +6,7 @@
 import { contraste } from '../src/lib/dossier.js';
 import { remplir } from '../src/lib/gabarit.js';
 import { adresseAsso, MODES_ENVOI, modeEnvoi } from '../netlify/functions/_envoi.mjs';
+import { MODES_STOCKAGE, modeStockage } from '../netlify/functions/_stockage.mjs';
 
 export { contraste };
 
@@ -145,7 +146,16 @@ export function verifierEnv(env, modules) {
     return r;
   }
 
-  const besoinSheets = modules.essais || modules.adhesion || modules.bureau;
+  const besoinDonnees = modules.essais || modules.adhesion || modules.bureau;
+  const stockage = modeStockage(env, false);
+  const besoinSheets = besoinDonnees && stockage === 'google';
+  const choixStockage = a('STOCKAGE').toLowerCase();
+  if (choixStockage && !MODES_STOCKAGE.includes(choixStockage)) {
+    r.push(attention(`STOCKAGE « ${a('STOCKAGE')} » inconnu : ignoré.`, 'Valeurs possibles : netlify, google.'));
+  }
+  if (besoinDonnees && stockage === 'netlify') {
+    r.push(ok('Données du bureau : sur Netlify (rien à créer). Export Excel dans /bureau, sauvegarde chaque lundi par mail.'));
+  }
   if (besoinSheets) {
     if (!a('GOOGLE_SERVICE_ACCOUNT_JSON')) {
       r.push(erreur('GOOGLE_SERVICE_ACCOUNT_JSON manquante.', 'Clé JSON du compte de service Google : voir docs/DOC-GOOGLE-SHEETS.md.'));
@@ -170,7 +180,9 @@ export function verifierEnv(env, modules) {
     [['mail'], 'GOOGLE_REFRESH_TOKEN', 'Le référent connecte le compte une fois : /bureau/connexion-google.'],
   ];
   const incomplets = new Set();
+  const cleSheets = (cle) => /^GOOGLE_SHEET/.test(cle);
   for (const [mods, cle, aide] of besoins) {
+    if (cleSheets(cle) && !besoinSheets) continue;
     const qui = mods.filter((m) => modules[m]);
     if (!qui.length || a(cle)) continue;
     r.push(erreur(`${cle} manquante.`, aide));
@@ -199,7 +211,7 @@ export function verifierEnv(env, modules) {
       r.push(attention('BUREAU_PASSWORD courte (moins de 12 caractères).', 'Une phrase de 3 ou 4 mots est plus sûre et facile à retenir.'));
     }
   }
-  if (modules.bureau && !a('GOOGLE_SITE_SHEET_ID')) {
+  if (besoinSheets && modules.bureau && !a('GOOGLE_SITE_SHEET_ID')) {
     r.push(attention('GOOGLE_SITE_SHEET_ID absente : le planning et les événements se modifieront dans le classeur Essais.', 'Facultatif : un classeur « contenu site » séparé.'));
   }
   r.push(...verifierEnvoi(env, modules));

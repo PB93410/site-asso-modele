@@ -18,10 +18,12 @@
 import {
   getEventsTab,
   getPlanningTab,
+  getSiteSheetId,
   readSheetValues,
   rowsToCsv,
 } from './_bureau-lib.mjs';
-import { SITE_URL } from '../../asso.derive.js';
+import { MODULES, SITE_URL } from '../../asso.derive.js';
+import { brancherStockage, surNetlify } from './_stockage.mjs';
 
 /**
  * URL « Publier sur le Web → CSV » de chaque onglet (facultatif, variables Netlify).
@@ -40,6 +42,7 @@ const CORS_HEADERS = {
 };
 
 export async function handler(event) {
+  brancherStockage(event);
   // Préflight CORS
   if (event.httpMethod === 'OPTIONS') {
     return {
@@ -72,10 +75,12 @@ export async function handler(event) {
   }
 
   try {
-    const liveId =
-      process.env.GOOGLE_SITE_SHEET_ID ||
-      process.env.GOOGLE_SHEET_ESSAIS_ID ||
-      process.env.GOOGLE_SUIVI_SHEET_ID;
+    // Stockage Netlify : planning et événements modifiés depuis /bureau.
+    const liveId = surNetlify()
+      ? MODULES.bureau && getSiteSheetId()
+      : process.env.GOOGLE_SITE_SHEET_ID ||
+        process.env.GOOGLE_SHEET_ESSAIS_ID ||
+        process.env.GOOGLE_SUIVI_SHEET_ID;
     if (liveId && (tab === 'planning' || tab === 'evenements')) {
       const name = tab === 'planning' ? getPlanningTab() : getEventsTab();
       const values = await readSheetValues(liveId, name);

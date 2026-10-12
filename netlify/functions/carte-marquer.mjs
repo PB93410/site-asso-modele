@@ -20,6 +20,7 @@ import {
   telPersonKey,
   updateRowByHeaders,
 } from './_bureau-lib.mjs';
+import { brancherStockage } from './_stockage.mjs';
 
 function todayFr() {
   const parts = new Intl.DateTimeFormat('fr-FR', {
@@ -81,6 +82,7 @@ export async function noteCarteDate(row, tel) {
 }
 
 export async function handler(event) {
+  brancherStockage(event);
   if (event.httpMethod === 'OPTIONS') return handleOptions();
   if (event.httpMethod !== 'POST') {
     return json(405, { error: 'Method not allowed' });

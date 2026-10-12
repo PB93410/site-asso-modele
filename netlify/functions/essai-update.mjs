@@ -16,6 +16,7 @@ import {
   telPersonKey,
   updateRowByHeaders,
 } from './_bureau-lib.mjs';
+import { brancherStockage } from './_stockage.mjs';
 
 const ESSAI_STATUTS = new Set(ESSAIS_STATUTS);
 
@@ -31,6 +32,7 @@ function todayFr() {
 }
 
 export async function handler(event) {
+  brancherStockage(event);
   if (event.httpMethod === 'OPTIONS') return handleOptions();
   if (event.httpMethod !== 'POST') {
     return json(405, { error: 'Method not allowed' });

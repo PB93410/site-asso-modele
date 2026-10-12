@@ -7,7 +7,8 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { google } from 'googleapis';
 import { ASSO, MODULES, PAYMENT_MODES, SITE_URL } from '../../asso.derive.js';
-import { DEMO, demoSheets } from './_demo.mjs';
+import { DEMO, demoSheets, parseCsv, readProjectFile } from './_demo.mjs';
+import { blobSheets, CLASSEURS, surNetlify } from './_stockage.mjs';
 
 export { SEASON_PREFIX, nextAdherentNumero } from './_cartes-store.mjs';
 
@@ -67,6 +68,7 @@ export const ESSAIS_HEADERS = [
 export const ESSAIS_STATUTS = ['À venir', 'Confirmé', 'Venu', 'Absent', 'Annulé', 'Adhérent', 'Relancé'];
 
 export function getAdherentsSheetId() {
+  if (surNetlify()) return CLASSEURS.adherents;
   const id = process.env.GOOGLE_SHEET_ID;
   if (!id) throw new Error('GOOGLE_SHEET_ID manquante');
   return id;
@@ -77,6 +79,7 @@ export function getAdherentsTab() {
 }
 
 export function getEssaisSheetId() {
+  if (surNetlify()) return CLASSEURS.essais;
   const id = process.env.GOOGLE_SHEET_ESSAIS_ID || process.env.GOOGLE_SUIVI_SHEET_ID;
   if (!id) throw new Error('GOOGLE_SHEET_ESSAIS_ID manquante');
   return id;
@@ -86,14 +89,15 @@ export function getEssaisTab() {
   return process.env.GOOGLE_SHEET_ESSAIS_NAME || process.env.GOOGLE_SUIVI_SHEET_NAME || 'Essais';
 }
 
-/** Lien d’édition Google Sheets — uniquement renvoyé après auth bureau. */
+/** Lien d’édition Google Sheets — uniquement renvoyé après auth bureau. Vide hors Google. */
 export function googleSheetEditUrl(spreadsheetId) {
   const id = String(spreadsheetId || '').trim();
-  if (!id) return '';
+  if (!id || surNetlify() || DEMO) return '';
   return `https://docs.google.com/spreadsheets/d/${encodeURIComponent(id)}/edit`;
 }
 
 export function getSiteSheetId() {
+  if (surNetlify()) return CLASSEURS.site;
   const id =
     process.env.GOOGLE_SITE_SHEET_ID ||
     process.env.GOOGLE_SHEET_ESSAIS_ID ||
@@ -338,10 +342,25 @@ export function consumeRateLimit(key, max, windowMs) {
 
 let _sheetsClient = null;
 
+/** Stockage Netlify : contenu d'un onglet jamais écrit (en-têtes, ou planning et événements du site). */
+export function ongletVierge(id, tab) {
+  if (id === CLASSEURS.adherents) return [[...ADHERENTS_HEADERS, 'NUMERO', 'CARTE']];
+  if (id === CLASSEURS.essais) return [ESSAIS_HEADERS];
+  if (id === CLASSEURS.site) {
+    const fichier = tab === getPlanningTab() ? 'planning' : tab === getEventsTab() ? 'evenements' : '';
+    return fichier ? parseCsv(readProjectFile(`public/data/${fichier}.csv`)) : [];
+  }
+  return [];
+}
+
 export async function getSheets() {
   if (_sheetsClient) return _sheetsClient;
   if (DEMO) {
     _sheetsClient = demoSheets();
+    return _sheetsClient;
+  }
+  if (surNetlify()) {
+    _sheetsClient = blobSheets({ seed: ongletVierge });
     return _sheetsClient;
   }
 

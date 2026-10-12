@@ -87,13 +87,19 @@ Enfin, relisez **les mentions légales et la page confidentialité** (`src/secti
 2. Les réglages sont lus dans `netlify.toml` (build `npm run build`, dossier `dist`, fonctions `netlify/functions`).
 3. Branchez votre nom de domaine, puis mettez la même adresse dans `asso.config.js → siteUrl`.
 
-À ce stade le site public est en ligne. Les formulaires `/essai` et `/inscription` répondent « échec » tant que Google n’est pas branché : le visiteur se voit proposer WhatsApp.
+À ce stade le site public est en ligne.
 
 ---
 
-## Étape 5 — Google Sheets (essais, adhésions, planning)
+## Étape 5 — Les données du bureau (essais, adhésions, planning)
 
-Le bureau s’appuie sur trois classeurs Google, dans le Drive du compte de l’asso :
+**Par défaut, rien à créer** : les données sont rangées sur Netlify, avec le site (Netlify Blobs). Dans Netlify → **Environment variables**, mettez seulement `BUREAU_PASSWORD` et `BUREAU_SECRET` (voir [`.env.example`](../.env.example)), redéployez, puis testez `/essai` et `/bureau`.
+
+Le bureau est l’interface : listes, recherche, fiches. **Bureau → Autre → Télécharger tout (Excel)** donne tout dans un fichier. Chaque lundi, une sauvegarde Excel part à la boîte de l’asso (si l’envoi des mails est réglé, étape 6). Détails, restauration : [DOC-DONNEES.md](DOC-DONNEES.md).
+
+### Variante : Google Sheets
+
+Si l’association tient à ses tableaux Google (plusieurs personnes qui travaillent dedans chaque jour), le bureau s’appuie sur trois classeurs Google, dans le Drive du compte de l’asso :
 
 | Classeur | Onglet | Colonnes (dans cet ordre, ne pas renommer) |
 |---|---|---|

@@ -18,9 +18,9 @@ const ASSO = {
   // Le site vitrine (cours, planning, tarifs, contact) marche toujours, sans réglage.
   // `npm run verifier` dit ce qui manque pour chaque fonction activée.
   modules: {
-    /** Formulaire d'essai gratuit → Google Sheet Essais. Sinon /essai propose d'appeler ou d'écrire. */
+    /** Formulaire d'essai gratuit → tableau Essais du bureau. Sinon /essai propose d'appeler ou d'écrire. */
     essais: true,
-    /** Inscription en ligne → Google Sheet Adhérents. Sinon /inscription explique comment s'inscrire. */
+    /** Inscription en ligne → tableau Adhérents du bureau. Sinon /inscription explique comment s'inscrire. */
     adhesion: true,
     /** Espace /bureau des bénévoles (essais, encaissements, cartes, planning). */
     bureau: true,

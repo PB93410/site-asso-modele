@@ -17,7 +17,7 @@
 - NUMERO : un numéro attribué est définitif, ne jamais le réécrire ni renuméroter.
 - Cartes : le recto est fabriqué à l’envoi depuis la fiche (`_carte-recto.mjs`). Pas de coffre d’images, pas de PNG nominatif sur disque.
 - Aucune donnée personnelle dans le dépôt.
-- Mode démo (`npm run demo`, `netlify/functions/_demo.mjs`) : tout appel Google passe par `getSheets()`, `gmailApi()` ou `calendarApi()`, jamais `google.*` directement, sinon la démo casse. Tout mail envoyé par le site passe par `envoyerMail()` (`_envoi.mjs` : SMTP, Brevo ou Gmail), jamais `gmail.users.messages.send` directement (sauf la réponse depuis la boîte Gmail, module `mail`).
+- Mode démo (`npm run demo`, `netlify/functions/_demo.mjs`) : tout appel Google passe par `getSheets()`, `gmailApi()` ou `calendarApi()`, jamais `google.*` directement, sinon la démo casse. Les données du bureau passent par `getSheets()` même hors Google : stockage Netlify Blobs (`_stockage.mjs`, même API que Sheets), faux classeur en démo ; toute fonction qui y touche appelle `brancherStockage(event)` en tête. Tout mail envoyé par le site passe par `envoyerMail()` (`_envoi.mjs` : SMTP, Brevo ou Gmail), jamais `gmail.users.messages.send` directement (sauf la réponse depuis la boîte Gmail, module `mail`).
 - Fonctions activables (`asso.config.js → modules`) : une nouvelle page ou fonction liée à un module vérifie `MODULES` (client) ou `moduleOff()` (serveur).
 - `npm run verifier` doit rester juste : un nouveau réglage obligatoire y est ajouté (`scripts/_verifier.mjs`).
 - Cours, animateurs, FAQ, planning et événements par défaut : `contenu/*.json` (pas dans le code). `src/data/` les met en forme ; textes à trous via `src/lib/gabarit.js`.

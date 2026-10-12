@@ -1,10 +1,11 @@
 # Envoi des mails (référent)
 
-Le site envoie trois sortes de mails :
+Le site envoie quatre sortes de mails :
 
 - l'**alerte « nouvel essai »** à la boîte de l'asso (`[ESSAI] Marie Dupont · Gym douce …`) ;
 - l'**alerte « nouvelle adhésion »** à la boîte de l'asso (`[ASE] Adhésion — Marie Dupont`) ;
-- la **carte d'adhérent**, à l'adhérent, depuis /bureau.
+- la **carte d'adhérent**, à l'adhérent, depuis /bureau ;
+- la **sauvegarde du lundi** (fichier Excel des données), à la boîte de l'asso, quand les données sont sur Netlify ([DOC-DONNEES.md](DOC-DONNEES.md)).
 
 Pas besoin de Google : le site envoie avec **la boîte mail que l'asso a déjà** (SMTP), ou avec **Brevo**. L'envoi par Gmail (compte Google connecté) reste possible.
 

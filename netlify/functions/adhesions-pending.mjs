@@ -16,8 +16,10 @@ import {
   readSheetAsObjects,
   requireAuth,
 } from './_bureau-lib.mjs';
+import { brancherStockage } from './_stockage.mjs';
 
 export async function handler(event) {
+  brancherStockage(event);
   if (event.httpMethod === 'OPTIONS') return handleOptions();
   if (event.httpMethod !== 'GET') {
     return json(405, { error: 'Method not allowed' });

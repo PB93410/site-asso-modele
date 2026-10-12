@@ -20,6 +20,7 @@ import {
   requireAuth,
   telPersonKey,
 } from './_bureau-lib.mjs';
+import { brancherStockage } from './_stockage.mjs';
 
 function looksLikeDateOnly(raw) {
   const s = String(raw || '').trim();
@@ -68,6 +69,7 @@ function hasIdentity(item) {
 }
 
 export async function handler(event) {
+  brancherStockage(event);
   if (event.httpMethod === 'OPTIONS') return handleOptions();
   if (event.httpMethod !== 'GET') {
     return json(405, { error: 'Method not allowed' });

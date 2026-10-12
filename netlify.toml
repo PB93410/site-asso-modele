@@ -38,8 +38,8 @@
 # ──────────────────────────────────────────────
 [functions]
   node_bundler = "esbuild"
-  # Included files si besoin de CSV locaux dans la function
-  # included_files = ["public/data/**"]
+  # Planning et événements de départ du stockage Netlify (onglets jamais écrits).
+  included_files = ["public/data/*.csv"]
 
 # Cartes adhérents : recto fabriqué à l’envoi (polices, logo, moteur resvg), verso commun.
 [functions.carte-mail]
@@ -49,6 +49,11 @@
     "netlify/cartes/fonts/*.ttf",
     "node_modules/@resvg/resvg-wasm/index_bg.wasm",
   ]
+
+# Sauvegarde Excel envoyée à la boîte de l’asso chaque lundi à 6 h (UTC), stockage Netlify seulement.
+[functions.sauvegarde-hebdo]
+  schedule = "0 6 * * 1"
+  included_files = ["public/data/*.csv"]
 
 [functions.carte-image]
   included_files = [
@@ -143,6 +148,12 @@
 [[redirects]]
   from = "/api/essai-update"
   to = "/.netlify/functions/essai-update"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/bureau-export"
+  to = "/.netlify/functions/bureau-export"
   status = 200
   force = true
 
@@ -361,6 +372,11 @@
   [headers.values]
     Cache-Control = "no-store, private"
     X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/api/bureau-export"
+  [headers.values]
+    Cache-Control = "no-store, private"
 
 [[headers]]
   for = "/api/site-content"

@@ -25,6 +25,7 @@
     "sheets:format": "node scripts/format-bureau-sheets.mjs",
     "sheets:site": "node scripts/seed-site-sheet.mjs",
     "sheets:creer": "node scripts/sheets-creer.mjs",
+    "donnees": "node scripts/donnees.mjs",
     "prerender": "node scripts/prerender.mjs",
     "deploy:prod": "npx --yes netlify-cli deploy --prod --dir=dist --functions=netlify/functions --no-build",
     "deploy:prod:seo": "npm run build && npm run deploy:prod"

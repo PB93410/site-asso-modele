@@ -29,6 +29,7 @@ import { ASSO, MODULES } from '../asso.derive.js';
 import { parseCsv } from '../netlify/functions/_demo.mjs';
 import { planClasseurs, majEnv } from './_sheets-creer.mjs';
 import { compteDeService } from './_verifier.mjs';
+import { modeStockage } from '../netlify/functions/_stockage.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PORT = 53682;
@@ -150,6 +151,11 @@ async function main() {
   const env = lireEnv();
   const plan = planClasseurs(ASSO, MODULES, { planning: lireCsv('planning'), evenements: lireCsv('evenements') }, env);
 
+  if (modeStockage(env, false) !== 'google') {
+    console.log('Les données du bureau sont sur Netlify (pas de compte de service Google, ni STOCKAGE=google) : rien à créer.');
+    console.log('Pour utiliser Google Sheets : docs/DOC-DONNEES.md.');
+    return;
+  }
   if (!plan.length) {
     console.log('Aucune fonction n’utilise Google Sheets (asso.config.js → modules) : rien à créer.');
     return;

@@ -17,6 +17,7 @@ import {
 } from './_bureau-lib.mjs';
 import { sendAdhesionNotification } from './_adhesion-mail.mjs';
 import { ASSO, PAYMENT_MODES, SITE_URL } from '../../asso.derive.js';
+import { brancherStockage, modeStockage } from './_stockage.mjs';
 
 const CORS = {
   'Access-Control-Allow-Origin': SITE_URL,
@@ -83,6 +84,7 @@ function extractFields(raw) {
 }
 
 export async function handler(event) {
+  brancherStockage(event);
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 204, headers: CORS, body: '' };
   }
@@ -93,7 +95,7 @@ export async function handler(event) {
     return publicJson(405, { ok: false, error: 'Method Not Allowed' });
   }
 
-  if (!process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
+  if (modeStockage() === 'google' && !process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
     console.error('Missing env: GOOGLE_SERVICE_ACCOUNT_JSON');
     return publicJson(500, { ok: false, error: 'Configuration serveur manquante' });
   }

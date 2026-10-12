@@ -27,6 +27,7 @@ import {
   telPersonKey,
 } from './_bureau-lib.mjs';
 import { ASSO, SAISON_COURTE } from '../../asso.derive.js';
+import { brancherStockage } from './_stockage.mjs';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function isCarteMailAddress(raw) {
@@ -76,6 +77,7 @@ function readBody(event) {
 }
 
 export async function handler(event) {
+  brancherStockage(event);
   if (event.httpMethod === 'OPTIONS') return handleOptions();
   if (event.httpMethod !== 'POST') return json(405, { error: 'Method not allowed' });
 
