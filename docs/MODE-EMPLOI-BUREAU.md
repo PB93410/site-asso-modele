@@ -125,6 +125,14 @@ Sur le formulaire d’inscription, la personne indique ses aides. Le **reste à 
 
 **Autre → Rapport annuel**. Effectifs, essais devenus adhésions, présences (si le pointage est allumé), âges et communes. **Aucun nom.** Téléchargez le PDF ou le CSV pour l’AG ou la mairie.
 
+## Attestations, si la fonction est activée
+
+1. L’adhérent va sur **/attestations** : numéro + e-mail, ou **Recevoir un lien par mail**.
+2. **Autre → Attestations** : pour chaque personne à jour, téléchargez le PDF (adhésion, reçu fiscal si l’asso est éligible, comité d’entreprise) ou envoyez le lien.
+3. Le reçu fiscal n’apparaît **que** si le référent a coché l’éligibilité (intérêt général). Sinon, seulement adhésion + CE.
+
+Rien n’est enregistré : le PDF est fabriqué au moment du clic.
+
 ---
 
 ## Si ça coince

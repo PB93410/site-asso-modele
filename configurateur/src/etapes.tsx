@@ -706,6 +706,7 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
             listeAttente: v ? m.listeAttente : false,
             wallet: v ? m.wallet : false,
             rapport: v ? m.rapport : false,
+            attestations: v ? m.attestations : false,
           })
         }
       />
@@ -810,6 +811,31 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
           checked={m.rapport}
           onChange={(v) => maj('modules.rapport', v)}
         />
+      ) : null}
+      <Case
+        label="Attestations PDF"
+        aide="L’adhérent télécharge son attestation d’adhésion, un reçu fiscal (si l’asso est éligible) et une attestation pour le comité d’entreprise. Numéro + e-mail, ou un lien reçu par mail. Le bureau peut aussi les fabriquer."
+        checked={m.attestations}
+        onChange={(v) => maj('modules.attestations', v)}
+      />
+      {m.attestations ? (
+        <div className="space-y-4 pl-1">
+          <Case
+            label="L’association peut délivrer un reçu fiscal"
+            aide="Uniquement si vous êtes éligible (intérêt général, articles 200 et 238 bis du CGI). Sinon, ne cochez pas : le reçu n’apparaît pas."
+            checked={d.attestations.recuFiscal}
+            onChange={(v) => maj('attestations.recuFiscal', v)}
+          />
+          {d.attestations.recuFiscal ? (
+            <Texte
+              label="Objet social (reçu fiscal)"
+              facultatif
+              value={d.attestations.objet}
+              onChange={(v) => maj('attestations.objet', v)}
+              placeholder="ex. pratique sportive amateur, gym douce"
+            />
+          ) : null}
+        </div>
       ) : null}
       <Encadre>Pas sûr ? Cochez seulement « essai gratuit » : c’est ce qui fait venir de nouveaux adhérents.</Encadre>
     </div>

@@ -63,6 +63,8 @@ const ASSO = {
     financement: ${m.financement === true ? 'true' : 'false'},
     /** Rapport annuel (AG, subvention) : effectifs, essais, présences, âges, communes. */
     rapport: ${m.rapport === true ? 'true' : 'false'},
+    /** Attestations PDF (adhésion, reçu fiscal si éligible, comité d’entreprise). */
+    attestations: ${m.attestations === true ? 'true' : 'false'},
   },
 
   // ---- Identité ----
@@ -143,6 +145,14 @@ ${(c.lieux || []).map(lieu).join('\n')}
     capaciteDefaut: ${Number(c.listeAttente?.capaciteDefaut) || 20},
     /** Heures pour accepter une place libérée. */
     delaiReponseHeures: ${Number(c.listeAttente?.delaiReponseHeures) || 48},
+  },
+
+  // ---- Attestations (modules.attestations) ----
+  attestations: {
+    /** Reçu fiscal (modèle Cerfa) : seulement si l’association est éligible (intérêt général). */
+    recuFiscal: ${c.attestations?.recuFiscal === true ? 'true' : 'false'},
+    /** Objet social, mentionné sur le reçu fiscal. Vide = l’accroche. */
+    objet: ${q(c.attestations?.objet)},
   },
 
   // ---- Aides (modules.financement) ----

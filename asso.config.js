@@ -41,6 +41,8 @@ const ASSO = {
     financement: false,
     /** Rapport annuel (AG, subvention) : effectifs, essais, présences, âges, communes. */
     rapport: false,
+    /** Attestations PDF (adhésion, reçu fiscal si éligible, comité d’entreprise). */
+    attestations: false,
   },
 
   // ---- Identité ----
@@ -132,6 +134,14 @@ const ASSO = {
     capaciteDefaut: 20,
     /** Heures pour accepter une place libérée. */
     delaiReponseHeures: 48,
+  },
+
+  // ---- Attestations (modules.attestations) ----
+  attestations: {
+    /** Reçu fiscal (modèle Cerfa) : seulement si l’association est éligible (intérêt général). */
+    recuFiscal: false,
+    /** Objet social, mentionné sur le reçu fiscal. Vide = l’accroche. */
+    objet: '',
   },
 
   // ---- Aides (modules.financement) ----

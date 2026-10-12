@@ -30,6 +30,8 @@ export interface AssoModules {
   financement: boolean;
   /** Rapport annuel. Absent = désactivé. */
   rapport: boolean;
+  /** Attestations PDF. Absent = désactivé. */
+  attestations: boolean;
 }
 
 export interface AssoListeAttente {
@@ -41,6 +43,12 @@ export interface AssoFinancement {
   passSport: number;
   ancvMax: number;
   comiteEntreprise: number;
+}
+
+export interface AssoAttestations {
+  /** Reçu fiscal : seulement si l’association est éligible. */
+  recuFiscal: boolean;
+  objet: string;
 }
 
 export interface AssoConfig {
@@ -80,6 +88,7 @@ export interface AssoConfig {
   };
   listeAttente: AssoListeAttente;
   financement: AssoFinancement;
+  attestations: AssoAttestations;
   saison: { label: string; reprise: string; finCampagneEssai: string };
   couleurs: { primaire: string; primaireHover: string; secondaire: string; secondaireHover: string };
   logo: string;

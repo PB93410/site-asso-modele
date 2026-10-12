@@ -203,6 +203,7 @@ const MODULE_NOMS = {
   presences: 'Le pointage par QR',
   quiz: 'Le quiz « Quel cours pour moi ? »',
   alertes: 'Les alertes de dernière minute',
+  attestations: 'Les attestations PDF',
 };
 
 /** Réponse 404 si la fonction est désactivée dans asso.config.js → modules, sinon null. */

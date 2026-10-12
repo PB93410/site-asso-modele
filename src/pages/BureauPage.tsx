@@ -27,6 +27,7 @@ import {
   LogOut,
   Link2,
   FileText,
+  FileCheck,
   ListOrdered,
 } from 'lucide-react';
 import BureauAide from '../components/BureauAide';
@@ -1327,6 +1328,9 @@ export default function BureauPage() {
               ) : null}
               {MODULES.rapport ? (
                 <MenuLigne icone={FileText} label="Rapport annuel" aide="AG et subvention : effectifs, essais, communes" to="/bureau/rapport" />
+              ) : null}
+              {MODULES.attestations ? (
+                <MenuLigne icone={FileCheck} label="Attestations" aide="Adhésion, reçu fiscal, comité d’entreprise" to="/bureau/attestations" />
               ) : null}
               {MODULES.mail ? (
                 <MenuLigne icone={Mail} label="Mail" aide="Adhésions et paiements en ligne" to="/bureau/mail?filter=adhesions" />

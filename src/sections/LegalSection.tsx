@@ -219,6 +219,14 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                     et les demandes de subvention. Aucun nom n&apos;apparaît dans le PDF ou le CSV.
                     Base : intérêt légitime (art. 6.1.f) et obligations associatives.
                   </li>
+                  <li id="attestations">
+                    <strong className="text-brand-black">Attestations PDF (/attestations)</strong> — si
+                    la fonction est activée : numéro d&apos;adhérent et e-mail pour télécharger
+                    l&apos;attestation d&apos;adhésion, le reçu fiscal (seulement si l&apos;association
+                    est déclarée éligible) et l&apos;attestation comité d&apos;entreprise. Un lien
+                    personnel peut être envoyé par mail (valable 7 jours). Le PDF est fabriqué à la
+                    demande, rien n&apos;est stocké. Base : exécution de l&apos;adhésion (art. 6.1.b).
+                  </li>
                 </ul>
               </div>
 
@@ -401,10 +409,15 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                         <td className="p-2">Calculer le reste à payer, suivi par le bureau</td>
                         <td className="p-2">Durée de l&apos;adhésion, puis suppression avec la fiche</td>
                       </tr>
-                      <tr>
+                      <tr className="border-b border-black/[0.06]">
                         <td className="p-2">Rapport annuel (totaux, âges, communes — sans noms)</td>
                         <td className="p-2">AG et demandes de subvention</td>
                         <td className="p-2">Selon les obligations associatives et de subvention</td>
+                      </tr>
+                      <tr>
+                        <td className="p-2">Attestations (n°, e-mail, lien personnel, PDF à la volée)</td>
+                        <td className="p-2">Justificatif d&apos;adhésion, reçu fiscal, employeur / CE</td>
+                        <td className="p-2">Pas de copie conservée ; le lien expire après 7 jours</td>
                       </tr>
                     </tbody>
                   </table>

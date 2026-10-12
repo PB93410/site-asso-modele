@@ -88,6 +88,7 @@ describe('dossier', () => {
       wallet: false,
       financement: false,
       rapport: false,
+      attestations: false,
     });
   });
 

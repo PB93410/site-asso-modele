@@ -162,9 +162,10 @@ export function dossierVide(date = new Date()) {
     coachs: [],
     faq: [],
     apparence: { couleur: '#C45309', secondaire: '#5C6B4A', logo: '', hero: '', heroAlt: '' },
-    modules: { essais: true, adhesion: false, bureau: false, mail: false, presences: false, quiz: false, alertes: false, listeAttente: false, wallet: false, financement: false, rapport: false },
+    modules: { essais: true, adhesion: false, bureau: false, mail: false, presences: false, quiz: false, alertes: false, listeAttente: false, wallet: false, financement: false, rapport: false, attestations: false },
     listeAttente: { capaciteDefaut: 20, delaiReponseHeures: 48 },
     financement: { passSport: 50, ancvMax: 40, comiteEntreprise: 30 },
+    attestations: { recuFiscal: false, objet: '' },
     remarques: '',
   };
 }
@@ -188,6 +189,7 @@ export function normaliserDossier(raw) {
     modules: merge(base.modules, d.modules),
     listeAttente: merge(base.listeAttente, d.listeAttente),
     financement: merge(base.financement, d.financement),
+    attestations: merge(base.attestations, d.attestations),
     lieux: Array.isArray(d.lieux) ? d.lieux : [],
     cours: Array.isArray(d.cours) ? d.cours : [],
     planning: Array.isArray(d.planning) ? d.planning : [],
@@ -368,6 +370,10 @@ export function configDepuisDossier(dossier, base) {
       passSport: Number(d.financement?.passSport ?? base.financement?.passSport ?? 50),
       ancvMax: Number(d.financement?.ancvMax ?? base.financement?.ancvMax ?? 40),
       comiteEntreprise: Number(d.financement?.comiteEntreprise ?? base.financement?.comiteEntreprise ?? 30),
+    },
+    attestations: {
+      recuFiscal: d.attestations?.recuFiscal === true,
+      objet: String(d.attestations?.objet || '').trim(),
     },
     saison: {
       label: d.saison.label,

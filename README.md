@@ -65,6 +65,7 @@ Dans `asso.config.js → modules`, chaque fonction s’active séparément :
 | `wallet` | Carte adhérent dans Apple Wallet (.pkpass) et Google Wallet | Bureau. En prod : certificats (voir ci-dessous). En démo : aperçu non signé, boutons visibles. **Désactivé par défaut.** |
 | `financement` | Aides Pass'Sport, chèques ANCV, comité d’entreprise sur le formulaire d’adhésion ; reste à payer noté sur la fiche | Module `adhesion`. Montants dans `asso.config.js → financement`. **Désactivé par défaut.** |
 | `rapport` | Rapport annuel (AG, subvention) : effectifs, conversion essais, présences si activées, âges, communes ; PDF et CSV | Bureau. **Désactivé par défaut.** |
+| `attestations` | PDF d’adhésion, reçu fiscal (si éligible), attestation CE ; accès n° + e-mail ou lien mail ; aussi depuis le bureau | Bureau pour la vue bénévoles. Reçu fiscal : `attestations.recuFiscal`. **Désactivé par défaut.** |
 
 Les données sont rangées sur Netlify, avec le site : aucun compte Google n’est nécessaire. Google Sheets reste possible ([docs/DOC-DONNEES.md](docs/DOC-DONNEES.md)).
 
@@ -160,6 +161,9 @@ Sur `/inscription` : cases Pass'Sport / ANCV / comité d’entreprise, montants 
 
 **Rapport (`modules.rapport`)**  
 Totaux sans noms (adhérents à jour, conversion essai → adhésion, pointages si `presences`, tranches d’âge, communes). PDF et CSV depuis `/bureau/rapport`. Les lignes « test » sont exclues.
+
+**Attestations (`modules.attestations`)**  
+L’adhérent à jour saisit son **numéro + e-mail** sur `/attestations`, ou reçoit un **lien personnel** (7 jours) par mail. Documents : attestation d’adhésion, attestation comité d’entreprise (montant et saison), **reçu fiscal** seulement si `attestations.recuFiscal` est à `true` (éligibilité intérêt général — à cocher dans le questionnaire). Le PDF est fabriqué à la demande, **aucune copie n’est gardée**. Le bureau peut aussi les télécharger ou envoyer le lien. Mentions type Cerfa 11580 sur le reçu (organisme, objet, bénéficiaire, montant, articles 200 / 238 bis).
 
 Mode d’emploi bénévoles : [docs/MODE-EMPLOI-BUREAU.md](docs/MODE-EMPLOI-BUREAU.md).
 

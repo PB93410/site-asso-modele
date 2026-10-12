@@ -87,6 +87,7 @@ export interface Dossier {
   modules: AssoModules;
   listeAttente: { capaciteDefaut: number; delaiReponseHeures: number };
   financement: { passSport: number; ancvMax: number; comiteEntreprise: number };
+  attestations: { recuFiscal: boolean; objet: string };
   remarques: string;
 }
 

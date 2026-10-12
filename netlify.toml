@@ -296,6 +296,23 @@
   status = 200
   force = true
 
+[[redirects]]
+  from = "/api/attestations"
+  to = "/.netlify/functions/attestations"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/attestations"
+  to = "/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/attestations/"
+  to = "/index.html"
+  status = 200
+
 # ──────────────────────────────────────────────
 # Headers sécurité + performance
 # ──────────────────────────────────────────────
@@ -483,6 +500,18 @@
 
 [[headers]]
   for = "/liste-attente/place"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store"
+
+[[headers]]
+  for = "/api/attestations"
+  [headers.values]
+    Cache-Control = "no-store, private"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/attestations"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
     Cache-Control = "no-store"
