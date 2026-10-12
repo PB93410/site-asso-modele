@@ -3,7 +3,7 @@
  * Le dossier se traite dans Bureau → Essais. L’essai s’enregistre même si le mail échoue.
  */
 
-import { ASSO_GMAIL, gmailApi, toBase64Url } from './_google-user.mjs';
+import { adresseAsso, envoyerMail } from './_envoi.mjs';
 
 function formatFrPhoneDisplay(raw) {
   let d = String(raw || '').replace(/\D/g, '');
@@ -22,12 +22,6 @@ function essaiNLabel(n) {
   if (!Number.isFinite(num) || num < 1) return '';
   if (num >= 4) return `Essai ${num} — au-delà de 3`;
   return `Essai ${num}/3`;
-}
-
-function encodeMimeSubject(raw) {
-  const s = String(raw || '').trim() || '[ESSAI]';
-  if (/^[\x20-\x7E]*$/.test(s)) return s;
-  return `=?UTF-8?B?${Buffer.from(s, 'utf8').toString('base64')}?=`;
 }
 
 function withCourse(cours, slot) {
@@ -62,32 +56,17 @@ export function buildEssaiMailBody({ prenom, nom, telephone, creneau, nEssai, em
 }
 
 /**
- * Envoie la copie à la boîte asso. Ne lance pas d’autre canal (ntfy reste à part dans essai.mjs).
+ * Envoie la copie à la boîte asso (SMTP, Brevo ou Gmail : _envoi.mjs).
+ * Ne lance pas d’autre canal (ntfy reste à part dans essai.mjs).
  */
 export async function sendEssaiNotification(payload) {
   const subject = buildEssaiMailSubject(payload);
-  const body = buildEssaiMailBody(payload);
-  const prospectMail = String(payload.email || '').trim();
-  const replyTo =
-    prospectMail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(prospectMail) ? prospectMail : ASSO_GMAIL;
-
   try {
-    const gmail = gmailApi();
-    const mime = [
-      `From: ${ASSO_GMAIL}`,
-      `To: ${ASSO_GMAIL}`,
-      `Reply-To: ${replyTo}`,
-      `Subject: ${encodeMimeSubject(subject)}`,
-      'MIME-Version: 1.0',
-      'Content-Type: text/plain; charset=UTF-8',
-      'Content-Transfer-Encoding: 8bit',
-      '',
-      body,
-    ].join('\r\n');
-
-    await gmail.users.messages.send({
-      userId: 'me',
-      requestBody: { raw: toBase64Url(mime) },
+    await envoyerMail({
+      to: adresseAsso(),
+      replyTo: String(payload.email || '').trim(),
+      subject,
+      text: buildEssaiMailBody(payload),
     });
     return { sent: true, subject };
   } catch (err) {

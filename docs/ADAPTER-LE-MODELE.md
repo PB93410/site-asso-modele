@@ -125,9 +125,12 @@ Une commande crée les trois classeurs, les partage et les met en forme : `npm r
 
 ---
 
-## Étape 6 — Gmail, Agenda, Contacts (facultatif)
+## Étape 6 — Envoi des mails, puis Gmail, Agenda, Contacts (facultatif)
 
-Pour que le bureau lise la boîte mail et l’agenda de l’asso sans ouvrir Gmail, et que les inscriptions envoient une alerte par mail : suivez **[DOC-BUREAU-GOOGLE.md](DOC-BUREAU-GOOGLE.md)**.
+Alertes « nouvel essai » et « nouvelle adhésion », cartes d’adhérent par mail : le site envoie avec la boîte mail de l’asso (SMTP) ou Brevo, sans Google. Voir **[DOC-MAIL.md](DOC-MAIL.md)**.
+
+
+Pour que le bureau lise la boîte mail et l’agenda de l’asso sans ouvrir Gmail : suivez **[DOC-BUREAU-GOOGLE.md](DOC-BUREAU-GOOGLE.md)**.
 
 ---
 

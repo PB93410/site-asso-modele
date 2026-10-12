@@ -1,6 +1,6 @@
 /**
  * POST /api/carte-mail
- * Envoie UNE carte adhérent par mail (Gmail asso), avec le PNG joint.
+ * Envoie UNE carte adhérent par mail (SMTP, Brevo ou Gmail : _envoi.mjs), avec le PNG joint.
  * Destinataire = MAIL de la fiche, jamais une adresse choisie par le navigateur.
  * Pas d’envoi groupé. Ne touche pas adhesion.mjs ni les colonnes A→R.
  * Body: { row, tel, renvoyer? }. Le recto est fabriqué à l’instant à partir de la même fiche
@@ -15,7 +15,7 @@ import { carteFiche } from './carte-image.mjs';
 import { renderRecto } from './_carte-recto.mjs';
 import { journalEntry, masquerMail, noteEnvoi } from './_cartes-journal.mjs';
 import { SEASON_PREFIX } from './_cartes-store.mjs';
-import { ASSO_GMAIL, gmailApi, googleErrorMessage, mimeName, toBase64Url } from './_google-user.mjs';
+import { envoyerMail } from './_envoi.mjs';
 import {
   getAdherentsSheetId,
   getAdherentsTab,
@@ -33,16 +33,6 @@ export function isCarteMailAddress(raw) {
   return EMAIL_RE.test(String(raw || '').trim());
 }
 
-function encodeMimeSubject(raw) {
-  const s = String(raw || '').trim();
-  if (/^[\x20-\x7E]*$/.test(s)) return s;
-  return `=?UTF-8?B?${Buffer.from(s, 'utf8').toString('base64')}?=`;
-}
-
-function wrap76(b64) {
-  return b64.replace(/.{1,76}/g, '$&\r\n').trim();
-}
-
 function mailBody(prenom, numero) {
   return `Bonjour ${prenom || ''},
 Voici ta carte d’adhérent ${ASSO.nom}, saison ${ASSO.saison.label} (${numero}).
@@ -56,18 +46,6 @@ const VERSO_REL = `public/assets/carte-verso-${SAISON_COURTE}.png`;
 
 export function versoFileName(prefix = SEASON_PREFIX) {
   return `${String(prefix || '').replace(/-$/, '')}-verso.png`;
-}
-
-function pngPart(boundary, filename, png) {
-  return [
-    `--${boundary}`,
-    `Content-Type: image/png; name="${filename}"`,
-    'Content-Transfer-Encoding: base64',
-    `Content-Disposition: attachment; filename="${filename}"`,
-    '',
-    wrap76(png.toString('base64')),
-    '',
-  ];
 }
 
 /** Verso commun, inclus dans le bundle. null si le fichier manque. */
@@ -84,28 +62,11 @@ export function readVersoPng() {
   return null;
 }
 
-export function buildMime({ to, numero, prenom, png, verso }) {
-  const boundary = `asso-carte-${numero}`;
-  const subject = encodeMimeSubject(`Votre carte d’adhérent ${ASSO.nom}`);
-  const lines = [
-    `From: ${mimeName(ASSO.nom)} <${ASSO_GMAIL}>`,
-    `To: ${to}`,
-    `Reply-To: ${ASSO_GMAIL}`,
-    `Subject: ${subject}`,
-    'MIME-Version: 1.0',
-    `Content-Type: multipart/mixed; boundary="${boundary}"`,
-    '',
-    `--${boundary}`,
-    'Content-Type: text/plain; charset=UTF-8',
-    'Content-Transfer-Encoding: 8bit',
-    '',
-    mailBody(prenom, numero),
-    '',
-    ...pngPart(boundary, `${numero}-recto.png`, png),
-  ];
-  if (verso && verso.length) lines.push(...pngPart(boundary, versoFileName(), verso));
-  lines.push(`--${boundary}--`, '');
-  return lines.join('\r\n');
+/** Le mail de la carte : texte, recto puis verso en pièces jointes. */
+export function messageCarte({ to, numero, prenom, png, verso }) {
+  const attachments = [{ filename: `${numero}-recto.png`, content: png, contentType: 'image/png' }];
+  if (verso && verso.length) attachments.push({ filename: versoFileName(), content: verso, contentType: 'image/png' });
+  return { to, subject: `Votre carte d’adhérent ${ASSO.nom}`, text: mailBody(prenom, numero), attachments };
 }
 
 function readBody(event) {
@@ -165,15 +126,10 @@ export async function handler(event) {
     const verso = readVersoPng();
     if (!verso) console.error('carte-mail verso introuvable, envoi du recto seul');
 
-    const gmail = gmailApi();
-    await gmail.users.messages.send({
-      userId: 'me',
-      requestBody: { raw: toBase64Url(buildMime({ to, numero, prenom: fiche.prenom, png, verso })) },
-    });
+    await envoyerMail(messageCarte({ to, numero, prenom: fiche.prenom, png, verso }));
   } catch (err) {
-    const googleCode = err?.response?.data?.error || err?.message || 'failed';
-    console.error('carte-mail send', googleCode);
-    return json(500, { error: googleErrorMessage(err) });
+    console.error('carte-mail send', err?.cause?.code || err?.cause?.message || err?.message || 'failed');
+    return json(500, { error: err?.lisible ? err.message : 'L’envoi a échoué. Réessayez dans quelques minutes.' });
   }
 
   await noteEnvoi(event, journalEntry({ numero, row, canal: 'mail', dest: masquerMail(to), renvoi: Boolean(deja) }));

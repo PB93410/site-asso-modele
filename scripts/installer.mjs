@@ -75,6 +75,9 @@ export function recapitulatif(dossier, config) {
     ...(config.modules.essais || config.modules.adhesion || config.modules.bureau
       ? ['- [ ] Google : compte de service + client OAuth, puis `npm run sheets:creer` (docs/ADAPTER-LE-MODELE.md, étape 5)']
       : []),
+    ...(config.modules.essais || config.modules.adhesion || config.modules.bureau
+      ? ['- [ ] Envoi des mails : boîte de l’asso en SMTP, ou Brevo (docs/DOC-MAIL.md)']
+      : []),
     ...(config.modules.mail ? ['- [ ] Compte Google de l’asso : /bureau/connexion-google (docs/DOC-BUREAU-GOOGLE.md)'] : []),
     '- [ ] Netlify : site relié au dépôt, variables, domaine',
     '- [ ] `npm run verifier` sans ✖',

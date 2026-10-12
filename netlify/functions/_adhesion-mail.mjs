@@ -1,9 +1,9 @@
 /**
  * Alerte mail bureau — inscription.
- * Sheet = seul registre. Ce mail = copie d’alerte (Gmail API), pas Netlify Forms.
+ * Sheet = seul registre. Ce mail = copie d’alerte (SMTP, Brevo ou Gmail : _envoi.mjs), pas Netlify Forms.
  */
 
-import { ASSO_GMAIL, gmailApi, mimeName, toBase64Url } from './_google-user.mjs';
+import { adresseAsso, envoyerMail } from './_envoi.mjs';
 import { ASSO, SITE_URL } from '../../asso.derive.js';
 
 function dash(value) {
@@ -45,12 +45,6 @@ function paymentAction(mode) {
     return 'ANCV : encaisser, puis /bureau → À payer → J’ai reçu l’argent.';
   }
   return `Paiement « ${mode} » : noter dans /bureau quand l’argent est vraiment là.`;
-}
-
-function encodeMimeSubject(raw) {
-  const s = String(raw || '').trim() || `[${ASSO.sigle}] Adhésion`;
-  if (/^[\x20-\x7E]*$/.test(s)) return s;
-  return `=?UTF-8?B?${Buffer.from(s, 'utf8').toString('base64')}?=`;
 }
 
 /** Sujet INTANGIBLE — filtre Mail bureau + Gmail. */
@@ -125,34 +119,16 @@ export function formatAdhesionFiche(f) {
 }
 
 /**
- * Envoi Gmail API vers la boîte asso.
- * Ne plus poster Netlify Forms (mails vides « Nouvelle Adhesion : »).
+ * Alerte vers la boîte asso. Ne plus poster Netlify Forms (mails vides « Nouvelle Adhesion : »).
  */
 export async function sendAdhesionNotification(f) {
   const subject = buildAdhesionMailSubject(f);
-  const body = formatAdhesionFiche(f);
-  const prospectMail = String(f.email || '').trim();
-  const replyTo =
-    prospectMail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(prospectMail) ? prospectMail : ASSO_GMAIL;
-
   try {
-    const gmail = gmailApi();
-    const mime = [
-      `From: ${mimeName(ASSO.nom)} <${ASSO_GMAIL}>`,
-      `To: ${ASSO_GMAIL}`,
-      `Reply-To: ${replyTo}`,
-      `Subject: ${encodeMimeSubject(subject)}`,
-      'MIME-Version: 1.0',
-      'Content-Type: text/plain; charset=UTF-8',
-      'Content-Transfer-Encoding: 8bit',
-      'Content-Language: fr',
-      '',
-      body,
-    ].join('\r\n');
-
-    await gmail.users.messages.send({
-      userId: 'me',
-      requestBody: { raw: toBase64Url(mime) },
+    await envoyerMail({
+      to: adresseAsso(),
+      replyTo: String(f.email || '').trim(),
+      subject,
+      text: formatAdhesionFiche(f),
     });
     return { sent: true, subject };
   } catch (err) {

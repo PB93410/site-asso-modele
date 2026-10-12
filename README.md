@@ -56,7 +56,7 @@ Dans `asso.config.js → modules`, chaque fonction s’active séparément :
 | `essais` | Formulaire d’essai gratuit → Google Sheet | Compte de service Google + classeur Essais |
 | `adhesion` | Inscription en ligne → Google Sheet | Compte de service Google + classeur Adhérents |
 | `bureau` | Espace `/bureau` des bénévoles | Mot de passe + secret + les deux classeurs |
-| `mail` | Mail et agenda de l’asso dans le bureau | Connexion du compte Google de l’asso |
+| `mail` | Boîte mail et agenda de l’asso dans le bureau | Connexion du compte Google de l’asso |
 
 Une fonction à `false` disparaît proprement : `/essai` et `/inscription` proposent alors d’appeler, d’écrire ou de venir sur place. On peut publier le jour même et brancher le reste plus tard.
 
@@ -107,6 +107,7 @@ Si le site est relié à GitHub, Netlify lance lui-même `npm run build` à chaq
 
 - [docs/CONFIGURATEUR.md](docs/CONFIGURATEUR.md) — questionnaire en ligne et `npm run installer`
 - [docs/ADAPTER-LE-MODELE.md](docs/ADAPTER-LE-MODELE.md) — reprendre le modèle pour son asso
+- [docs/DOC-MAIL.md](docs/DOC-MAIL.md) — envoi des mails (alertes, cartes) : boîte de l’asso en SMTP, Brevo ou Gmail
 - [docs/DOC-BUREAU-GOOGLE.md](docs/DOC-BUREAU-GOOGLE.md) — brancher Gmail / Agenda / Contacts
 - [docs/DOC-GOOGLE-SHEETS.md](docs/DOC-GOOGLE-SHEETS.md) — planning et événements dans un Google Sheet
 - [docs/DOC-FONCTION-ADHESION.md](docs/DOC-FONCTION-ADHESION.md) — formulaire d’inscription → Sheet Adhérents

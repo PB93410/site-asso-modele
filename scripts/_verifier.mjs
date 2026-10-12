@@ -5,6 +5,7 @@
 
 import { contraste } from '../src/lib/dossier.js';
 import { remplir } from '../src/lib/gabarit.js';
+import { adresseAsso, MODES_ENVOI, modeEnvoi } from '../netlify/functions/_envoi.mjs';
 
 export { contraste };
 
@@ -201,10 +202,47 @@ export function verifierEnv(env, modules) {
   if (modules.bureau && !a('GOOGLE_SITE_SHEET_ID')) {
     r.push(attention('GOOGLE_SITE_SHEET_ID absente : le planning et les événements se modifieront dans le classeur Essais.', 'Facultatif : un classeur « contenu site » séparé.'));
   }
+  r.push(...verifierEnvoi(env, modules));
   if (/^(1|true|oui)$/i.test(a('DEMO'))) {
     r.push(erreur('DEMO est activé : le site tourne sur des données fictives.', 'Retirez DEMO des variables de production.'));
   }
   if (!r.some((x) => x.niveau === 'erreur')) r.push(ok(`Variables présentes pour : ${actifs.join(', ')}.`));
+  return r;
+}
+
+/**
+ * Envoi des mails (alertes essai et adhésion, cartes) : SMTP, Brevo ou Gmail.
+ * @param {Record<string, string | undefined>} env
+ * @param {{essais: boolean, adhesion: boolean, bureau: boolean}} modules
+ */
+export function verifierEnvoi(env, modules) {
+  if (!modules.essais && !modules.adhesion && !modules.bureau) return [];
+  const a = (k) => String(env[k] || '').trim();
+  const r = [];
+  const choix = a('MAIL_ENVOI').toLowerCase();
+  if (choix && choix !== 'aucun' && !MODES_ENVOI.includes(choix)) {
+    r.push(attention(`MAIL_ENVOI « ${a('MAIL_ENVOI')} » inconnu : ignoré.`, 'Valeurs possibles : smtp, brevo, gmail, aucun.'));
+  }
+  const mode = modeEnvoi(env, false);
+  const adresse = adresseAsso(env);
+  if (!mode) {
+    r.push(
+      attention(
+        'Aucun envoi de mail : les alertes d’essai et d’adhésion et les cartes par mail ne partiront pas.',
+        'Le plus simple : la boîte mail de l’asso en SMTP (SMTP_HOST, SMTP_USER, SMTP_PASS), ou Brevo. Voir docs/DOC-MAIL.md.',
+      ),
+    );
+  } else if (mode === 'smtp') {
+    if (!a('SMTP_PASS')) r.push(erreur('SMTP_PASS manquante.', 'Mot de passe de la boîte mail (ou mot de passe d’application) : voir docs/DOC-MAIL.md.'));
+    else r.push(ok(`Envoi des mails : SMTP ${a('SMTP_HOST')}:${a('SMTP_PORT') || 465}, depuis ${a('SMTP_USER') || adresse}.`));
+  } else if (mode === 'brevo') {
+    if (!a('BREVO_API_KEY')) r.push(erreur('BREVO_API_KEY manquante.', 'Brevo → SMTP & API → Clés API : voir docs/DOC-MAIL.md.'));
+    else r.push(ok(`Envoi des mails : Brevo, depuis ${adresse} (adresse à valider dans Brevo).`));
+  } else if (mode === 'gmail') {
+    const manque = ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GOOGLE_REFRESH_TOKEN'].filter((k) => !a(k));
+    if (manque.length) r.push(erreur(`Envoi par Gmail : ${manque.join(', ')} manquante(s).`, 'Voir docs/DOC-BUREAU-GOOGLE.md, ou passez en SMTP (docs/DOC-MAIL.md).'));
+    else r.push(ok(`Envoi des mails : Gmail, depuis ${adresse}.`));
+  }
   return r;
 }
 

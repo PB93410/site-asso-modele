@@ -1,7 +1,7 @@
 /**
  * npm run verifier — tout ce qui manque pour mettre le site en ligne, en français simple.
  *
- *   npm run verifier                 configuration + variables + connexions Google
+ *   npm run verifier                 configuration + variables + connexions (Google, mail)
  *   npm run verifier -- --hors-ligne sans tester les connexions
  *
  * Lit asso.config.js, puis .env et .env.local (sans jamais afficher un secret).
@@ -13,6 +13,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ASSO, MODULES, SAISON_COURTE } from '../asso.derive.js';
 import { valeursTexte } from '../src/lib/gabarit.js';
+import { adresseAsso, messageBrevo, messageSmtp, modeEnvoi } from '../netlify/functions/_envoi.mjs';
 import { compteDeService, ecartsColonnes, verifierConfig, verifierContenu, verifierEnv } from './_verifier.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -120,8 +121,45 @@ async function verifierConnexions(env) {
       });
     }
   }
+  r.push(...(await verifierEnvoiEnLigne(env)));
   if (!r.length) r.push({ niveau: 'attention', texte: 'Aucune connexion à tester (variables absentes ou fonctions désactivées).' });
   return r;
+}
+
+/** Se connecte au fournisseur de mail, sans rien envoyer. */
+async function verifierEnvoiEnLigne(env) {
+  if (!MODULES.essais && !MODULES.adhesion && !MODULES.bureau) return [];
+  const mode = modeEnvoi(env, false);
+  if (mode === 'smtp' && env.SMTP_PASS) {
+    const { default: nodemailer } = await import('nodemailer');
+    const port = Number(env.SMTP_PORT) || 465;
+    const t = nodemailer.createTransport({
+      host: env.SMTP_HOST,
+      port,
+      secure: port === 465,
+      auth: { user: env.SMTP_USER || adresseAsso(env), pass: env.SMTP_PASS },
+      connectionTimeout: 8000,
+      greetingTimeout: 8000,
+    });
+    try {
+      await t.verify();
+      return [{ niveau: 'ok', texte: `Boîte mail (SMTP ${env.SMTP_HOST}) : connexion acceptée.` }];
+    } catch (err) {
+      return [{ niveau: 'erreur', texte: `Boîte mail (SMTP) : ${messageSmtp(err)}`, aFaire: 'Réglages SMTP de votre fournisseur : docs/DOC-MAIL.md.' }];
+    } finally {
+      t.close();
+    }
+  }
+  if (mode === 'brevo' && env.BREVO_API_KEY) {
+    try {
+      const res = await fetch('https://api.brevo.com/v3/account', { headers: { 'api-key': env.BREVO_API_KEY, accept: 'application/json' } });
+      if (res.ok) return [{ niveau: 'ok', texte: 'Brevo : clé acceptée.' }];
+      return [{ niveau: 'erreur', texte: `Brevo : ${messageBrevo(res.status)}` }];
+    } catch {
+      return [{ niveau: 'attention', texte: 'Brevo injoignable depuis ce poste : réessayez plus tard.' }];
+    }
+  }
+  return [];
 }
 
 // ---------------------------------------------------------------------------
@@ -146,7 +184,7 @@ async function main() {
     ['Contenus (contenu/*.json)', contenus()],
     ['Variables (.env en local, Netlify en ligne)', verifierEnv(env, MODULES)],
   ];
-  if (!horsLigne) sections.push(['Connexions Google', await verifierConnexions(env)]);
+  if (!horsLigne) sections.push(['Connexions (Google, mail)', await verifierConnexions(env)]);
 
   for (const [titre, lignes] of sections) afficher(titre, lignes);
 

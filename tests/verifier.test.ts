@@ -6,6 +6,7 @@ import {
   valeursExemple,
   verifierConfig,
   verifierEnv,
+  verifierEnvoi,
 } from '../scripts/_verifier.mjs';
 import ASSO from '../asso.config.js';
 
@@ -90,5 +91,30 @@ describe('npm run verifier — variables', () => {
       'colonne 2 : « Prénom » au lieu de « PRENOM »',
     ]);
     expect(ecartsColonnes(['DATE_DEMANDE'], ['date demande'])).toEqual([]);
+  });
+});
+
+describe('npm run verifier — envoi des mails', () => {
+  const textes = (r: { texte: string }[]) => r.map((x) => x.texte);
+
+  it('site vitrine seul : pas de mail à envoyer', () => {
+    expect(verifierEnvoi({}, AUCUN)).toEqual([]);
+  });
+
+  it('sans fournisseur : prévient, sans bloquer la mise en ligne', () => {
+    const r = verifierEnvoi({}, { ...AUCUN, essais: true });
+    expect(r.map((x) => x.niveau)).toEqual(['attention']);
+    expect(r[0].aFaire).toMatch(/SMTP/);
+  });
+
+  it('SMTP : demande le mot de passe, puis dit d’où partent les mails', () => {
+    expect(erreurs(verifierEnvoi({ SMTP_HOST: 'ssl0.ovh.net' }, { ...AUCUN, essais: true }))).toEqual(['SMTP_PASS manquante.']);
+    expect(textes(verifierEnvoi({ SMTP_HOST: 'ssl0.ovh.net', SMTP_PASS: 'x', MAIL_ASSO: 'bureau@club.fr' }, { ...AUCUN, essais: true }))).toEqual([
+      'Envoi des mails : SMTP ssl0.ovh.net:465, depuis bureau@club.fr.',
+    ]);
+  });
+
+  it('Gmail forcé sans connexion Google : erreur claire', () => {
+    expect(erreurs(verifierEnvoi({ MAIL_ENVOI: 'gmail' }, { ...AUCUN, bureau: true }))[0]).toMatch(/GOOGLE_REFRESH_TOKEN/);
   });
 });

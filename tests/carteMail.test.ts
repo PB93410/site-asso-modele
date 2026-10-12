@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { buildMime, isCarteMailAddress } from '../netlify/functions/carte-mail.mjs';
+import { isCarteMailAddress, messageCarte } from '../netlify/functions/carte-mail.mjs';
+import { messageBrut } from '../netlify/functions/_envoi.mjs';
 
 describe('carte par mail', () => {
   it('accepte une adresse simple et refuse le reste', () => {
@@ -9,7 +10,7 @@ describe('carte par mail', () => {
     expect(isCarteMailAddress('')).toBe(false);
   });
 
-  it('joint le recto puis le verso', () => {
+  it('joint le recto puis le verso', async () => {
     const recto = Buffer.alloc(32, 1);
     recto[0] = 0x89;
     recto[1] = 0x50;
@@ -20,18 +21,19 @@ describe('carte par mail', () => {
     verso[1] = 0x50;
     verso[2] = 0x4e;
     verso[3] = 0x47;
-    const mime = buildMime({
+    const message = messageCarte({
       to: 'marie@example.fr',
       numero: 'ASE-2627-004',
       prenom: 'Marie',
       png: recto,
       verso,
     });
-    const rectoName = mime.indexOf('filename="ASE-2627-004-recto.png"');
-    const versoName = mime.indexOf('filename="ASE-2627-verso.png"');
+    const mime = (await messageBrut({ from: 'contact@exemple-asso.fr', ...message })).toString();
+    const rectoName = mime.search(/filename="?ASE-2627-004-recto.png/);
+    const versoName = mime.search(/filename="?ASE-2627-verso.png/);
     expect(rectoName).toBeGreaterThan(-1);
     expect(versoName).toBeGreaterThan(rectoName);
     expect(mime.indexOf(recto.toString('base64'))).toBeLessThan(mime.indexOf(verso.toString('base64')));
-    expect(mime).toContain('Le QR au verso ouvre le site du club.');
+    expect(message.text).toContain('Le QR au verso ouvre le site du club.');
   });
 });
