@@ -22,11 +22,15 @@ export default function AlertesPage() {
   const [pushOk, setPushOk] = useState('');
   const [vapid, setVapid] = useState('');
 
-  usePageMeta({
-    title: `Alertes cours — ${ASSO.nom}`,
-    description: `Recevoir un message si un cours de ${ASSO.nom} est annulé ou déplacé.`,
-    path: '/alertes',
-  });
+  usePageMeta(
+    MODULES.alertes
+      ? {
+          title: `Alertes cours — ${ASSO.nom}`,
+          description: `Recevoir un message si un cours de ${ASSO.nom} est annulé ou déplacé.`,
+          path: '/alertes',
+        }
+      : { title: `Page introuvable — ${ASSO.nom}`, path: '/alertes' },
+  );
 
   useEffect(() => {
     if (!MODULES.alertes) return;

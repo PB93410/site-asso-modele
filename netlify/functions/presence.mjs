@@ -92,6 +92,24 @@ function publicJson(status, body) {
   return json(status, body);
 }
 
+/** En démo, le QR pointe vers le serveur local, pas vers le siteUrl d’exemple. */
+function basePublique(event) {
+  if (process.env.DEMO === '1') {
+    const origin = String(event.headers?.origin || '').replace(/\/+$/, '');
+    if (origin && /^https?:\/\//i.test(origin)) return origin;
+    const host = String(event.headers?.host || event.headers?.['x-forwarded-host'] || '')
+      .split(',')[0]
+      .trim();
+    if (host) {
+      const proto = String(event.headers?.['x-forwarded-proto'] || (host.includes('localhost') ? 'http' : 'https'))
+        .split(',')[0]
+        .trim();
+      return `${proto}://${host}`.replace(/\/+$/, '');
+    }
+  }
+  return SITE_URL;
+}
+
 async function handler(event) {
   brancherStockage(event);
   if (event.httpMethod === 'OPTIONS') return handleOptions();
@@ -199,7 +217,7 @@ async function handler(event) {
     const secret = secretPresence();
     const sessions = sessionsDuJour(planning, ymd).map((s) => {
       const token = signerPresence(s.id, ymd, secret);
-      return { ...s, token, url: urlPresence(SITE_URL, s.id, token) };
+      return { ...s, token, url: urlPresence(basePublique(event), s.id, token) };
     });
     return json(200, { date: ymd, sessions });
   }
@@ -210,7 +228,7 @@ async function handler(event) {
     if (!session) return json(400, { error: 'Séance manquante.' });
     const secret = secretPresence();
     const token = signerPresence(session, ymd, secret);
-    const url = urlPresence(SITE_URL, session, token);
+    const url = urlPresence(basePublique(event), session, token);
     const planning = await lirePlanning();
     const seance = sessionsDuJour(planning, ymd).find((s) => s.id === session) || { id: session, cours: '', horaire: '', lieu: '' };
     let svg = '';

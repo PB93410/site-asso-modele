@@ -18,11 +18,15 @@ export default function PresencePage() {
   const [envoi, setEnvoi] = useState(false);
   const [ok, setOk] = useState<{ prenom: string; deja: boolean; cours: string } | null>(null);
 
-  usePageMeta({
-    title: `Pointer — ${ASSO.nom}`,
-    description: `Pointer votre présence à ${ASSO.nom}.`,
-    path: '/presence',
-  });
+  usePageMeta(
+    MODULES.presences
+      ? {
+          title: `Pointer — ${ASSO.nom}`,
+          description: `Pointer votre présence à ${ASSO.nom}.`,
+          path: '/presence',
+        }
+      : { title: `Page introuvable — ${ASSO.nom}`, path: '/presence' },
+  );
 
   useEffect(() => {
     if (!MODULES.presences || !session || !token) return;

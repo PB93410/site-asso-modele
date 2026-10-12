@@ -3,8 +3,16 @@
  * 6 questions, ranking des cours du fichier contenu/.
  */
 
+import { ASSO } from '../data/asso';
 import { COURS, PLANNING_CONTENU } from '../data/contenu';
 import type { CoursContenu, CreneauContenu } from '../data/contenu';
+import { remplir, valeursTexte } from './gabarit.js';
+
+const VALEURS = valeursTexte(ASSO, COURS.length);
+
+function lieuLisible(lieu: string) {
+  return remplir(lieu, VALEURS);
+}
 
 export type QuizQuestionId = 'pratique' | 'age' | 'objectif' | 'intensite' | 'dispo' | 'contrainte';
 
@@ -221,7 +229,7 @@ export function scorerCours(cours: CoursContenu, reponses: QuizReponses, plannin
   const creneaux = planning
     .filter((c) => c.cours === cours.nom)
     .filter((c) => !reponses.dispo || creneauMatcheDispo(c.jour, c.horaire, reponses.dispo))
-    .map((c) => ({ jour: c.jour, horaire: c.horaire, lieu: c.lieu }));
+    .map((c) => ({ jour: c.jour, horaire: c.horaire, lieu: lieuLisible(c.lieu) }));
   if (reponses.dispo) {
     if (creneaux.length) {
       score += 3;
@@ -239,7 +247,9 @@ export function scorerCours(cours: CoursContenu, reponses: QuizReponses, plannin
     nom: cours.nom,
     score,
     raisons: [...new Set(raisons)].slice(0, 3),
-    creneaux: planning.filter((c) => c.cours === cours.nom).map((c) => ({ jour: c.jour, horaire: c.horaire, lieu: c.lieu })),
+    creneaux: planning
+      .filter((c) => c.cours === cours.nom)
+      .map((c) => ({ jour: c.jour, horaire: c.horaire, lieu: lieuLisible(c.lieu) })),
     niveau: cours.niveau,
     resume: cours.resume,
   };

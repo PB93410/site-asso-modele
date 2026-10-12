@@ -91,6 +91,12 @@ describe('présences — fonction démo', () => {
     expect(data.sessions.length).toBeGreaterThan(0);
     expect(data.sessions[0].url).toContain('/presence?s=');
     expect(data.sessions[0].token).toHaveLength(32);
+    const local = await call({
+      httpMethod: 'GET',
+      headers: { ...auth, origin: 'http://localhost:5173' },
+      queryStringParameters: { action: 'sessions' },
+    });
+    expect(JSON.parse(local.body).sessions[0].url).toMatch(/^http:\/\/localhost:5173\/presence\?/);
   });
 
   it('pointe une fois, refuse le doublon, ignore un jeton d’un autre jour', async () => {

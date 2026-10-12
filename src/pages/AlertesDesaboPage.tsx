@@ -11,11 +11,15 @@ export default function AlertesDesaboPage() {
   const [etat, setEtat] = useState<'wait' | 'ok' | 'err'>('wait');
   const [msg, setMsg] = useState('');
 
-  usePageMeta({
-    title: `Retrait des alertes — ${ASSO.nom}`,
-    description: `Ne plus recevoir les alertes de cours de ${ASSO.nom}.`,
-    path: '/alertes/desabo',
-  });
+  usePageMeta(
+    MODULES.alertes
+      ? {
+          title: `Retrait des alertes — ${ASSO.nom}`,
+          description: `Ne plus recevoir les alertes de cours de ${ASSO.nom}.`,
+          path: '/alertes/desabo',
+        }
+      : { title: `Page introuvable — ${ASSO.nom}`, path: '/alertes/desabo' },
+  );
 
   useEffect(() => {
     if (!MODULES.alertes) return;

@@ -15,11 +15,15 @@ export default function QuizPage() {
   const [etape, setEtape] = useState(0);
   const [reponses, setReponses] = useState<QuizReponses>({});
 
-  usePageMeta({
-    title: `Quel cours pour moi ? — ${ASSO.nom}`,
-    description: `Six questions pour trouver le cours de ${ASSO.nom} à ${ASSO.ville} qui vous convient.`,
-    path: '/quiz',
-  });
+  usePageMeta(
+    MODULES.quiz
+      ? {
+          title: `Quel cours pour moi ? — ${ASSO.nom}`,
+          description: `Six questions pour trouver le cours de ${ASSO.nom} à ${ASSO.ville} qui vous convient.`,
+          path: '/quiz',
+        }
+      : { title: `Page introuvable — ${ASSO.nom}`, path: '/quiz' },
+  );
 
   const question = QUIZ_QUESTIONS[etape];
   const termine = etape >= QUIZ_QUESTIONS.length;

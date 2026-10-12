@@ -133,9 +133,14 @@ function Contenu() {
             <p className="text-sm text-slate-500">{qr.horaire}</p>
             {qr.svg ? (
               <div className="mx-auto w-[260px] h-[260px]" dangerouslySetInnerHTML={{ __html: qr.svg }} />
-            ) : (
-              <p className="text-sm break-all">{qr.url}</p>
-            )}
+            ) : null}
+            {qr.url ? (
+              <p className="text-sm">
+                <a href={qr.url} className="text-brand-olive font-semibold break-all underline underline-offset-2">
+                  Ouvrir la page de pointage
+                </a>
+              </p>
+            ) : null}
             <p className="text-sm text-slate-500">Valable uniquement le {date}.</p>
             <button type="button" className={bouton.secondaire} onClick={() => setQr(null)}>
               Fermer

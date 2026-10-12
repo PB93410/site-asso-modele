@@ -25,7 +25,7 @@ export interface AssoModules {
 }
 
 export interface AssoConfig {
-  /** Fonctions activées (toutes par défaut). */
+  /** Fonctions activées. essais / adhesion / bureau / mail : absentes = on. presences / quiz / alertes : absentes = off. */
   modules?: Partial<AssoModules>;
   nom: string;
   nomCourt: string;

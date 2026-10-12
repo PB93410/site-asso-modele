@@ -26,6 +26,8 @@ describe('quiz « Quel cours pour moi ? »', () => {
     );
     expect(recos[0].nom).toBe('Gym Douce');
     expect(recos[0].score).toBeGreaterThan(recos[2].score);
+    expect(recos[0].creneaux.length).toBeGreaterThan(0);
+    expect(recos[0].creneaux.every((c) => !c.lieu.includes('{'))).toBe(true);
   });
 
   it('oriente vers Zumba pour danse + soirée', () => {
