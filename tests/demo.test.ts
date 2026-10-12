@@ -4,7 +4,7 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 process.env.DEMO = '1';
 
 type Handler = (event: Record<string, unknown>) => Promise<{ statusCode: number; body: string; headers?: Record<string, string> }>;
-const fn = async (name: string): Promise<Handler> => (await import(`../netlify/functions/${name}.mjs`)).handler;
+const fn = async (name: string): Promise<Handler> => (await import(`../netlify/functions/${name}.mjs`)).traiter;
 const call = async (name: string, event: Record<string, unknown>) =>
   (await fn(name))({ headers: {}, queryStringParameters: {}, ...event });
 const json = (r: { body: string }) => JSON.parse(r.body);

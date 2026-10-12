@@ -15,6 +15,7 @@ import {
 } from './_bureau-lib.mjs';
 import { ASSO } from '../../asso.derive.js';
 import { brancherStockage } from './_stockage.mjs';
+import { versV2 } from './_v2.mjs';
 
 const DAYS = new Set(['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']);
 /**
@@ -113,7 +114,7 @@ function validateEvents(rows) {
   return null;
 }
 
-export async function handler(event) {
+async function handler(event) {
   brancherStockage(event);
   if (event.httpMethod === 'OPTIONS') return handleOptions();
 
@@ -199,3 +200,7 @@ export async function handler(event) {
     });
   }
 }
+
+// Fonction v2 (lecture forte de Netlify Blobs) : voir _v2.mjs.
+export { handler as traiter };
+export default versV2(handler);

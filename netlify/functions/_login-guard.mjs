@@ -92,7 +92,7 @@ function openStore(event) {
     for (const [key, value] of Object.entries(event.headers || {})) {
       headers[String(key).toLowerCase()] = value;
     }
-    connectLambda({ ...event, headers });
+    if (event?.blobs) connectLambda({ ...event, headers });
     const store = getStore({ name: LOGIN_STORE, consistency: 'strong' });
     return {
       get: (key) => store.get(key, { type: 'json' }),

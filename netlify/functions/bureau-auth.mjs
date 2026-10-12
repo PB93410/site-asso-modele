@@ -15,6 +15,7 @@ import {
   moduleOff,
 } from './_bureau-lib.mjs';
 import { checkLoginLock, clearLoginFailures, recordLoginFailure } from './_login-guard.mjs';
+import { versV2 } from './_v2.mjs';
 
 function tooMany(retryAfterSec) {
   const minutes = Math.max(1, Math.ceil(retryAfterSec / 60));
@@ -28,7 +29,7 @@ function tooMany(retryAfterSec) {
   );
 }
 
-export async function handler(event) {
+async function handler(event) {
   if (event.httpMethod === 'OPTIONS') return handleOptions();
   const off = moduleOff('bureau');
   if (off) return off;
@@ -89,3 +90,7 @@ export async function handler(event) {
     message: 'Connexion réussie',
   });
 }
+
+// Fonction v2 (lecture forte de Netlify Blobs) : voir _v2.mjs.
+export { handler as traiter };
+export default versV2(handler);

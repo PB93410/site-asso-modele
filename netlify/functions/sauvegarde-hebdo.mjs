@@ -2,7 +2,7 @@
  * Sauvegarde du lundi matin (stockage Netlify) : toutes les données du bureau en Excel,
  * envoyées à la boîte de l'asso. Le Drive ne fait plus de copie : c'est cette pièce jointe.
  * Rien avec Google Sheets (les classeurs ont déjà leur historique), ni en démo.
- * Pour couper : SAUVEGARDE_MAIL=non. Planification : netlify.toml.
+ * Pour couper : SAUVEGARDE_MAIL=non. Planification : `config` en bas du fichier.
  */
 
 import { ASSO, MODULES } from '../../asso.derive.js';
@@ -10,6 +10,7 @@ import { adresseAsso, envoyerMail, modeEnvoi } from './_envoi.mjs';
 import { classeurBureau, nomFichierExport } from './_export.mjs';
 import { brancherStockage, surNetlify } from './_stockage.mjs';
 import { XLSX_TYPE } from './_xlsx.mjs';
+import { versV2 } from './_v2.mjs';
 
 export function sauvegardeActive(env = process.env) {
   if (/^(non|0|false)$/i.test(String(env.SAUVEGARDE_MAIL || '').trim())) return false;
@@ -36,7 +37,7 @@ export async function envoyerSauvegarde(now = new Date()) {
   return nom;
 }
 
-export const handler = async (event) => {
+const handler = async (event) => {
   if (!sauvegardeActive()) return { statusCode: 200, body: 'sauvegarde inactive' };
   brancherStockage(event);
   try {
@@ -48,3 +49,10 @@ export const handler = async (event) => {
     return { statusCode: 500, body: 'échec' };
   }
 };
+
+// Fonction v2 (lecture forte de Netlify Blobs) : voir _v2.mjs.
+export { handler as traiter };
+export default versV2(handler);
+
+// Chaque lundi à 6 h (UTC).
+export const config = { schedule: '0 6 * * 1' };

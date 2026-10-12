@@ -50,9 +50,8 @@
     "node_modules/@resvg/resvg-wasm/index_bg.wasm",
   ]
 
-# Sauvegarde Excel envoyée à la boîte de l’asso chaque lundi à 6 h (UTC), stockage Netlify seulement.
+# Sauvegarde Excel envoyée à la boîte de l’asso chaque lundi (planification : config dans le fichier).
 [functions.sauvegarde-hebdo]
-  schedule = "0 6 * * 1"
   included_files = ["public/data/*.csv"]
 
 [functions.carte-image]

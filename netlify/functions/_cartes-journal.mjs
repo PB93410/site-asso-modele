@@ -44,7 +44,7 @@ export async function noteEnvoi(event, entry) {
     for (const [key, value] of Object.entries(event?.headers || {})) {
       headers[String(key).toLowerCase()] = value;
     }
-    connectLambda({ ...event, headers });
+    if (event?.blobs) connectLambda({ ...event, headers });
     const store = getStore({ name: JOURNAL_STORE, consistency: 'strong' });
     await store.setJSON(journalKey(entry), entry);
   } catch (err) {

@@ -28,6 +28,7 @@ import { notifyBureauNewLead } from './_notify-bureau.mjs';
 import { sendEssaiNotification } from './_essai-mail.mjs';
 import { SITE_URL } from '../../asso.derive.js';
 import { brancherStockage, modeStockage } from './_stockage.mjs';
+import { versV2 } from './_v2.mjs';
 
 const CORS = {
   'Access-Control-Allow-Origin': SITE_URL,
@@ -77,7 +78,7 @@ function publicJson(status, body) {
   return { statusCode: status, headers: CORS, body: JSON.stringify(body) };
 }
 
-export async function handler(event) {
+async function handler(event) {
   brancherStockage(event);
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 204, headers: CORS, body: '' };
@@ -233,3 +234,7 @@ export async function handler(event) {
     return publicJson(500, { ok: false, error: 'Envoi impossible pour le moment' });
   }
 }
+
+// Fonction v2 (lecture forte de Netlify Blobs) : voir _v2.mjs.
+export { handler as traiter };
+export default versV2(handler);

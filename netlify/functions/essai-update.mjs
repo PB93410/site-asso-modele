@@ -17,6 +17,7 @@ import {
   updateRowByHeaders,
 } from './_bureau-lib.mjs';
 import { brancherStockage } from './_stockage.mjs';
+import { versV2 } from './_v2.mjs';
 
 const ESSAI_STATUTS = new Set(ESSAIS_STATUTS);
 
@@ -31,7 +32,7 @@ function todayFr() {
   return `${get('day')}/${get('month')}/${get('year')}`;
 }
 
-export async function handler(event) {
+async function handler(event) {
   brancherStockage(event);
   if (event.httpMethod === 'OPTIONS') return handleOptions();
   if (event.httpMethod !== 'POST') {
@@ -137,3 +138,7 @@ export async function handler(event) {
     });
   }
 }
+
+// Fonction v2 (lecture forte de Netlify Blobs) : voir _v2.mjs.
+export { handler as traiter };
+export default versV2(handler);

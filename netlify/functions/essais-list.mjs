@@ -21,6 +21,7 @@ import {
   telPersonKey,
 } from './_bureau-lib.mjs';
 import { brancherStockage } from './_stockage.mjs';
+import { versV2 } from './_v2.mjs';
 
 function looksLikeDateOnly(raw) {
   const s = String(raw || '').trim();
@@ -68,7 +69,7 @@ function hasIdentity(item) {
   return Boolean((item.prenom || item.nom || item.tel).trim());
 }
 
-export async function handler(event) {
+async function handler(event) {
   brancherStockage(event);
   if (event.httpMethod === 'OPTIONS') return handleOptions();
   if (event.httpMethod !== 'GET') {
@@ -149,3 +150,7 @@ export async function handler(event) {
     });
   }
 }
+
+// Fonction v2 (lecture forte de Netlify Blobs) : voir _v2.mjs.
+export { handler as traiter };
+export default versV2(handler);

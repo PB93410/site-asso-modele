@@ -3,8 +3,9 @@
  * GET /.netlify/functions/health
  */
 import { ASSO } from '../../asso.derive.js';
+import { versV2 } from './_v2.mjs';
 
-export async function handler() {
+async function handler() {
   return {
     statusCode: 200,
     headers: {
@@ -18,3 +19,7 @@ export async function handler() {
     }),
   };
 }
+
+// Fonction v2 (lecture forte de Netlify Blobs) : voir _v2.mjs.
+export { handler as traiter };
+export default versV2(handler);

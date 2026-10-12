@@ -60,7 +60,7 @@ function netlifyFunctionsDev(): Plugin {
           const body = await readBody(req);
           const headers: Record<string, string> = {};
           for (const [k, v] of Object.entries(req.headers)) if (typeof v === 'string') headers[k.toLowerCase()] = v;
-          const out = await mod.handler({
+          const out = await (mod.traiter || mod.handler)({
             httpMethod: req.method,
             path: url.pathname,
             rawUrl: url.href,

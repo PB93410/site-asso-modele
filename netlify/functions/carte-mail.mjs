@@ -28,6 +28,7 @@ import {
 } from './_bureau-lib.mjs';
 import { ASSO, SAISON_COURTE } from '../../asso.derive.js';
 import { brancherStockage } from './_stockage.mjs';
+import { versV2 } from './_v2.mjs';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function isCarteMailAddress(raw) {
@@ -76,7 +77,7 @@ function readBody(event) {
   return JSON.parse(raw || '{}');
 }
 
-export async function handler(event) {
+async function handler(event) {
   brancherStockage(event);
   if (event.httpMethod === 'OPTIONS') return handleOptions();
   if (event.httpMethod !== 'POST') return json(405, { error: 'Method not allowed' });
@@ -149,3 +150,7 @@ export async function handler(event) {
     return json(200, { ok: true, sent: true, suivi: false, carte: '' });
   }
 }
+
+// Fonction v2 (lecture forte de Netlify Blobs) : voir _v2.mjs.
+export { handler as traiter };
+export default versV2(handler);

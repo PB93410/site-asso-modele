@@ -21,6 +21,7 @@ import {
   updateRowByHeaders,
 } from './_bureau-lib.mjs';
 import { brancherStockage } from './_stockage.mjs';
+import { versV2 } from './_v2.mjs';
 
 function todayFr() {
   const parts = new Intl.DateTimeFormat('fr-FR', {
@@ -81,7 +82,7 @@ export async function noteCarteDate(row, tel) {
   return { status: 200, body: { ok: true, row, carte, already: false }, numero, tel: telFiche };
 }
 
-export async function handler(event) {
+async function handler(event) {
   brancherStockage(event);
   if (event.httpMethod === 'OPTIONS') return handleOptions();
   if (event.httpMethod !== 'POST') {
@@ -123,3 +124,7 @@ export async function handler(event) {
     return json(500, { error: 'Impossible d’enregistrer. Réessayez dans un instant.' });
   }
 }
+
+// Fonction v2 (lecture forte de Netlify Blobs) : voir _v2.mjs.
+export { handler as traiter };
+export default versV2(handler);

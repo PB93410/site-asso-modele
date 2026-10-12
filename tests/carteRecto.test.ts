@@ -100,7 +100,7 @@ describe('journal des envois de cartes', () => {
 
 describe('carte-mail : pas de second envoi sans demande explicite', () => {
   it('carte déjà partie → 409, rien n’est envoyé', async () => {
-    const { handler } = await import('../netlify/functions/carte-mail.mjs');
+    const { traiter: handler } = await import('../netlify/functions/carte-mail.mjs');
     const res = await handler({
       httpMethod: 'POST',
       headers: {},

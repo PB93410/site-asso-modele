@@ -8,6 +8,7 @@ import { timingSafeEqual } from 'node:crypto';
 import { agendaApi, calendrierIcs, cleAbonnement } from './_agenda.mjs';
 import { moduleOff } from './_bureau-lib.mjs';
 import { brancherStockage } from './_stockage.mjs';
+import { versV2 } from './_v2.mjs';
 
 const ymd = (ms) => new Date(ms).toISOString().slice(0, 10);
 
@@ -23,7 +24,7 @@ const texte = (statusCode, body) => ({
   body,
 });
 
-export async function handler(event) {
+async function handler(event) {
   brancherStockage(event);
   if (event.httpMethod !== 'GET' && event.httpMethod !== 'HEAD') return texte(405, 'Méthode non autorisée');
   const off = moduleOff('bureau');
@@ -58,3 +59,7 @@ export async function handler(event) {
     return texte(503, 'Agenda indisponible, réessayez plus tard.');
   }
 }
+
+// Fonction v2 (lecture forte de Netlify Blobs) : voir _v2.mjs.
+export { handler as traiter };
+export default versV2(handler);

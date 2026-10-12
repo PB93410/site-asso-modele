@@ -24,6 +24,7 @@ import {
 } from './_bureau-lib.mjs';
 import { MODULES, SITE_URL } from '../../asso.derive.js';
 import { brancherStockage, surNetlify } from './_stockage.mjs';
+import { versV2 } from './_v2.mjs';
 
 /**
  * URL « Publier sur le Web → CSV » de chaque onglet (facultatif, variables Netlify).
@@ -41,7 +42,7 @@ const CORS_HEADERS = {
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
-export async function handler(event) {
+async function handler(event) {
   brancherStockage(event);
   // Préflight CORS
   if (event.httpMethod === 'OPTIONS') {
@@ -146,3 +147,7 @@ export async function handler(event) {
     };
   }
 }
+
+// Fonction v2 (lecture forte de Netlify Blobs) : voir _v2.mjs.
+export { handler as traiter };
+export default versV2(handler);

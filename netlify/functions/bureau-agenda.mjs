@@ -10,6 +10,7 @@
 import { agendaApi, lienAbonnement, messageAgenda } from './_agenda.mjs';
 import { handleOptions, json, requireAuth } from './_bureau-lib.mjs';
 import { brancherStockage } from './_stockage.mjs';
+import { versV2 } from './_v2.mjs';
 
 const getCalendarId = () => (process.env.GOOGLE_CALENDAR_ID || 'primary').trim() || 'primary';
 
@@ -196,7 +197,7 @@ async function handleDelete(id) {
   return json(200, { ok: true });
 }
 
-export async function handler(event) {
+async function handler(event) {
   brancherStockage(event);
   if (event.httpMethod === 'OPTIONS') return handleOptions();
 
@@ -224,3 +225,7 @@ export async function handler(event) {
     return json(err?.code === 404 ? 404 : 502, { error: await messageAgenda(err) });
   }
 }
+
+// Fonction v2 (lecture forte de Netlify Blobs) : voir _v2.mjs.
+export { handler as traiter };
+export default versV2(handler);

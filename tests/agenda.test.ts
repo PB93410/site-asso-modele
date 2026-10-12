@@ -11,7 +11,7 @@ process.env.BUREAU_SECRET = 'secret-de-test-0123456789abcdef0123456789';
 
 type Handler = (event: Record<string, unknown>) => Promise<{ statusCode: number; body: string; headers?: Record<string, string> }>;
 const call = async (name: string, event: Record<string, unknown>) =>
-  ((await import(`../netlify/functions/${name}.mjs`)).handler as Handler)({ headers: {}, queryStringParameters: {}, ...event });
+  ((await import(`../netlify/functions/${name}.mjs`)).traiter as Handler)({ headers: {}, queryStringParameters: {}, ...event });
 const json = (r: { body: string }) => JSON.parse(r.body);
 
 describe('agenda — format .ics', () => {

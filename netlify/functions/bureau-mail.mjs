@@ -17,6 +17,7 @@ import {
   toBase64Url,
 } from './_google-user.mjs';
 import { lireImap, listerImap, messageImap, modeBoite, repondreImap } from './_boite.mjs';
+import { versV2 } from './_v2.mjs';
 
 function parseMailPath(event) {
   const candidates = [
@@ -190,7 +191,7 @@ async function handleReply(id, body) {
   return json(200, { ok: true, message: 'Réponse envoyée.' });
 }
 
-export async function handler(event) {
+async function handler(event) {
   if (event.httpMethod === 'OPTIONS') return handleOptions();
   const off = moduleOff('mail');
   if (off) return off;
@@ -229,3 +230,7 @@ export async function handler(event) {
     return json(502, { error: googleErrorMessage(err) });
   }
 }
+
+// Fonction v2 (lecture forte de Netlify Blobs) : voir _v2.mjs.
+export { handler as traiter };
+export default versV2(handler);

@@ -9,8 +9,9 @@ import {
   createGoogleOAuthState,
   googleErrorMessage,
 } from './_google-user.mjs';
+import { versV2 } from './_v2.mjs';
 
-export async function handler(event) {
+async function handler(event) {
   if (event.httpMethod === 'OPTIONS') return handleOptions();
   const off = moduleOff('mail');
   if (off) return off;
@@ -30,3 +31,7 @@ export async function handler(event) {
     return json(500, { error: googleErrorMessage(err) });
   }
 }
+
+// Fonction v2 (lecture forte de Netlify Blobs) : voir _v2.mjs.
+export { handler as traiter };
+export default versV2(handler);

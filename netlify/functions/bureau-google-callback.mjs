@@ -5,6 +5,7 @@
 
 import { createOAuth2Client, verifyGoogleOAuthState, ASSO_GMAIL } from './_google-user.mjs';
 import { moduleOff } from './_bureau-lib.mjs';
+import { versV2 } from './_v2.mjs';
 
 function escapeHtml(s) {
   return String(s ?? '')
@@ -40,7 +41,7 @@ function htmlPage(title, bodyHtml) {
 </html>`;
 }
 
-export async function handler(event) {
+async function handler(event) {
   const off = moduleOff('mail');
   if (off) return off;
   if (event.httpMethod !== 'GET') {
@@ -153,3 +154,7 @@ export async function handler(event) {
     };
   }
 }
+
+// Fonction v2 (lecture forte de Netlify Blobs) : voir _v2.mjs.
+export { handler as traiter };
+export default versV2(handler);

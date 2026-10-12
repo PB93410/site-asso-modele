@@ -18,6 +18,7 @@ import {
   requireAuth,
 } from './_bureau-lib.mjs';
 import { brancherStockage } from './_stockage.mjs';
+import { versV2 } from './_v2.mjs';
 
 /** Fiche qui peut recevoir une carte, ou la réponse d’erreur. */
 export function carteFiche(target, numeroAffiche) {
@@ -39,7 +40,7 @@ export function carteFiche(target, numeroAffiche) {
   return { prenom, nom, numero };
 }
 
-export async function handler(event) {
+async function handler(event) {
   brancherStockage(event);
   if (event.httpMethod === 'OPTIONS') return handleOptions();
   if (event.httpMethod !== 'GET') return json(405, { error: 'Method not allowed' });
@@ -76,3 +77,7 @@ export async function handler(event) {
     return json(500, { error: 'La carte n’a pas pu être fabriquée. Réessayez dans un instant.' });
   }
 }
+
+// Fonction v2 (lecture forte de Netlify Blobs) : voir _v2.mjs.
+export { handler as traiter };
+export default versV2(handler);
