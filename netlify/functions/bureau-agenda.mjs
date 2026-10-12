@@ -1,17 +1,17 @@
 /**
- * Agenda bureau — Calendar API (un seul calendrier asso)
+ * Agenda bureau — rangé sur Netlify ou dans Google Agenda (_agenda.mjs), un seul agenda asso
+ * GET renvoie aussi le lien d'abonnement .ics (agenda-ics.mjs).
  * GET    /api/bureau/agenda?from=&to=
  * POST   /api/bureau/agenda
  * PATCH  /api/bureau/agenda/:id
  * DELETE /api/bureau/agenda/:id
  */
 
-import { handleOptions, json, moduleOff, requireAuth } from './_bureau-lib.mjs';
-import {
-  getCalendarId,
-  calendarApi,
-  googleErrorMessage,
-} from './_google-user.mjs';
+import { agendaApi, lienAbonnement, messageAgenda } from './_agenda.mjs';
+import { handleOptions, json, requireAuth } from './_bureau-lib.mjs';
+import { brancherStockage } from './_stockage.mjs';
+
+const getCalendarId = () => (process.env.GOOGLE_CALENDAR_ID || 'primary').trim() || 'primary';
 
 const TZ = 'Europe/Paris';
 
@@ -112,7 +112,7 @@ function validateEventBody(body, { partial = false } = {}) {
 }
 
 async function calendarClient() {
-  return calendarApi();
+  return agendaApi();
 }
 
 async function handleList(q) {
@@ -134,7 +134,7 @@ async function handleList(q) {
   const events = (res.data.items || [])
     .filter((ev) => ev.start?.dateTime && ev.end?.dateTime)
     .map(mapEvent);
-  return json(200, { events });
+  return json(200, { events, abonnement: lienAbonnement() });
 }
 
 async function handleCreate(body) {
@@ -197,9 +197,8 @@ async function handleDelete(id) {
 }
 
 export async function handler(event) {
+  brancherStockage(event);
   if (event.httpMethod === 'OPTIONS') return handleOptions();
-  const off = moduleOff('mail');
-  if (off) return off;
 
   const auth = requireAuth(event);
   if (!auth.ok) return auth.response;
@@ -222,6 +221,6 @@ export async function handler(event) {
     return json(405, { error: 'Method not allowed' });
   } catch (err) {
     console.error('bureau-agenda', err?.message || err);
-    return json(502, { error: googleErrorMessage(err) });
+    return json(err?.code === 404 ? 404 : 502, { error: await messageAgenda(err) });
   }
 }

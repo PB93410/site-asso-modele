@@ -1244,6 +1244,18 @@ export default function BureauPage() {
                 </span>
               </span>
             </button>
+            <Link
+              to="/bureau/agenda"
+              className="w-full flex items-center gap-3 rounded-2xl bg-white border border-black/10 p-4 text-left min-h-[56px]"
+            >
+              <Calendar className="w-5 h-5 text-orange-primary shrink-0" aria-hidden="true" />
+              <span>
+                <span className="block font-semibold text-brand-black">Agenda</span>
+                <span className="block text-sm text-slate-500">
+                  Agenda unique du bureau, aussi sur les téléphones
+                </span>
+              </span>
+            </Link>
             {MODULES.mail ? (
               <>
               <Link
@@ -1259,18 +1271,6 @@ export default function BureauPage() {
                 </span>
               </Link>
               <Link
-                to="/bureau/agenda"
-                className="w-full flex items-center gap-3 rounded-2xl bg-white border border-black/10 p-4 text-left min-h-[56px]"
-              >
-                <Calendar className="w-5 h-5 text-orange-primary shrink-0" aria-hidden="true" />
-                <span>
-                  <span className="block font-semibold text-brand-black">Agenda</span>
-                  <span className="block text-sm text-slate-500">
-                    Agenda unique du bureau
-                  </span>
-                </span>
-              </Link>
-              <Link
                 to="/bureau/connexion-google"
                 className="w-full flex items-center gap-3 rounded-2xl bg-white border border-dashed border-black/15 p-4 text-left min-h-[56px]"
               >
@@ -1278,7 +1278,7 @@ export default function BureauPage() {
                 <span>
                   <span className="block font-semibold text-brand-black">Connecter Google</span>
                   <span className="block text-sm text-slate-500">
-                    Référent — une fois (Mail + Agenda)
+                    Référent — une fois (boîte mail)
                   </span>
                 </span>
               </Link>

@@ -152,6 +152,12 @@
   force = true
 
 [[redirects]]
+  from = "/api/agenda.ics"
+  to = "/.netlify/functions/agenda-ics"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/bureau-export"
   to = "/.netlify/functions/bureau-export"
   status = 200

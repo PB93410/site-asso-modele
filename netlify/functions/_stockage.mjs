@@ -41,30 +41,39 @@ export function brancherStockage(event) {
 
 export const cleOnglet = (id, tab) => `${id}/${tab}`;
 
+/** Store des données (remplaçable en test via vi.mock de @netlify/blobs). */
+export const storeDonnees = () => getStore({ name: STORE_DONNEES, consistency: 'strong' });
+
+/**
+ * Lit, modifie et réécrit une entrée JSON d'un seul tenant : si quelqu'un a écrit entre-temps,
+ * on relit et on recommence. fn(données lues ou null) → { valeur à écrire, res renvoyé }.
+ */
+export async function modifierBlob(s, cle, fn, essais = 8) {
+  for (let i = 0; i < essais; i += 1) {
+    const lu = await s.getWithMetadata(cle, { type: 'json' });
+    const { valeur, res } = fn(lu?.data ?? null);
+    const ecrit = await s.setJSON(cle, valeur, lu?.etag ? { onlyIfMatch: lu.etag } : { onlyIfNew: true });
+    if (ecrit?.modified !== false) return res;
+    await new Promise((r) => setTimeout(r, 40 + Math.random() * 120 * (i + 1)));
+  }
+  throw Object.assign(new Error('Données occupées : réessayez dans un instant.'), { code: 409 });
+}
+
 /**
  * Classeur sur Netlify Blobs, avec la même API que Google Sheets (spreadsheets.values.*).
  * @param {{ store?: () => any, seed?: (id: string, tab: string) => string[][], essais?: number }} opts
  *   store : le store Blobs (remplaçable en test) ; seed : lignes d'un onglet encore jamais écrit.
  */
-export function blobSheets({ store = () => getStore({ name: STORE_DONNEES, consistency: 'strong' }), seed = () => [], essais = 8 } = {}) {
+export function blobSheets({ store = storeDonnees, seed = () => [], essais = 8 } = {}) {
   const lire = async (id, tab) => {
     const data = await store().get(cleOnglet(id, tab), { type: 'json' });
     return Array.isArray(data?.rows) ? data.rows : seed(id, tab).map((r) => [...r]);
   };
-  const modifier = async (id, tab, fn) => {
-    const s = store();
-    const cle = cleOnglet(id, tab);
-    for (let i = 0; i < essais; i += 1) {
-      const lu = await s.getWithMetadata(cle, { type: 'json' });
-      const rows = Array.isArray(lu?.data?.rows) ? lu.data.rows : seed(id, tab).map((r) => [...r]);
+  const modifier = (id, tab, fn) =>
+    modifierBlob(store(), cleOnglet(id, tab), (data) => {
+      const rows = Array.isArray(data?.rows) ? data.rows : seed(id, tab).map((r) => [...r]);
       const res = fn(rows);
-      const valeur = { rows, maj: new Date().toISOString() };
-      const ecrit = await s.setJSON(cle, valeur, lu?.etag ? { onlyIfMatch: lu.etag } : { onlyIfNew: true });
-      if (ecrit?.modified !== false) return res;
-      // Quelqu'un a écrit entre-temps : on relit et on recommence.
-      await new Promise((r) => setTimeout(r, 40 + Math.random() * 120 * (i + 1)));
-    }
-    throw Object.assign(new Error('Données occupées : réessayez dans un instant.'), { code: 409 });
-  };
+      return { valeur: { rows, maj: new Date().toISOString() }, res };
+    }, essais);
   return tableurValues({ lire, modifier });
 }

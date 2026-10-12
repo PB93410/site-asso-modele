@@ -22,7 +22,8 @@ Issu du site d’une association sportive en production, puis rendu générique.
 - Adhésions en attente, « J’ai reçu l’argent », numéros d’adhérent
 - Cartes d’adhérent fabriquées à l’envoi à partir de la fiche (mail ou WhatsApp), journal des envois
 - Édition du planning et des événements sans toucher au code
-- Boîte mail et agenda du compte Google de l’asso, modèles de messages
+- Agenda du bureau, à suivre sur son téléphone (abonnement .ics)
+- Boîte Gmail de l’asso dans le bureau (facultatif), modèles de messages
 
 **Technique** : React 19, Vite, Tailwind CSS, TypeScript · Netlify (hébergement + fonctions) · Google Sheets comme registre (essais, adhérents, planning).
 
@@ -55,8 +56,8 @@ Dans `asso.config.js → modules`, chaque fonction s’active séparément :
 | *(toujours)* | Site vitrine : cours, planning, tarifs, contact | Rien |
 | `essais` | Formulaire d’essai gratuit → tableau Essais du bureau | Rien (données sur Netlify) ; pour l’alerte par mail : SMTP ou Brevo |
 | `adhesion` | Inscription en ligne → tableau Adhérents du bureau | Rien (données sur Netlify) ; pour l’alerte par mail : SMTP ou Brevo |
-| `bureau` | Espace `/bureau` des bénévoles, export Excel, sauvegarde chaque lundi par mail | Mot de passe + secret |
-| `mail` | Boîte mail et agenda de l’asso dans le bureau | Connexion du compte Google de l’asso |
+| `bureau` | Espace `/bureau` des bénévoles, agenda (abonnement téléphone), export Excel, sauvegarde chaque lundi par mail | Mot de passe + secret |
+| `mail` | Boîte Gmail de l’asso lue dans le bureau | Connexion du compte Google de l’asso |
 
 Les données sont rangées sur Netlify, avec le site : aucun compte Google n’est nécessaire. Google Sheets reste possible ([docs/DOC-DONNEES.md](docs/DOC-DONNEES.md)).
 
@@ -110,6 +111,7 @@ Si le site est relié à GitHub, Netlify lance lui-même `npm run build` à chaq
 - [docs/CONFIGURATEUR.md](docs/CONFIGURATEUR.md) — questionnaire en ligne et `npm run installer`
 - [docs/ADAPTER-LE-MODELE.md](docs/ADAPTER-LE-MODELE.md) — reprendre le modèle pour son asso
 - [docs/DOC-DONNEES.md](docs/DOC-DONNEES.md) — où sont les données, export Excel, sauvegarde, restauration, Google Sheets
+- [docs/DOC-AGENDA.md](docs/DOC-AGENDA.md) — agenda du bureau, abonnement sur les téléphones
 - [docs/DOC-MAIL.md](docs/DOC-MAIL.md) — envoi des mails (alertes, cartes) : boîte de l’asso en SMTP, Brevo ou Gmail
 - [docs/DOC-BUREAU-GOOGLE.md](docs/DOC-BUREAU-GOOGLE.md) — brancher Gmail / Agenda / Contacts
 - [docs/DOC-GOOGLE-SHEETS.md](docs/DOC-GOOGLE-SHEETS.md) — planning et événements dans un Google Sheet

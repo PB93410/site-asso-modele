@@ -1,12 +1,66 @@
 /**
- * /bureau/agenda — un agenda asso (Calendar API via Netlify)
+ * /bureau/agenda — un agenda asso (rangé sur Netlify ou dans Google Agenda), avec abonnement .ics
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Plus, Smartphone } from 'lucide-react';
 import BureauAuthGate, { BureauSeanceReserve, getBureauToken } from '../components/BureauAuthGate';
 import { bureauFetch } from '../lib/bureauApi';
 import { ASSO } from '../data/asso';
+
+/** Abonnement à l’agenda depuis le téléphone (lien secret, lecture seule). */
+function AbonnementAgenda({ lien }: { lien: string }) {
+  const [copie, setCopie] = useState(false);
+  if (!lien) return null;
+  const webcal = lien.replace(/^https?:/, 'webcal:');
+  const copier = async () => {
+    try {
+      await navigator.clipboard.writeText(lien);
+      setCopie(true);
+      setTimeout(() => setCopie(false), 2500);
+    } catch {
+      setCopie(false);
+    }
+  };
+  return (
+    <details className="rounded-2xl bg-white border border-brand-gray-light p-4">
+      <summary className="flex items-center gap-2 font-semibold cursor-pointer min-h-[44px]">
+        <Smartphone className="w-5 h-5 text-orange-primary shrink-0" aria-hidden="true" />
+        Voir cet agenda sur mon téléphone
+      </summary>
+      <div className="mt-3 space-y-3 text-sm text-brand-gray leading-relaxed">
+        <p>
+          L’agenda du bureau s’ajoute à celui de votre téléphone et se met à jour tout seul (environ
+          toutes les heures). Pour ajouter ou modifier une date : ici, dans le bureau.
+        </p>
+        <a
+          href={webcal}
+          className="inline-flex items-center justify-center gap-2 min-h-[48px] px-4 rounded-xl bg-orange-primary text-white font-semibold w-full sm:w-auto"
+        >
+          Ajouter à mon agenda (iPhone, Mac)
+        </a>
+        <p>
+          <strong>Android / Google Agenda</strong> : sur un ordinateur, Google Agenda → « Autres agendas » →
+          « + » → « À partir de l’URL », collez le lien. <strong>Outlook</strong> : « Ajouter un calendrier » →
+          « S’abonner à partir du web ».
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={copier}
+            className="inline-flex items-center justify-center min-h-[44px] px-3 rounded-xl border border-black/10 bg-white font-semibold text-brand-black"
+          >
+            {copie ? 'Lien copié ✔' : 'Copier le lien'}
+          </button>
+        </div>
+        <p className="text-xs">
+          Ce lien est personnel au bureau : ne le publiez pas. Pour en changer, le référent change le secret
+          du bureau.
+        </p>
+      </div>
+    </details>
+  );
+}
 
 const escRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -164,16 +218,18 @@ export default function BureauAgendaPage() {
   const [editing, setEditing] = useState<AgendaEvent | null>(null);
   const [form, setForm] = useState<FormState>(() => emptyForm(today));
   const [saving, setSaving] = useState(false);
+  const [abonnement, setAbonnement] = useState('');
   const initDone = useRef(false);
 
   const load = useCallback(async () => {
     const { from, to: monthTo } = monthBounds(cursor.y, cursor.m);
     const horizon = addDaysYmd(today, 120);
     const to = maxYmd(monthTo, horizon);
-    const data = await bureauFetch<{ events: AgendaEvent[] }>(
+    const data = await bureauFetch<{ events: AgendaEvent[]; abonnement?: string }>(
       `/api/bureau/agenda?from=${from}&to=${to}`,
     );
     setEvents(data.events || []);
+    setAbonnement(data.abonnement || '');
   }, [cursor.y, cursor.m, today]);
 
   useEffect(() => {
@@ -674,6 +730,7 @@ export default function BureauAgendaPage() {
               </div>
             </section>
           ) : null}
+          <AbonnementAgenda lien={abonnement} />
         </main>
       </div>
       </BureauSeanceReserve>

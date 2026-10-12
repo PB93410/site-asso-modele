@@ -24,8 +24,8 @@ const ASSO = {
     adhesion: true,
     /** Espace /bureau des bénévoles (essais, encaissements, cartes, planning). */
     bureau: true,
-    /** Boîte mail et agenda du compte Google de l'asso, dans le bureau (demande le bureau).
-     *  L'envoi des alertes et des cartes n'en dépend pas : docs/DOC-MAIL.md. */
+    /** Boîte Gmail de l'asso, lue dans le bureau (demande le bureau). L'envoi des alertes et
+     *  des cartes n'en dépend pas (docs/DOC-MAIL.md), l'agenda non plus (docs/DOC-AGENDA.md). */
     mail: true,
   },
 

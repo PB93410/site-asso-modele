@@ -126,12 +126,12 @@ export default function App() {
             {MODULES.mail ? (
               <>
                 <Route path="/bureau/mail" element={<BureauMailPage />} />
-                <Route path="/bureau/agenda" element={<BureauAgendaPage />} />
                 <Route path="/bureau/connexion-google" element={<BureauGoogleConnectPage />} />
               </>
             ) : null}
             {MODULES.bureau ? (
               <>
+                <Route path="/bureau/agenda" element={<BureauAgendaPage />} />
                 <Route path="/bureau/relances" element={<BureauRelancesPage />} />
                 <Route path="/bureau" element={<BureauPage />} />
                 {CartesApercuPage ? (
