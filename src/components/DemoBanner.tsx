@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { X } from 'lucide-react';
 
 /** Mode démo (`npm run demo`) : données fictives, rien n’est envoyé. */
@@ -7,11 +7,13 @@ export const DEMO = import.meta.env.VITE_DEMO === '1';
 
 export default function DemoBanner() {
   const [open, setOpen] = useState(true);
+  // Dans le bureau, la barre de navigation occupe le bas de l’écran (téléphone) : on passe au-dessus.
+  const bureau = useLocation().pathname === '/bureau';
   if (!DEMO || !open) return null;
   return (
     <div
       role="note"
-      className="fixed left-3 bottom-3 z-[60] max-w-[calc(100vw-24px)] sm:max-w-sm rounded-2xl bg-brand-black/95 text-white shadow-lg px-4 py-3 pr-10 font-body text-[14px] leading-snug"
+      className={`fixed left-3 ${bureau ? 'bottom-[84px] lg:bottom-3 lg:left-auto lg:right-3' : 'bottom-3'} z-[60] max-w-[calc(100vw-24px)] sm:max-w-sm rounded-2xl bg-brand-black/95 text-white shadow-lg px-4 py-3 pr-10 font-body text-[14px] leading-snug`}
     >
       <p>
         <strong>Démo</strong> — données fictives, rien n’est envoyé ni enregistré.

@@ -8,7 +8,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
-  Users,
   AlertCircle,
   Phone,
   Shield,
@@ -21,6 +20,11 @@ import {
   Calendar,
   CreditCard,
   MessageCircle,
+  Wallet,
+  RefreshCw,
+  UserRound,
+  ArrowLeftRight,
+  LogOut,
 } from 'lucide-react';
 import BureauAide from '../components/BureauAide';
 import { clearBureauToken, getBureauRole, getBureauToken, setBureauRole, setBureauToken } from '../components/BureauAuthGate';
@@ -29,7 +33,7 @@ import BureauCartesTab, { isAJourCarte } from '../components/bureau/BureauCartes
 import BureauEssaisTab from '../components/bureau/BureauEssaisTab';
 import BureauPersonSheet from '../components/bureau/BureauPersonSheet';
 import BureauRelancesTab from '../components/bureau/BureauRelancesTab';
-import BureauTodayTab from '../components/bureau/BureauTodayTab';
+import BureauTodayTab, { type CreneauDuJour } from '../components/bureau/BureauTodayTab';
 import BureauSheetLinks from '../components/BureauSheetLinks';
 import BureauSiteEditor from '../components/BureauSiteEditor';
 import { useScheduleFromSheet } from '../hooks/useSheetData';
@@ -355,7 +359,7 @@ function PeopleSearch({
 }) {
   return (
     <label className="block relative">
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
       <span className="sr-only">Rechercher prénom, nom ou téléphone</span>
       <input
         type="search"
@@ -363,7 +367,7 @@ function PeopleSearch({
         onChange={(e) => onChange(e.target.value)}
         placeholder="Rechercher prénom, nom ou téléphone"
         autoComplete="off"
-        className="w-full min-h-[48px] rounded-xl border border-slate-300 bg-white pl-10 pr-3 py-3 text-base"
+        className="w-full min-h-[48px] rounded-2xl border-0 ring-1 ring-black/[0.08] bg-white pl-12 pr-4 py-3 text-base placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-olive"
       />
     </label>
   );
@@ -950,6 +954,16 @@ export default function BureauPage() {
         ),
       );
   })();
+  // Accueil : essais attendus aujourd’hui, par créneau.
+  const ceJour: CreneauDuJour[] = [];
+  for (const item of suiviPool) {
+    if (!isAVenir(item.statut) || essaiYmdFromCreneau(item.creneau || '') !== todayYmd) continue;
+    const slot = essaiSlotLabel(item);
+    const c = ceJour.find((x) => foldPerson(x.slot) === foldPerson(slot));
+    if (c) c.attendus += 1;
+    else ceJour.push({ slot, attendus: 1 });
+  }
+  const cartesAPreparer = cartesList.filter((i) => !String(i.carte || '').trim()).length;
   const essaiSearchHits = qPeople ? essaiPool.filter((i) => matchesPerson(qPeople, i)) : [];
   const adhesionHitsOnEssai = qPeople
     ? adhesionsAll.filter((i) => matchesPerson(qPeople, i)).length
@@ -958,25 +972,35 @@ export default function BureauPage() {
   if (!porte) {
     return (
       <div data-bureau-root className="min-h-screen bg-brand-cream pb-8">
-        <header className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-black/10">
-          <div className="max-w-3xl mx-auto px-4 py-2.5 flex items-center justify-between gap-2">
-            <h1 className="font-display font-bold text-lg text-brand-black leading-tight">Bureau</h1>
+        <header className="sticky top-0 z-30 bg-brand-cream/90 backdrop-blur border-b border-black/[0.06]">
+          <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
+            <span
+              aria-hidden="true"
+              className="w-10 h-10 rounded-xl bg-brand-olive text-white font-display font-bold text-sm inline-flex items-center justify-center shrink-0"
+            >
+              {ASSO.sigle.slice(0, 3)}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs text-slate-500 capitalize leading-tight truncate">{todayLabel}</p>
+              <h1 className="font-display font-bold text-lg text-brand-black leading-tight">Bureau</h1>
+            </div>
             <button
               type="button"
               onClick={() => logout()}
-              className="px-3 py-2 rounded-xl border border-black/10 text-slate-700 text-sm font-medium min-h-[48px]"
+              className="inline-flex items-center gap-2 px-3 min-h-[44px] rounded-xl text-sm font-medium text-slate-700 hover:bg-black/[0.05]"
             >
+              <LogOut className="w-4 h-4" aria-hidden="true" />
               Quitter
             </button>
           </div>
         </header>
-        <main className="max-w-3xl mx-auto px-4 py-6 space-y-4">
-          <div>
-            <h2 className="font-display font-bold text-xl text-brand-black">Où travaillez-vous ?</h2>
-            <p className="text-sm text-slate-600 mt-1">Deux portes. Choisissez une fois, vous pourrez revenir.</p>
+        <main className="max-w-3xl mx-auto px-4 py-8 space-y-4">
+          <div className="px-1">
+            <h2 className="font-display font-bold text-2xl text-brand-black">Où travaillez-vous ?</h2>
+            <p className="text-slate-600 mt-1">Deux portes. Choisissez une fois, vous pourrez revenir.</p>
           </div>
           {error ? (
-            <div className="flex items-start gap-2 text-red-700 bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm">
+            <div role="alert" className="flex items-start gap-2 text-red-800 bg-red-50 ring-1 ring-red-100 rounded-2xl px-4 py-3 text-sm">
               <AlertCircle className="w-5 h-5 shrink-0" />
               <span>{error}</span>
             </div>
@@ -984,27 +1008,37 @@ export default function BureauPage() {
           <button
             type="button"
             onClick={() => enterPorte('seance')}
-            className="w-full text-left rounded-2xl bg-brand-olive text-white p-5 min-h-[48px] shadow-sm"
+            className="w-full flex items-center gap-4 text-left rounded-2xl bg-brand-olive hover:bg-brand-olive-hover text-white p-5 min-h-[96px] shadow-sm"
           >
-            <p className="font-display font-bold text-xl leading-tight">Ce soir — essais</p>
-            <p className="text-base text-white/90 mt-2 leading-snug">
-              Présents, WhatsApp, nouveaux essais.
-            </p>
+            <span className="w-12 h-12 rounded-2xl bg-white/15 inline-flex items-center justify-center shrink-0">
+              <Phone className="w-6 h-6" aria-hidden="true" />
+            </span>
+            <span className="flex-1 min-w-0">
+              <span className="block font-display font-bold text-xl leading-tight">Ce soir — essais</span>
+              <span className="block text-white/85 mt-1 leading-snug">Présents, WhatsApp, nouveaux essais.</span>
+            </span>
             {essaisATraiter > 0 ? (
-              <p className="text-sm text-white/80 mt-3">{essaisATraiter} à suivre</p>
+              <span className="min-w-[2rem] h-8 px-2.5 rounded-full bg-white text-brand-olive font-semibold inline-flex items-center justify-center">
+                {essaisATraiter}
+              </span>
             ) : null}
           </button>
           <button
             type="button"
             onClick={() => enterPorte('admin')}
-            className="w-full text-left rounded-2xl bg-white border border-black/10 p-5 min-h-[48px]"
+            className="w-full flex items-center gap-4 text-left rounded-2xl bg-white ring-1 ring-black/[0.06] hover:ring-black/15 p-5 min-h-[96px] shadow-[0_1px_2px_rgba(17,17,16,0.04)]"
           >
-            <p className="font-display font-bold text-xl text-brand-black leading-tight">Bureau — admin</p>
-            <p className="text-base text-slate-600 mt-2 leading-snug">
-              À encaisser, adhérents, mails.
-            </p>
+            <span className="w-12 h-12 rounded-2xl bg-brand-olive-soft text-brand-olive inline-flex items-center justify-center shrink-0">
+              <Shield className="w-6 h-6" aria-hidden="true" />
+            </span>
+            <span className="flex-1 min-w-0">
+              <span className="block font-display font-bold text-xl text-brand-black leading-tight">Bureau — admin</span>
+              <span className="block text-slate-600 mt-1 leading-snug">À encaisser, adhérents, mails.</span>
+            </span>
             {pendingCount > 0 ? (
-              <p className="text-sm text-brand-olive mt-3 font-medium">{pendingCount} à encaisser</p>
+              <span className="min-w-[2rem] h-8 px-2.5 rounded-full bg-orange-primary text-white font-semibold inline-flex items-center justify-center">
+                {pendingCount}
+              </span>
             ) : null}
           </button>
         </main>
@@ -1017,96 +1051,140 @@ export default function BureauPage() {
       ? [{ id: 'essais' as const, label: 'Essais', icon: Phone, count: essaisATraiter }]
       : [
           { id: 'today' as const, label: 'Accueil', icon: Home, count: 0 },
-          { id: 'adhesions' as const, label: 'À payer', icon: Users, count: pendingCount },
+          { id: 'essais' as const, label: 'Essais', icon: Phone, count: essaisATraiter },
+          { id: 'adhesions' as const, label: 'À payer', icon: Wallet, count: pendingCount },
           { id: 'relances' as const, label: 'Relances', icon: MessageCircle, count: relanceP1 + relanceP2 },
           { id: 'more' as const, label: 'Autre', icon: MoreHorizontal, count: 0 },
         ];
+  const avecBarre = navItems.length > 1;
 
   return (
-    <div data-bureau-root className="min-h-screen bg-brand-cream pb-24">
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-black/10">
-        <div className="max-w-3xl mx-auto px-4 py-2.5 flex items-center justify-between gap-2">
-          <div className="min-w-0">
+    <div data-bureau-root className={`min-h-screen bg-brand-cream ${avecBarre ? 'pb-28 lg:pb-10 lg:pl-60' : 'pb-10'}`}>
+      <header className="sticky top-0 z-30 bg-brand-cream/90 backdrop-blur border-b border-black/[0.06]">
+        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
+          <span
+            aria-hidden="true"
+            className="w-10 h-10 rounded-xl bg-brand-olive text-white font-display font-bold text-sm inline-flex items-center justify-center shrink-0"
+          >
+            {ASSO.sigle.slice(0, 3)}
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs text-slate-500 capitalize leading-tight truncate">{todayLabel}</p>
             <h1 className="font-display font-bold text-lg text-brand-black leading-tight truncate">
-              {porte === 'seance' ? 'Ce soir — essais' : 'Bureau — admin'}
+              {porte === 'seance' ? 'Ce soir — essais' : 'Bureau'}
             </h1>
-            {bureauRole !== 'seance' ? (
-            <button
-              type="button"
-              onClick={backToPortes}
-              className="text-xs font-medium text-brand-olive underline underline-offset-2 mt-0.5"
-            >
-              Changer de porte
-            </button>
-            ) : null}
           </div>
-          <div className="flex items-center gap-1.5 shrink-0">
-            {porte === 'admin' && MODULES.mail ? (
-              <Link
-                to="/bureau/mail?filter=adhesions"
-                className="px-3 py-2 rounded-xl border border-black/10 text-slate-700 text-sm font-medium min-h-[40px] inline-flex items-center gap-1"
-              >
-                <Mail className="w-4 h-4" aria-hidden="true" />
-                Mail
-              </Link>
-            ) : null}
-            <button
-              type="button"
-              onClick={() => loadAll()}
-              disabled={loading}
-              className="px-3 py-2 rounded-xl border border-black/10 text-slate-700 text-sm font-medium min-h-[40px]"
+          {porte === 'admin' && MODULES.mail ? (
+            <Link
+              to="/bureau/mail?filter=adhesions"
+              aria-label="Mail"
+              title="Mail"
+              className="w-11 h-11 rounded-xl inline-flex items-center justify-center text-slate-700 hover:bg-black/[0.05]"
             >
-              {loading ? '…' : 'Actualiser'}
-            </button>
-            <button
-              type="button"
-              onClick={() => logout()}
-              className="px-3 py-2 rounded-xl border border-black/10 text-slate-700 text-sm font-medium min-h-[40px]"
+              <Mail className="w-5 h-5" aria-hidden="true" />
+            </Link>
+          ) : null}
+          <button
+            type="button"
+            onClick={() => loadAll()}
+            disabled={loading}
+            aria-label="Actualiser"
+            title="Actualiser"
+            className="w-11 h-11 rounded-xl inline-flex items-center justify-center text-slate-700 hover:bg-black/[0.05] disabled:opacity-60"
+          >
+            <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
+          </button>
+          <details className="relative">
+            <summary
+              aria-label="Menu"
+              title="Menu"
+              className="list-none [&::-webkit-details-marker]:hidden w-11 h-11 rounded-xl inline-flex items-center justify-center text-slate-700 hover:bg-black/[0.05] cursor-pointer"
             >
-              Quitter
-            </button>
-          </div>
-        </div>
-        <div className="max-w-3xl mx-auto px-2 flex gap-1 pb-2">
-          {navItems.map(({ id, label, icon: Icon, count }) => {
-            const active = tab === id;
-            return (
+              <UserRound className="w-5 h-5" aria-hidden="true" />
+            </summary>
+            <div className="absolute right-0 mt-2 w-60 rounded-2xl bg-white ring-1 ring-black/10 shadow-lg p-1.5 z-40">
+              <p className="px-3 py-2 text-xs text-slate-500">
+                {porte === 'seance' ? 'Porte « Ce soir — essais »' : 'Porte « Bureau — admin »'}
+              </p>
+              {bureauRole !== 'seance' ? (
+                <button
+                  type="button"
+                  onClick={backToPortes}
+                  className="w-full flex items-center gap-3 px-3 min-h-[44px] rounded-xl text-sm font-medium text-brand-black hover:bg-black/[0.04]"
+                >
+                  <ArrowLeftRight className="w-4 h-4 text-slate-500" aria-hidden="true" />
+                  Changer de porte
+                </button>
+              ) : null}
               <button
-                key={id}
                 type="button"
-                onClick={() => {
-                  setTab(id);
-                  if (id === 'more') setMoreKind('menu');
-                }}
-                className={`relative flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-2 rounded-xl text-[12px] font-semibold leading-tight min-h-[48px] ${
-                  active ? 'bg-brand-olive text-white' : 'text-slate-600'
-                }`}
+                onClick={() => logout()}
+                className="w-full flex items-center gap-3 px-3 min-h-[44px] rounded-xl text-sm font-medium text-red-700 hover:bg-red-50"
               >
-                <Icon className="w-4 h-4 shrink-0" />
-                <span>{label}</span>
-                {count > 0 ? (
-                  <span
-                    className={`absolute top-0.5 right-0.5 min-w-[1.15rem] h-4 px-1 rounded-full text-[10px] leading-4 ${
-                      active ? 'bg-white text-brand-olive' : 'bg-orange-primary text-white'
-                    }`}
-                  >
-                    {count > 99 ? '99+' : count}
-                  </span>
-                ) : null}
+                <LogOut className="w-4 h-4" aria-hidden="true" />
+                Quitter
               </button>
-            );
-          })}
+            </div>
+          </details>
         </div>
         {showSearch ? (
-          <div className="max-w-3xl mx-auto px-4 pb-2">
+          <div className="max-w-3xl mx-auto px-4 pb-3">
             <PeopleSearch value={peopleQuery} onChange={setPeopleQuery} />
           </div>
         ) : null}
       </header>
 
+      {avecBarre ? (
+        <nav
+          aria-label="Sections du bureau"
+          className="fixed z-30 bottom-0 inset-x-0 bg-white/95 backdrop-blur border-t border-black/[0.06] pb-[env(safe-area-inset-bottom)] lg:inset-y-0 lg:right-auto lg:w-60 lg:border-t-0 lg:border-r lg:pt-24 lg:pb-6 lg:bg-white"
+        >
+          <ul className="max-w-3xl mx-auto flex lg:flex-col lg:gap-1 lg:px-3">
+            {navItems.map(({ id, label, icon: Icon, count }) => {
+              const active = tab === id;
+              return (
+                <li key={id} className="flex-1 min-w-0 lg:flex-none">
+                  <button
+                    type="button"
+                    aria-current={active ? 'page' : undefined}
+                    onClick={() => {
+                      setTab(id);
+                      if (id === 'more') setMoreKind('menu');
+                      window.scrollTo({ top: 0 });
+                    }}
+                    className={`relative w-full flex flex-col items-center justify-center gap-1 pt-2 pb-1.5 min-h-[60px] text-[11px] font-semibold lg:flex-row lg:justify-start lg:gap-3 lg:px-3 lg:min-h-[44px] lg:rounded-xl lg:text-sm ${
+                      active ? 'text-brand-olive lg:bg-brand-olive-soft' : 'text-slate-500 hover:text-brand-black lg:hover:bg-black/[0.04]'
+                    }`}
+                  >
+                    <span
+                      className={`relative inline-flex items-center justify-center w-12 h-7 rounded-full lg:w-auto lg:h-auto ${
+                        active ? 'bg-brand-olive-soft lg:bg-transparent' : ''
+                      }`}
+                    >
+                      <Icon className="w-5 h-5 shrink-0" aria-hidden="true" />
+                      {count > 0 ? (
+                        <span className="absolute -top-1 -right-0.5 lg:hidden min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-orange-primary text-white text-[10px] leading-[1.1rem] text-center">
+                          {count > 99 ? '99+' : count}
+                        </span>
+                      ) : null}
+                    </span>
+                    <span className="truncate max-w-full lg:flex-1 lg:text-left">{label}</span>
+                    {count > 0 ? (
+                      <span className="hidden lg:inline-flex min-w-[1.5rem] h-6 px-2 rounded-full bg-orange-primary text-white text-xs items-center justify-center">
+                        {count > 99 ? '99+' : count}
+                      </span>
+                    ) : null}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      ) : null}
+
       <main className="max-w-3xl mx-auto px-4 py-5">
         {error && (
-          <div className="mb-4 flex items-start gap-2 text-red-700 bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm">
+          <div role="alert" className="mb-4 flex items-start gap-2 text-red-800 bg-red-50 ring-1 ring-red-100 rounded-2xl px-4 py-3 text-sm">
             <AlertCircle className="w-5 h-5 shrink-0" />
             <span>{error}</span>
           </div>
@@ -1115,10 +1193,19 @@ export default function BureauPage() {
         {/* ---- ACCUEIL (admin) ---- */}
         {tab === 'today' && porte === 'admin' && (
           <BureauTodayTab
-            todayLabel={todayLabel}
             qPeople={qPeople}
             loading={loading}
             adhesionList={adhesionList}
+            ceJour={ceJour}
+            cartesAPreparer={cartesAPreparer}
+            onCeJour={() => {
+              setEssaisVue('week');
+              setTab('essais');
+            }}
+            onCartes={() => {
+              setTab('more');
+              setMoreKind('cartes');
+            }}
             aPointer={aPointer.length}
             aConfirmer={nouveauxEssais.length}
             aEncaisser={pendingCount}
@@ -1455,7 +1542,7 @@ export default function BureauPage() {
       ) : null}
 
       {toast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 max-w-sm w-[90%] rounded-xl bg-slate-900 text-white text-sm font-medium px-4 py-3 text-center">
+        <div role="status" className="fixed bottom-24 lg:bottom-6 left-1/2 -translate-x-1/2 z-50 max-w-sm w-[90%] rounded-2xl bg-slate-900 text-white text-sm font-medium px-4 py-3 text-center shadow-lg">
           {toast}
         </div>
       )}

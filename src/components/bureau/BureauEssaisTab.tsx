@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CheckCircle2, MessageCircle } from 'lucide-react';
+import { CalendarCheck, Inbox, MessageCircle, Search, UsersRound } from 'lucide-react';
 import { msgBureauEssai, resolveCreneau } from '../../lib/essaiMessages';
 import { essaiYmdFromCreneau } from '../../lib/essaiDates';
 import { formatEssaiDu } from '../../lib/essaisSemaine';
@@ -7,6 +7,8 @@ import { formatTelFr, telDedupeKey } from '../../lib/bureauSearch';
 import { PersonNameButton } from './BureauPersonSheet';
 import { isAVenir, isCountableEssai, isStrictAVenir } from '../../lib/essaiStatuts';
 import { ASSO, NB_ESSAIS, SITE_URL } from '../../data/asso';
+import { Initiales, Intertitre, Segments, Statut, Vide } from './ui';
+import { bouton, carte } from './styles';
 
 type EssaiItem = {
   source: 'forum' | 'essai';
@@ -54,7 +56,8 @@ type Props = {
   porte: PorteId;
   essaisVue: EssaisVue;
   setEssaisVue: (v: EssaisVue) => void;
-  onBackAutre: () => void;
+  /** Plus utilisé : Essais est dans la barre du bas. */
+  onBackAutre?: () => void;
   onOpenAdhesions: () => void;
   qPeople: string;
   loading: boolean;
@@ -227,24 +230,25 @@ function CloreEssai({
     else updateEssai(item, choice);
   }
   return (
-    <div className="basis-full max-[700px]:col-span-2">
+    <div className="basis-full col-span-2">
       <button
         type="button"
         disabled={disabled}
+        aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="h-11 min-h-[44px] px-1 text-sm text-slate-500 underline underline-offset-2 disabled:opacity-60"
+        className={bouton.discret}
       >
-        Clore
+        Clore l’essai…
       </button>
       {open ? (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 pt-1">
           {choices.map((choice) => (
             <button
               key={choice}
               type="button"
               disabled={disabled}
               onClick={() => choose(choice)}
-              className="h-11 min-h-[44px] px-3 rounded-xl border border-[#E8E6E1] bg-white text-brand-black font-semibold text-sm disabled:opacity-60"
+              className={bouton.secondaire}
             >
               {choice}
             </button>
@@ -301,71 +305,55 @@ function EssaiLineCard({
   const aVenir = isAVenir(item.statut);
   const strictAVenir = isStrictAVenir(item.statut);
   return (
-    <article className="rounded-2xl bg-white border border-[#E8E6E1] border-l-[4px] border-l-orange-primary px-4 py-3 space-y-1.5">
-      <h3 className="font-semibold text-base text-brand-black leading-snug">
-        <PersonNameButton prenom={item.prenom} nom={item.nom} tel={item.tel} onOpen={onOpenPerson} />
-      </h3>
-      {essaiDu ? <p className="text-sm text-slate-600">{essaiDu}</p> : null}
-      <p className="text-base text-brand-gray">
-        {[slot, essaiNLabel(personN), telLabel].filter(Boolean).join(' · ')}
-      </p>
-      {item.statut && !aVenir ? (
-        <p className="text-sm text-brand-gray">{item.statut}</p>
-      ) : null}
-      <div className="flex flex-wrap items-center gap-2 pt-0.5 max-[700px]:grid max-[700px]:grid-cols-2">
-        {showWa ? (
-          <a
-            href={wa!}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => {
-              if (relanceOnWhatsApp && strictAVenir) onWhatsAppRelance?.(item);
-            }}
-            className="inline-flex items-center justify-center gap-1.5 h-11 min-h-[44px] px-3 rounded-xl border border-[#25D366] bg-transparent text-[#25D366] font-semibold text-sm max-[700px]:w-full"
-          >
-            <MessageCircle className="w-4 h-4" aria-hidden="true" />
-            WhatsApp
-          </a>
-        ) : null}
-        {aVenir ? (
-          <>
-            <button
-              type="button"
-              disabled={isBusy}
-              onClick={() => updateEssai(item, 'Venu')}
-              className="h-11 min-h-[44px] px-3 rounded-xl bg-brand-olive hover:bg-brand-olive-hover text-white font-semibold text-sm disabled:opacity-60 max-[700px]:w-full"
-            >
-              {isBusy ? '…' : 'Venu'}
-            </button>
-            <button
-              type="button"
-              disabled={isBusy}
-              onClick={() => updateEssai(item, 'Absent')}
-              className="h-11 min-h-[44px] px-3 rounded-xl border border-[#E8E6E1] bg-white text-brand-black font-semibold text-sm disabled:opacity-60 max-[700px]:w-full"
-            >
-              Absent
-            </button>
-            {strictAVenir && sansCreneau ? (
-              <button
-                type="button"
-                disabled={isBusy}
-                onClick={() => updateEssai(item, 'Relancé')}
-                className="h-11 min-h-[44px] px-3 rounded-xl border border-orange-primary/40 bg-white text-orange-primary font-semibold text-sm disabled:opacity-60 max-[700px]:w-full max-[700px]:col-span-2"
-              >
-                Relancé
-              </button>
-            ) : null}
-          </>
-        ) : null}
-        {allowClose ? (
-          <CloreEssai
-            item={item}
-            disabled={isBusy}
-            updateEssai={updateEssai}
-            hideAdherent={hideCloreAdherent}
-          />
-        ) : null}
+    <article className={`${carte} p-4 space-y-3`}>
+      <div className="flex items-start gap-3">
+        <Initiales prenom={item.prenom} nom={item.nom} />
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-base text-brand-black leading-snug">
+            <PersonNameButton prenom={item.prenom} nom={item.nom} tel={item.tel} onOpen={onOpenPerson} />
+          </h3>
+          {essaiDu ? <p className="text-sm font-medium text-orange-primary">{essaiDu}</p> : null}
+          <p className="text-sm text-slate-500">{[slot, essaiNLabel(personN)].filter(Boolean).join(' · ')}</p>
+          {telLabel ? <p className="text-sm text-slate-500 tabular-nums">{telLabel}</p> : null}
+        </div>
+        <Statut>{(item.statut || 'À venir').trim()}</Statut>
       </div>
+      {showWa || aVenir || allowClose ? (
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+          {aVenir ? (
+            <>
+              <button type="button" disabled={isBusy} onClick={() => updateEssai(item, 'Venu')} className={bouton.principal}>
+                {isBusy ? '…' : 'Venu'}
+              </button>
+              <button type="button" disabled={isBusy} onClick={() => updateEssai(item, 'Absent')} className={bouton.secondaire}>
+                Absent
+              </button>
+            </>
+          ) : null}
+          {showWa ? (
+            <a
+              href={wa!}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => {
+                if (relanceOnWhatsApp && strictAVenir) onWhatsAppRelance?.(item);
+              }}
+              className={`${bouton.whatsapp} ${aVenir && !(strictAVenir && sansCreneau) ? 'col-span-2' : ''}`}
+            >
+              <MessageCircle className="w-4 h-4" aria-hidden="true" />
+              WhatsApp
+            </a>
+          ) : null}
+          {aVenir && strictAVenir && sansCreneau ? (
+            <button type="button" disabled={isBusy} onClick={() => updateEssai(item, 'Relancé')} className={bouton.secondaire}>
+              Relancé
+            </button>
+          ) : null}
+          {allowClose ? (
+            <CloreEssai item={item} disabled={isBusy} updateEssai={updateEssai} hideAdherent={hideCloreAdherent} />
+          ) : null}
+        </div>
+      ) : null}
     </article>
   );
 }
@@ -374,7 +362,6 @@ export default function BureauEssaisTab({
   porte,
   essaisVue,
   setEssaisVue,
-  onBackAutre,
   onOpenAdhesions,
   qPeople,
   loading,
@@ -395,76 +382,37 @@ export default function BureauEssaisTab({
 }: Props) {
   return (
     <div className="space-y-5">
-      {porte === 'admin' ? (
-        <button
-          type="button"
-          onClick={onBackAutre}
-          className="text-sm font-semibold text-brand-olive"
-        >
-          ← Autre
-        </button>
+      <div className="px-1">
+        <h2 className="font-display font-bold text-2xl text-brand-black">Essais</h2>
+        <p className="text-sm text-slate-500 mt-0.5">Venu, absent, WhatsApp : une ligne par créneau.</p>
+      </div>
+      {!qPeople ? (
+        <Segments
+          label="Vue des essais"
+          valeur={essaisVue}
+          onChange={setEssaisVue}
+          options={[
+            { id: 'nouveaux', label: 'Nouveaux', compte: nouveauxEssais.length },
+            { id: 'week', label: 'Semaine', compte: aPointer.length + weekDayGroups.reduce((n, g) => n + g.slots.reduce((m, sl) => m + sl.items.length, 0), 0) },
+            { id: 'person', label: 'Par personne' },
+          ]}
+        />
       ) : null}
-      <div>
-        <h2 className="font-display font-bold text-lg">Essais</h2>
-        <p className="text-sm text-slate-600 mt-1">
-          Une ligne = un créneau. Badge : à venir. Recherche en haut.
-        </p>
-      </div>
-      <div className="flex gap-2 flex-wrap">
-        <button
-          type="button"
-          onClick={() => setEssaisVue('nouveaux')}
-          className={`flex-1 min-w-[6.5rem] min-h-[44px] rounded-xl border px-3 py-2 text-sm font-semibold ${
-            essaisVue === 'nouveaux'
-              ? 'bg-brand-olive text-white border-brand-olive'
-              : 'bg-white text-brand-black border-[#E8E6E1]'
-          }`}
-        >
-          Nouveaux
-        </button>
-        <button
-          type="button"
-          onClick={() => setEssaisVue('week')}
-          className={`flex-1 min-w-[6.5rem] min-h-[44px] rounded-xl border px-3 py-2 text-sm font-semibold ${
-            essaisVue === 'week'
-              ? 'bg-brand-olive text-white border-brand-olive'
-              : 'bg-white text-brand-black border-[#E8E6E1]'
-          }`}
-        >
-          Cette semaine
-        </button>
-        <button
-          type="button"
-          onClick={() => setEssaisVue('person')}
-          className={`flex-1 min-w-[6.5rem] min-h-[44px] rounded-xl border px-3 py-2 text-sm font-semibold ${
-            essaisVue === 'person'
-              ? 'bg-brand-olive text-white border-brand-olive'
-              : 'bg-white text-brand-black border-[#E8E6E1]'
-          }`}
-        >
-          Par personne
-        </button>
-      </div>
       {porte === 'admin' && qPeople && adhesionHitsOnEssai > 0 ? (
         <button
           type="button"
           onClick={onOpenAdhesions}
-          className="text-sm text-emerald-800 underline underline-offset-2"
+          className="text-sm font-semibold text-brand-olive underline underline-offset-2 px-1"
         >
           Aussi dans Adhésion ({adhesionHitsOnEssai})
         </button>
       ) : null}
       {qPeople ? (
         essaiSearchHits.length === 0 && !loading ? (
-          <div className="rounded-2xl bg-[#F8F7F4] border border-[#E8E6E1] px-4 py-8 text-center text-brand-olive">
-            <CheckCircle2 className="w-10 h-10 mx-auto mb-2" />
-            <p className="font-medium">Personne avec ce nom ou ce numéro</p>
-          </div>
+          <Vide icone={Search} titre="Personne avec ce nom ou ce numéro" aide="Essayez le prénom seul, ou les 4 derniers chiffres du téléphone." />
         ) : (
           <div className="space-y-3">
-            <h3 className="font-display font-bold text-base text-slate-800">
-              Résultat ({essaiSearchHits.length})
-            </h3>
+            <Intertitre compte={essaiSearchHits.length}>Résultat</Intertitre>
             {essaiSearchHits.map((item) => {
               const key = `${item.source}-${item.row}`;
               const telKey = telDedupeKey(item.tel);
@@ -488,10 +436,7 @@ export default function BureauEssaisTab({
       ) : essaisVue === 'nouveaux' ? (
         <>
           {nouveauxEssais.length === 0 && !loading ? (
-            <div className="rounded-2xl bg-[#F8F7F4] border border-[#E8E6E1] px-4 py-8 text-center text-brand-olive">
-              <CheckCircle2 className="w-10 h-10 mx-auto mb-2" />
-              <p className="font-medium">Aucune nouvelle demande</p>
-            </div>
+            <Vide icone={Inbox} titre="Aucune nouvelle demande" aide="Les demandes faites sur le site arrivent ici." />
           ) : (
             <div className="space-y-3">
               {nouveauxEssais.map((item) => {
@@ -521,9 +466,7 @@ export default function BureauEssaisTab({
         <>
           {aPointer.length > 0 ? (
             <div className="space-y-3">
-              <h3 className="font-display font-bold text-base text-slate-800">
-                À pointer · {aPointer.length}
-              </h3>
+              <Intertitre compte={aPointer.length}>À pointer</Intertitre>
               {aPointer.map((item) => {
                 const key = `${item.source}-${item.row}`;
                 const telKey = telDedupeKey(item.tel);
@@ -549,17 +492,14 @@ export default function BureauEssaisTab({
             </div>
           ) : null}
           {weekDayGroups.length === 0 && aPointer.length === 0 && !loading ? (
-            <div className="rounded-2xl bg-[#F8F7F4] border border-[#E8E6E1] px-4 py-8 text-center text-brand-olive">
-              <CheckCircle2 className="w-10 h-10 mx-auto mb-2" />
-              <p className="font-medium">Aucun essai cette semaine</p>
-            </div>
+            <Vide icone={CalendarCheck} titre="Aucun essai cette semaine" />
           ) : null}
           {weekDayGroups.map((dayGroup) => (
             <div key={dayGroup.day} className="space-y-3">
-              <h3 className="font-display font-bold text-base text-slate-800">{dayGroup.label}</h3>
+              <Intertitre>{dayGroup.label}</Intertitre>
               {dayGroup.slots.map((slotGroup) => (
                 <div key={slotGroup.slot} className="space-y-2">
-                  <p className="text-sm font-medium text-slate-600">{slotGroup.slot}</p>
+                  <p className="text-sm font-semibold text-brand-black px-1">{slotGroup.slot}</p>
                   {slotGroup.items.map((item) => {
                     const key = `${item.source}-${item.row}`;
                     const telKey = telDedupeKey(item.tel);
@@ -588,10 +528,7 @@ export default function BureauEssaisTab({
       ) : (
         <>
           {personGroups.length === 0 && !loading ? (
-            <div className="rounded-2xl bg-[#F8F7F4] border border-[#E8E6E1] px-4 py-8 text-center text-brand-olive">
-              <CheckCircle2 className="w-10 h-10 mx-auto mb-2" />
-              <p className="font-medium">Aucune demande d’essai</p>
-            </div>
+            <Vide icone={UsersRound} titre="Aucune demande d’essai" />
           ) : null}
           {personGroups.map((group) => {
             const telLabel = formatTelFr(group.head.tel);
@@ -605,11 +542,10 @@ export default function BureauEssaisTab({
                 ? waUrl(group.head.tel, waBody)
                 : null;
             return (
-              <article
-                key={group.key}
-                className="rounded-2xl bg-white border border-[#E8E6E1] border-l-[4px] border-l-orange-primary px-4 py-3 space-y-2"
-              >
-                <div className="flex flex-wrap items-start justify-between gap-2">
+              <article key={group.key} className={`${carte} p-4 space-y-3`}>
+                <div className="flex items-start gap-3">
+                  <Initiales prenom={group.head.prenom} nom={group.head.nom} />
+                  <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-base text-brand-black leading-snug">
                     <PersonNameButton
                       prenom={group.head.prenom}
@@ -618,31 +554,28 @@ export default function BureauEssaisTab({
                       onOpen={onOpenPerson}
                     />
                   </h3>
-                  {group.isAdherent ? (
-                    <span className="text-xs font-semibold rounded-full bg-brand-olive text-white px-2 py-1">
-                      Adhérent
-                    </span>
-                  ) : null}
+                  <p className="text-sm text-slate-500">
+                    {[telLabel || 'Tél. manquant', essaiNLabel(group.nMax)].join(' · ')}
+                  </p>
+                  </div>
+                  {group.isAdherent ? <Statut>Adhérent</Statut> : null}
                 </div>
-                <p className="text-base text-brand-gray">
-                  {[telLabel || 'Tél. manquant', essaiNLabel(group.nMax)].join(' · ')}
-                </p>
-                <ul className="text-sm text-brand-gray space-y-2">
+                <ul className="text-sm text-slate-600 divide-y divide-black/[0.06] border-t border-black/[0.06]">
                   {group.items.map((line) => {
                     const key = `${line.source}-${line.row}`;
                     const aVenir = isAVenir(line.statut);
                     const strictAVenir = isStrictAVenir(line.statut);
                     const sansCreneauLine = !hasCreneauSlot(line);
                     return (
-                      <li key={key} className="space-y-1.5">
+                      <li key={key} className="space-y-2 pt-3 first:pt-3 [&:not(:first-child)]:pt-3 pb-1">
                         <p>{essaiPersonLineLabel(line)}</p>
                         {aVenir ? (
-                          <div className="flex flex-wrap gap-2">
+                          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
                             <button
                               type="button"
                               disabled={busyRow === key}
                               onClick={() => updateEssai(line, 'Venu')}
-                              className="h-11 min-h-[44px] px-3 rounded-xl bg-brand-olive hover:bg-brand-olive-hover text-white font-semibold text-sm disabled:opacity-60"
+                              className={bouton.principal}
                             >
                               {busyRow === key ? '…' : 'Venu'}
                             </button>
@@ -650,7 +583,7 @@ export default function BureauEssaisTab({
                               type="button"
                               disabled={busyRow === key}
                               onClick={() => updateEssai(line, 'Absent')}
-                              className="h-11 min-h-[44px] px-3 rounded-xl border border-[#E8E6E1] bg-white text-brand-black font-semibold text-sm disabled:opacity-60"
+                              className={bouton.secondaire}
                             >
                               Absent
                             </button>
@@ -659,7 +592,7 @@ export default function BureauEssaisTab({
                                 type="button"
                                 disabled={busyRow === key}
                                 onClick={() => updateEssai(line, 'Relancé')}
-                                className="h-11 min-h-[44px] px-3 rounded-xl border border-orange-primary/40 bg-white text-orange-primary font-semibold text-sm disabled:opacity-60"
+                                className={bouton.secondaire}
                               >
                                 Relancé
                               </button>
@@ -681,7 +614,7 @@ export default function BureauEssaisTab({
                     href={wa}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-1.5 h-11 min-h-[44px] px-3 rounded-xl border border-[#25D366] bg-transparent text-[#25D366] font-semibold text-sm"
+                    className={`${bouton.whatsapp} w-full sm:w-auto`}
                   >
                     <MessageCircle className="w-4 h-4" aria-hidden="true" />
                     WhatsApp
