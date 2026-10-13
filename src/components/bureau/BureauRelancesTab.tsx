@@ -467,7 +467,8 @@ export function BureauRelancesAutonome() {
   }, []);
 
   useEffect(() => {
-    void load();
+    const t = window.setTimeout(() => void load(), 0);
+    return () => window.clearTimeout(t);
   }, [load]);
 
   const personSheet = useMemo(

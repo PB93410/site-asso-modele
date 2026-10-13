@@ -91,4 +91,3 @@ export default function FAQSection({ withSchema = true }: Props) {
   );
 }
 
-export { faqs };

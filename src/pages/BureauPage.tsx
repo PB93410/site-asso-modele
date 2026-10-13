@@ -31,9 +31,10 @@ import {
   ListOrdered,
 } from 'lucide-react';
 import BureauAide from '../components/BureauAide';
-import { clearBureauToken, getBureauRole, getBureauToken, setBureauRole, setBureauToken } from '../components/BureauAuthGate';
+import { clearBureauToken, getBureauRole, getBureauToken, setBureauRole, setBureauToken } from '../lib/bureauSession';
 import BureauAdhesionsTab from '../components/bureau/BureauAdhesionsTab';
-import BureauCartesTab, { isAJourCarte } from '../components/bureau/BureauCartesTab';
+import BureauCartesTab from '../components/bureau/BureauCartesTab';
+import { isAJourCarte } from '../lib/cartes';
 import BureauEssaisTab from '../components/bureau/BureauEssaisTab';
 import BureauPersonSheet from '../components/bureau/BureauPersonSheet';
 import BureauRelancesTab from '../components/bureau/BureauRelancesTab';
@@ -595,7 +596,9 @@ export default function BureauPage() {
   }, [token, bureauRole]);
 
   useEffect(() => {
-    if (token) loadAll();
+    if (!token) return;
+    const t = window.setTimeout(() => void loadAll(), 0);
+    return () => window.clearTimeout(t);
   }, [token, loadAll]);
 
   useEffect(() => {

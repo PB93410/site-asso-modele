@@ -233,12 +233,12 @@ export default function InscriptionPage() {
   }, [success]);
 
   useEffect(() => {
-    if (!success || !paidByCarte) {
-      setPaiementReady(false);
-      return;
-    }
+    if (!success || !paidByCarte) return;
     const t = window.setTimeout(() => setPaiementReady(true), 1600);
-    return () => window.clearTimeout(t);
+    return () => {
+      window.clearTimeout(t);
+      setPaiementReady(false);
+    };
   }, [success, paidByCarte]);
 
   function setField<K extends keyof FormState>(key: K, value: FormState[K]) {

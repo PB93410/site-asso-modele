@@ -4,7 +4,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, ChevronLeft, ChevronRight, Plus, Smartphone } from 'lucide-react';
-import BureauAuthGate, { BureauSeanceReserve, getBureauToken } from '../components/BureauAuthGate';
+import BureauAuthGate, { BureauSeanceReserve } from '../components/BureauAuthGate';
+import { getBureauToken } from '../lib/bureauSession';
 import { bureauFetch } from '../lib/bureauApi';
 import { ASSO } from '../data/asso';
 
@@ -231,15 +232,6 @@ export default function BureauAgendaPage() {
     setEvents(data.events || []);
     setAbonnement(data.abonnement || '');
   }, [cursor.y, cursor.m, today]);
-
-  useEffect(() => {
-    const t = ymdParis();
-    const p = parisParts();
-    setToday(t);
-    setSelectedDate(t);
-    setFilter('ponctuel');
-    setCursor({ y: p.y, m: p.m });
-  }, []);
 
   useEffect(() => {
     if (initDone.current || loading) return;

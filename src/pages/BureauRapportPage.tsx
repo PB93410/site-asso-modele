@@ -4,7 +4,7 @@ import BureauAuthGate from '../components/BureauAuthGate';
 import { EnTete } from '../components/bureau/ui';
 import { bouton, carte } from '../components/bureau/styles';
 import { bureauFetch } from '../lib/bureauApi';
-import { getBureauToken } from '../components/BureauAuthGate';
+import { getBureauToken } from '../lib/bureauSession';
 
 type Rapport = {
   saison: string;

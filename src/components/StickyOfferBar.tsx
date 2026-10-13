@@ -10,8 +10,10 @@ export default function StickyOfferBar() {
 
   const [visible, setVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
-  const heroBandeauOn = NB_ESSAIS > 0 && Date.now() < BANDEAU_END;
-  const essaiCta = Date.now() < ESSAI_CTA_UNTIL;
+  // Heure lue une fois à l’affichage : le rendu reste le même d’une fois sur l’autre.
+  const [maintenant] = useState(() => Date.now());
+  const heroBandeauOn = NB_ESSAIS > 0 && maintenant < BANDEAU_END;
+  const essaiCta = maintenant < ESSAI_CTA_UNTIL;
 
   useEffect(() => {
     const handleScroll = () => {

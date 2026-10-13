@@ -27,6 +27,8 @@ jobs:
         run: npm run verifier:donnees
       - name: Types
         run: npx tsc -b
+      - name: Lint (règles React et TypeScript)
+        run: npm run lint
       - name: Tests
         run: npm test
       - name: Compilation du site

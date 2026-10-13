@@ -2,7 +2,7 @@ import { Download, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { TARIF_LABEL } from '../data/asso';
-import { getBureauToken } from './BureauAuthGate';
+import { getBureauToken } from '../lib/bureauSession';
 
 type Props = {
   essaisUrl: string;

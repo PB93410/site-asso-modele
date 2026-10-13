@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { CreditCard, Mail, MessageCircle, Search } from 'lucide-react';
 import { CARTE_VERSO_URL, SEASON_LABEL, SEASON_PREFIX } from '../../data/CONFIG';
-import { formatTelFr, nationalFrTel } from '../../lib/bureauSearch';
+import { formatTelFr } from '../../lib/bureauSearch';
 import { ASSO, MODULES } from '../../data/asso';
-import { getBureauToken } from '../BureauAuthGate';
+import { getBureauToken } from '../../lib/bureauSession';
+import { isAJourCarte, isCarteMail, isNumeroCarte, mobileFrWaDigits } from '../../lib/cartes';
 import { EnTete, Initiales, Vide } from './ui';
 import { bouton, carte } from './styles';
 
@@ -28,8 +29,6 @@ type Props = {
   token?: string | null;
 };
 
-const NUMERO_RE = new RegExp(`^${SEASON_PREFIX.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\d{3}$`);
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MSG_SUCCESS = 'C’est noté : carte envoyée.';
 const MSG_WA_ASK = 'Dans WhatsApp, vérifiez le prénom puis appuyez sur Envoyer. La carte est partie ?';
 const MSG_WA_NON = 'Rien n’est noté. Vous pourrez réessayer.';
@@ -52,27 +51,6 @@ Tu peux l’enregistrer dans le téléphone. Le QR au verso ouvre le site du clu
 ${ASSO.federation.sigle ? `Ce n’est pas la licence ${ASSO.federation.sigle}, c’est ta carte du club.` : 'C’est ta carte du club.'}
 À bientôt en cours,
 Le bureau`;
-}
-
-/** STATUT exact « À jour » (pas Essai / En attente). */
-export function isAJourCarte(statut: string) {
-  return String(statut || '').trim() === 'À jour';
-}
-
-export function isNumeroCarte(raw: string) {
-  return NUMERO_RE.test(String(raw || '').trim());
-}
-
-export function isCarteMail(raw: string) {
-  return EMAIL_RE.test(String(raw || '').trim());
-}
-
-/** Mobile FR 06/07 — 10 chiffres nationaux. Retourne digits wa.me (33…) ou null. */
-export function mobileFrWaDigits(raw: string): string | null {
-  const n = nationalFrTel(raw);
-  if (n.length !== 10) return null;
-  if (!n.startsWith('06') && !n.startsWith('07')) return null;
-  return `33${n.slice(1)}`;
 }
 
 function blocage(item: CarteAdherent): string | null {

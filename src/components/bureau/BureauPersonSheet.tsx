@@ -139,9 +139,12 @@ export default function BureauPersonSheet<E extends PersonEssai, A extends Perso
     ? ['Annulé', 'Pas intéressé']
     : ['Adhérent', 'Annulé', 'Pas intéressé'];
 
-  useEffect(() => {
+  // Autre personne : on referme le choix en cours (pendant le rendu, sans effet).
+  const [cleAffichee, setCleAffichee] = useState(sheet.key);
+  if (cleAffichee !== sheet.key) {
+    setCleAffichee(sheet.key);
     setCloreKey(null);
-  }, [sheet.key]);
+  }
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {

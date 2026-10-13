@@ -1,28 +1,21 @@
 import { useEffect, useState } from 'react';
 import { MessageCircle } from 'lucide-react';
+import { brancherAnnonceWhatsApp } from '../lib/whatsapp';
 
 type ToastState = { visible: boolean; message: string };
 
-let showToastFn: ((msg?: string) => void) | null = null;
-
-/** Ouvre WhatsApp après un court message de confirmation */
-export function openWhatsApp(url: string, message = 'Ouverture de WhatsApp…') {
-  window.open(url, '_blank', 'noopener,noreferrer');
-  showToastFn?.(message);
-}
 
 export default function WhatsAppToast() {
   const [toast, setToast] = useState<ToastState>({ visible: false, message: '' });
 
-  useEffect(() => {
-    showToastFn = (msg = 'Ouverture de WhatsApp…') => {
-      setToast({ visible: true, message: msg });
-      setTimeout(() => setToast({ visible: false, message: '' }), 2400);
-    };
-    return () => {
-      showToastFn = null;
-    };
-  }, []);
+  useEffect(
+    () =>
+      brancherAnnonceWhatsApp((msg) => {
+        setToast({ visible: true, message: msg });
+        setTimeout(() => setToast({ visible: false, message: '' }), 2400);
+      }),
+    [],
+  );
 
   if (!toast.visible) return null;
 

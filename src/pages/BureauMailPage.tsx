@@ -4,7 +4,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ExternalLink, Mail, MessageCircle, RefreshCw } from 'lucide-react';
-import BureauAuthGate, { BureauSeanceReserve, getBureauToken } from '../components/BureauAuthGate';
+import BureauAuthGate, { BureauSeanceReserve } from '../components/BureauAuthGate';
+import { getBureauToken } from '../lib/bureauSession';
 import { bureauFetch } from '../lib/bureauApi';
 import { matchSheetPerson, type MatchHow } from '../lib/mailMatch';
 import { ASSO, PAIEMENT_NOM } from '../data/asso';
@@ -198,7 +199,7 @@ function formatListDate(rfc: string, todayYmd: string) {
 
 function parseFrSheetDate(raw: string): Date | null {
   const s = String(raw || '').trim();
-  const m = s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})/);
+  const m = s.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})/);
   if (m) return new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]), 12);
   const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
   if (iso) return new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]), 12);
@@ -292,7 +293,7 @@ function extractNameFromMail(item: MailItem, fromName: string) {
   const line = snip.match(/Adhésion[^\n]*\n+\s*([A-ZÀ-ÿ][\wÀ-ÿ' -]{2,60})/i);
   if (line && !isOrgLabel(line[1])) return line[1].trim();
   const identite = snip.match(
-    /\b([A-ZÀ-ÿ][a-zà-ÿ'’\-]+)\s+([A-ZÀ-ÿ]{2,}(?:-[A-ZÀ-ÿ]{2,})?)\b/,
+    /\b([A-ZÀ-ÿ][a-zà-ÿ'’-]+)\s+([A-ZÀ-ÿ]{2,}(?:-[A-ZÀ-ÿ]{2,})?)\b/,
   );
   if (identite) {
     const guess = `${identite[1]} ${identite[2]}`;
@@ -547,7 +548,7 @@ function pickPrimary(messages: ParsedMail[]) {
   return ranked[0];
 }
 
-function buildFolders(items: MailItem[], people: SheetPerson[], sheetUrl: string, _todayYmd: string): MailFolder[] {
+function buildFolders(items: MailItem[], people: SheetPerson[], sheetUrl: string): MailFolder[] {
   const parsed = items.map(classify);
   const folders: MailFolder[] = [];
 
@@ -769,8 +770,8 @@ export default function BureauMailPage() {
   }, [loadList, loadSheet]);
 
   const folders = useMemo(
-    () => buildFolders(messages, people, adherentsSheetUrl, todayYmd),
-    [messages, people, adherentsSheetUrl, todayYmd],
+    () => buildFolders(messages, people, adherentsSheetUrl),
+    [messages, people, adherentsSheetUrl],
   );
 
   const visibleFolders = useMemo(() => {

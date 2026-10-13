@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import BureauAuthGate, { getBureauToken } from '../components/BureauAuthGate';
+import BureauAuthGate from '../components/BureauAuthGate';
+import { getBureauToken } from '../lib/bureauSession';
 import { EnTete } from '../components/bureau/ui';
 import { bouton, carte } from '../components/bureau/styles';
 import { bureauFetch } from '../lib/bureauApi';

@@ -1,4 +1,4 @@
-import { getBureauToken } from '../components/BureauAuthGate';
+import { getBureauToken } from './bureauSession';
 
 export async function bureauFetch<T>(
   path: string,

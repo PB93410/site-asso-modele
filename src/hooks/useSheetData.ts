@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import * as siteData from '../data/siteData';
 import { SHEET_CSV, GOOGLE_SHEET_URL } from '../data/CONFIG';
 import { eventKey, isPastEvent } from '../lib/events';
@@ -55,6 +55,11 @@ function useSheetResource<T>(
   const [loading, setLoading] = useState(false);
   const [fromSheet, setFromSheet] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Fonction de lecture fixe par ressource : gardée hors des dépendances, sans recharger.
+  const parseRef = useRef(parse);
+  useEffect(() => {
+    parseRef.current = parse;
+  });
 
   useEffect(() => {
     const url = sheetUrl(kind);
@@ -69,7 +74,7 @@ function useSheetResource<T>(
       try {
         console.info(`[SheetData] ${kind}: chargement…`, url.slice(0, 80) + '…');
         const csv = await fetchCsv(url);
-        const parsed = parse(csv);
+        const parsed = parseRef.current(csv);
         if (cancelled) return;
         if (parsed.length > 0) {
           setData(parsed);

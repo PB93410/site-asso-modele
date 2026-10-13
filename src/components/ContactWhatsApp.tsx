@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { MessageCircle, Sparkles, HelpCircle, UserPlus } from 'lucide-react';
 import { WHATSAPP_TEMPLATES, waUrl } from '../data/siteData';
-import { openWhatsApp } from './WhatsAppToast';
+import { openWhatsApp } from '../lib/whatsapp';
 import { WA_NOTICE } from './WhatsAppNotice';
 import { ASSO, COURS_ESSAI_LABEL, ESSAIS_LABEL, TARIF_LABEL } from '../data/asso';
 

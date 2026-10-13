@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { ASSO } from '../data/asso';
 import { ACTIVITIES } from '../data/siteData';
@@ -77,6 +77,11 @@ export default function BureauSiteEditor({
   const [saving, setSaving] = useState(false);
   const [schedule, setSchedule] = useState<ScheduleRow[]>([]);
   const [events, setEvents] = useState<EventRow[]>([]);
+  // Dernière version du message, sans recharger les données à chaque affichage du parent.
+  const toastRef = useRef(onToast);
+  useEffect(() => {
+    toastRef.current = onToast;
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -92,7 +97,7 @@ export default function BureauSiteEditor({
         setSchedule(data.planning || []);
         setEvents(data.evenements || []);
       } catch (err) {
-        onToast(err instanceof Error ? err.message : 'Chargement impossible');
+        toastRef.current(err instanceof Error ? err.message : 'Chargement impossible');
       } finally {
         if (!cancelled) setLoading(false);
       }
