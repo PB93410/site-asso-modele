@@ -168,14 +168,15 @@ export function dossierVide(date = new Date()) {
     financement: { passSport: 50, ancvMax: 40, comiteEntreprise: 30 },
     attestations: { recuFiscal: false, objet: '' },
     remarques: '',
-    adherentsImport: { source: '', importeLe: '', fiches: [] },
   };
 }
 
 /** Complète un dossier (ancien, partiel ou tapé à la main) avec les valeurs par défaut. */
 export function normaliserDossier(raw) {
   const base = dossierVide();
-  const d = raw && typeof raw === 'object' ? raw : {};
+  const d = raw && typeof raw === 'object' ? { ...raw } : {};
+  // Ancienne version du questionnaire : une liste d’adhérents importée n’est ni gardée ni envoyée.
+  delete d.adherentsImport;
   const merge = (a, b) => ({ ...a, ...(b && typeof b === 'object' ? b : {}) });
   return {
     ...base,
@@ -198,11 +199,6 @@ export function normaliserDossier(raw) {
     planning: Array.isArray(d.planning) ? d.planning : [],
     coachs: Array.isArray(d.coachs) ? d.coachs : [],
     faq: Array.isArray(d.faq) ? d.faq : [],
-    adherentsImport: {
-      source: String(d.adherentsImport?.source || ''),
-      importeLe: String(d.adherentsImport?.importeLe || ''),
-      fiches: Array.isArray(d.adherentsImport?.fiches) ? d.adherentsImport.fiches : [],
-    },
   };
 }
 

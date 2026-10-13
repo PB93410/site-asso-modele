@@ -311,12 +311,6 @@ function EtapeEnvoi({
         <Texte label="Votre téléphone" facultatif type="tel" inputMode="tel" value={d.contact.telephone} onChange={(v) => maj('contact.telephone', v)} />
       </div>
       <ZoneTexte label="Quelque chose à ajouter ?" facultatif value={d.remarques} onChange={(v) => maj('remarques', v)} />
-      {d.adherentsImport?.fiches?.length ? (
-        <Encadre>
-          {d.adherentsImport.fiches.length} adhérent(s) sont joints au dossier. Ils serviront au tableau du bureau, pas au site public. Ne les
-          déposez pas dans le dépôt du site.
-        </Encadre>
-      ) : null}
 
       {reste.length ? (
         <Encadre ton="attention">

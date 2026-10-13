@@ -15,7 +15,7 @@ google-credentials.json
 *.xlsx
 *.csv
 !public/data/*.csv
-# Dossier questionnaire (peut contenir une liste d’adhérents)
+# Dossier du questionnaire (contient le contact du bénévole)
 /dossier-*.json
 
 # Cartes adhérent : jamais dans public/ (Vite les copierait dans dist)

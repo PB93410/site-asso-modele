@@ -1,34 +1,11 @@
 /**
- * Reprise d’un fichier Excel / CSV dans le questionnaire :
- * planning (horaires) et/ou liste d’adhérents, avec correspondance de colonnes.
- * Les fiches d’adhérents restent dans le dossier (navigateur, envoi, tmp/) :
- * jamais dans contenu/ ni dans le dépôt.
+ * Reprise d’un planning Excel / CSV dans le questionnaire, avec correspondance de colonnes.
+ * Une liste d’adhérents n’est jamais lue ici : elle ne doit transiter ni par le navigateur
+ * du questionnaire, ni par le dossier envoyé (detecterGenre la repère pour la refuser).
  */
 
 import { JOURS, normaliserDossier } from './dossier.js';
 import { lireXlsxPortable } from './xlsx-lire.js';
-
-/** Mêmes colonnes que netlify/functions/_bureau-lib.mjs → ADHERENTS_HEADERS (un test le vérifie). */
-export const COLONNES_ADHERENTS = [
-  'NOM',
-  'PRENOM',
-  'TEL',
-  'MAIL',
-  'DATE_NAISSANCE',
-  'ADRESSE',
-  'CP',
-  'VILLE',
-  'MODE',
-  'STATUT',
-  'MONTANT',
-  'DETAIL',
-  'DATE_PAIEMENT',
-  'DROIT_IMAGE',
-  'QS_SPORT',
-  'SOURCE',
-  'NOTES',
-  'DATE_DEMANDE',
-];
 
 export const CHAMPS_PLANNING = [
   { id: 'jour', label: 'Jour' },
@@ -40,31 +17,6 @@ export const CHAMPS_PLANNING = [
   { id: 'note', label: 'Note' },
 ];
 
-export const CHAMPS_ADHERENTS = COLONNES_ADHERENTS.map((id) => ({
-  id,
-  label:
-    {
-      NOM: 'Nom',
-      PRENOM: 'Prénom',
-      TEL: 'Téléphone',
-      MAIL: 'E-mail',
-      DATE_NAISSANCE: 'Date de naissance',
-      ADRESSE: 'Adresse',
-      CP: 'Code postal',
-      VILLE: 'Ville',
-      MODE: 'Mode de paiement',
-      STATUT: 'Statut',
-      MONTANT: 'Montant',
-      DETAIL: 'Détail',
-      DATE_PAIEMENT: 'Date de paiement',
-      DROIT_IMAGE: 'Droit à l’image',
-      QS_SPORT: 'QS-SPORT',
-      SOURCE: 'Source',
-      NOTES: 'Notes',
-      DATE_DEMANDE: 'Date de la demande',
-    }[id] || id,
-}));
-
 const MOTS_PLANNING = {
   jour: ['jour', 'day', 'weekday', 'joursemaine'],
   horaire: ['horaire', 'time', 'heure', 'heures', 'creneau', 'plage', 'horaires'],
@@ -75,25 +27,12 @@ const MOTS_PLANNING = {
   note: ['note', 'notes', 'commentaire', 'remarque', 'remarques'],
 };
 
-const MOTS_ADHERENTS = {
-  NOM: ['nom', 'name', 'lastname', 'nomdefamille', 'familyname', 'nomfamille'],
-  PRENOM: ['prenom', 'firstname', 'givenname', 'prenoms'],
-  TEL: ['tel', 'telephone', 'phone', 'portable', 'mobile', 'telportable'],
-  MAIL: ['mail', 'email', 'courriel', 'e-mail', 'adresseemail', 'mel'],
-  DATE_NAISSANCE: ['datenaissance', 'naissance', 'birthday', 'datenais', 'nee', 'ne', 'ddn'],
-  ADRESSE: ['adresse', 'address', 'rue', 'adr'],
-  CP: ['cp', 'codepostal', 'postal', 'zip', 'codepost'],
-  VILLE: ['ville', 'city', 'commune', 'localite'],
-  MODE: ['mode', 'paiement', 'modepaiement', 'reglement'],
-  STATUT: ['statut', 'status', 'etat'],
-  MONTANT: ['montant', 'tarif', 'cotisation', 'somme'],
-  DETAIL: ['detail', 'details'],
-  DATE_PAIEMENT: ['datepaiement', 'paye', 'reglele'],
-  DROIT_IMAGE: ['droitimage', 'image', 'autorisationimage'],
-  QS_SPORT: ['qssport', 'qs', 'certificat', 'certificatmedical'],
-  SOURCE: ['source', 'origine'],
-  NOTES: ['notes', 'commentaire', 'remarque', 'observations'],
-  DATE_DEMANDE: ['datedemande', 'inscription', 'datesaisie', 'dateentree'],
+/** En-têtes qui trahissent une liste de personnes. */
+const MOTS_PERSONNES = {
+  nom: ['nom', 'name', 'lastname', 'nomdefamille', 'familyname', 'nomfamille'],
+  prenom: ['prenom', 'firstname', 'givenname', 'prenoms'],
+  tel: ['tel', 'telephone', 'phone', 'portable', 'mobile', 'telportable'],
+  mail: ['mail', 'email', 'courriel', 'adresseemail', 'mel'],
 };
 
 export function normaliserEnTete(s) {
@@ -120,15 +59,11 @@ export function correspondancePlanning(enTetes) {
   return choisirAlias(enTetes, MOTS_PLANNING);
 }
 
-export function correspondanceAdherents(enTetes) {
-  return choisirAlias(enTetes, MOTS_ADHERENTS);
-}
-
 export function detecterGenre(enTetes) {
   const p = correspondancePlanning(enTetes);
-  const a = correspondanceAdherents(enTetes);
+  const a = choisirAlias(enTetes, MOTS_PERSONNES);
   const scoreP = ['jour', 'cours', 'horaire', 'debut'].filter((k) => p[k]).length;
-  const scoreA = ['NOM', 'PRENOM', 'MAIL', 'TEL'].filter((k) => a[k]).length;
+  const scoreA = Object.values(a).filter(Boolean).length;
   if (scoreA >= 2 && scoreA >= scoreP) return 'adherents';
   if (scoreP >= 2) return 'planning';
   return 'inconnu';
@@ -305,22 +240,6 @@ export function creneauxDepuisLignes(lignes, mapping) {
   return out;
 }
 
-export function fichesDepuisLignes(lignes, mapping) {
-  const { enTetes, corps } = enTetesEtLignes(lignes);
-  const out = [];
-  for (const ligne of corps) {
-    const fiche = {};
-    let utile = false;
-    for (const id of COLONNES_ADHERENTS) {
-      const v = valeurMappee(ligne, enTetes, mapping[id]).trim();
-      fiche[id] = v;
-      if (v && (id === 'NOM' || id === 'PRENOM' || id === 'MAIL' || id === 'TEL')) utile = true;
-    }
-    if (utile) out.push(fiche);
-  }
-  return out;
-}
-
 export function integrerPlanning(dossier, creneaux, { remplacer = false } = {}) {
   const d = normaliserDossier(dossier);
   const noms = new Set(d.cours.map((c) => String(c.nom || '').trim().toLowerCase()).filter(Boolean));
@@ -337,32 +256,4 @@ export function integrerPlanning(dossier, creneaux, { remplacer = false } = {}) 
     cours: [...d.cours, ...ajoutCours],
     planning: remplacer ? [...creneaux] : [...d.planning, ...creneaux],
   };
-}
-
-export function integrerAdherents(dossier, fiches, source = '') {
-  const d = normaliserDossier(dossier);
-  const nom = String(source || '').replace(/^.*[/\\]/, '').slice(0, 80);
-  return {
-    ...d,
-    adherentsImport: {
-      source: nom,
-      importeLe: new Date().toISOString(),
-      fiches: fiches.map((f) => {
-        const row = {};
-        for (const k of COLONNES_ADHERENTS) row[k] = String(f[k] || '').trim();
-        return row;
-      }),
-    },
-  };
-}
-
-const csvCell = (v) => {
-  const s = String(v ?? '');
-  return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-};
-
-/** CSV aux colonnes du bureau, pour tmp/ (jamais commité). */
-export function csvAdherents(fiches) {
-  if (!fiches?.length) return '';
-  return [COLONNES_ADHERENTS.join(','), ...fiches.map((f) => COLONNES_ADHERENTS.map((k) => csvCell(f[k])).join(','))].join('\n') + '\n';
 }
