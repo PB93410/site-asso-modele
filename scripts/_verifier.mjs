@@ -5,6 +5,7 @@
 
 import { ASSO } from '../asso.derive.js';
 import { contraste } from '../src/lib/dossier.js';
+import { IDS_PREREGLAGES } from '../src/lib/prereglages.js';
 import { remplir } from '../src/lib/gabarit.js';
 import { adresseAsso, MODES_ENVOI, modeEnvoi } from '../netlify/functions/_envoi.mjs';
 import { MODES_STOCKAGE, modeStockage } from '../netlify/functions/_stockage.mjs';
@@ -92,6 +93,16 @@ export function verifierConfig(asso, modules, existe, saisonCourte) {
   r.push(lieux.length ? ok(`${lieux.length} lieu(x) de cours.`) : erreur('Aucun lieu de cours avec nom et rue.', 'Ajoutez-en un dans lieux.'));
 
   if (!(Number(asso.adhesion?.tarif) > 0)) r.push(erreur('adhesion.tarif : montant attendu (ex. 140).'));
+
+  const typeAsso = String(asso.typeAsso || '').trim();
+  if (typeAsso && !IDS_PREREGLAGES.includes(typeAsso)) {
+    r.push(
+      attention(
+        `typeAsso « ${typeAsso} » n’est pas un préréglage connu.`,
+        `Utilisez ${IDS_PREREGLAGES.join(', ')}, ou laissez vide.`,
+      ),
+    );
+  }
 
   const exemples = valeursExemple(asso);
   if (exemples.length) {

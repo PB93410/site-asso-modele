@@ -58,6 +58,8 @@ export interface Dossier {
     region: string;
     communesVoisines: string[];
   };
+  /** Préréglage du questionnaire (gym-volontaire, yoga…). Vide = autre / aucun. */
+  typeAsso: string;
   lieux: DossierLieu[];
   contacts: {
     email: string;

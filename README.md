@@ -73,7 +73,7 @@ Une fonction à `false` disparaît proprement : `/essai` et `/inscription` propo
 
 ## Installer pour une association (référent)
 
-L’association remplit un **questionnaire en ligne** (`configurateur/`, sans compte ni installation) : nom retrouvé dans le répertoire officiel, salles avec recherche d’adresse, horaires, couleur tirée du logo, aperçu de la carte. Vous recevez un dossier, puis :
+L’association remplit un **questionnaire en ligne** (`configurateur/`, sans compte ni installation) : type d’association (préréglages), import Excel/CSV du planning, nom retrouvé dans le répertoire officiel, salles avec recherche d’adresse, horaires, couleur tirée du logo, aperçu de la carte. Vous recevez un dossier, puis :
 
 ```bash
 npm run installer -- dossier-sigle.json

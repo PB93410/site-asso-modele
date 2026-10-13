@@ -11,6 +11,7 @@ import {
   dossierVide,
   erreursDossier,
   imagesDossier,
+  normaliserDossier,
   plageHoraire,
   planningCsv,
   saisonCourante,
@@ -76,6 +77,7 @@ describe('dossier', () => {
     expect(c.lieux[1]).toMatchObject({ id: 'dojo-de-saint-fictif', codePostal: '99010', ville: 'Saint-Fictif' });
     expect(c.logo).toBe('/assets/logo-asso.svg');
     expect(c.federation.logo).toBe('/assets/logo-federation.svg');
+    expect(c.typeAsso).toBe('gym-volontaire');
     expect(c.modules).toEqual({
       essais: true,
       adhesion: false,
@@ -132,6 +134,16 @@ describe('asso.config.js écrit par l’outil', () => {
     const relu = (await import(pathToFileURL(path.join(root, 'asso.config.js')).href)).default;
     expect(relu).toEqual(JSON.parse(JSON.stringify(config)));
     expect(fs.readFileSync(path.join(root, 'tmp/installation-sst.md'), 'utf8')).toContain('Marche nordique');
+    fs.rmSync(root, { recursive: true, force: true });
+  });
+
+  it('une liste d’adhérents d’un ancien brouillon n’est ni gardée ni installée', () => {
+    const d = { ...dossier(), adherentsImport: { source: 'liste.csv', fiches: [{ NOM: 'Durand', MAIL: 'alice.fictive@example.org' }] } };
+    expect(normaliserDossier(d)).not.toHaveProperty('adherentsImport');
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'installer-adh-'));
+    const { ecrits } = installerDossier({ dossier: d, root, base: ASSO });
+    expect(ecrits.some((f) => /adherent/i.test(f))).toBe(false);
+    for (const f of ecrits) expect(fs.readFileSync(path.join(root, f), 'utf8')).not.toContain('alice.fictive@example.org');
     fs.rmSync(root, { recursive: true, force: true });
   });
 });

@@ -77,6 +77,8 @@ const ASSO = {
   nomCourt: ${q(c.nomCourt)},
   /** Préfixe des numéros d'adhérent (ex. ASE-2627-0001). Lettres, sans espace. */
   sigle: ${q(c.sigle)},
+  /** Préréglage du questionnaire (gym-volontaire, yoga, chorale, danse, omnisport). Vide = aucun. */
+  typeAsso: ${q(c.typeAsso)},
   /** Type d'activité, utilisé dans les titres : « Gym, Pilates, Zumba ». */
   accroche: ${q(c.accroche)},
   /** Phrase courte du hero. */

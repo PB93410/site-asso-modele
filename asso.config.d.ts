@@ -57,6 +57,8 @@ export interface AssoConfig {
   nom: string;
   nomCourt: string;
   sigle: string;
+  /** Préréglage du questionnaire. Vide = autre / aucun. */
+  typeAsso?: string;
   accroche: string;
   slogan: string;
   anneeCreation: string;

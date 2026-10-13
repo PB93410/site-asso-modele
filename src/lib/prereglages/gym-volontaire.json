@@ -1,0 +1,76 @@
+{
+  "id": "gym-volontaire",
+  "titre": "Gym volontaire (FFEPGV)",
+  "resume": "Gym douce, renforcement, marche. Licence FFEPGV proposée.",
+  "accroche": "Gym douce, Renforcement, Marche nordique",
+  "slogan": "Bouger à son rythme, ensemble",
+  "inclus": "licence et assurance comprises",
+  "federation": {
+    "nom": "Fédération française d’éducation physique et de gymnastique volontaire",
+    "sigle": "FFEPGV",
+    "url": "https://www.ffepgv.fr"
+  },
+  "couleurs": {
+    "primaire": "#0E7490",
+    "secondaire": "#3F5C4A"
+  },
+  "modules": {
+    "essais": true,
+    "adhesion": true,
+    "bureau": true
+  },
+  "cours": [
+    {
+      "nom": "Gym douce",
+      "niveau": "Reprise en douceur",
+      "description": "Mobilité et équilibre, sur chaise si besoin. Chacun va à son rythme : on ne force pas.",
+      "bienfaits": ["Équilibre", "Mobilité", "Sans se brusquer"]
+    },
+    {
+      "nom": "Gym tonic",
+      "niveau": "Tous niveaux",
+      "description": "Renforcement et cardio léger, en musique. Les exercices sont adaptés à chacun.",
+      "bienfaits": ["Souffle", "Tonus", "Bonne humeur"]
+    },
+    {
+      "nom": "Renforcement",
+      "niveau": "Tous niveaux",
+      "description": "Dos, jambes et ceinture abdominale, avec le matériel du club. Utile au quotidien.",
+      "bienfaits": ["Dos", "Jambes", "Tenue"]
+    },
+    {
+      "nom": "Marche nordique",
+      "niveau": "Tous niveaux",
+      "description": "Sortie d’une heure environ, bâtons prêtés. On marche ensemble, sans compétition.",
+      "bienfaits": ["Plein air", "Cardio doux", "Groupe"]
+    }
+  ],
+  "faq": [
+    {
+      "question": "Faut-il un certificat médical ?",
+      "reponse": "Non pour la pratique de loisir : un questionnaire de santé QS-SPORT suffit. Si une réponse est positive, un certificat vous sera demandé.",
+      "populaire": true
+    },
+    {
+      "question": "Qu’est-ce que la licence FFEPGV ?",
+      "reponse": "Elle est comprise dans la cotisation. Elle vous assure pendant les activités et vous rattache à la gymnastique volontaire."
+    },
+    {
+      "question": "Je n’ai pas fait de sport depuis longtemps, c’est pour moi ?",
+      "reponse": "Oui. Les animateurs adaptent chaque mouvement. La gym douce est prévue pour une reprise, y compris sur chaise.",
+      "populaire": true
+    },
+    {
+      "question": "Quel matériel faut-il apporter ?",
+      "reponse": "Une tenue confortable et des chaussures propres. Tapis, haltères et bâtons de marche sont sur place."
+    },
+    {
+      "question": "Je peux m’inscrire en cours d’année ?",
+      "reponse": "Oui. L’adhésion est de {tarif} pour la saison en cours.{?essais| Les {essais} premières séances sont gratuites.}"
+    },
+    {
+      "question": "Je n’habite pas {ville}, je peux venir ?",
+      "reponse": "Oui. Les cours sont à {ville}. Des adhérents viennent aussi des communes autour."
+    }
+  ]
+}

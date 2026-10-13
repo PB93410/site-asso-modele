@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { dossierVide, erreursDossier, normaliserDossier, type Dossier, type ErreurDossier } from '../../src/lib/dossier.js';
+import { appliquerPrereglage, listePrereglages, prereglageParId } from '../../src/lib/prereglages.js';
 import { envoyer, telecharger } from './envoi';
+import { ImportExistant } from './ImportExistant';
 import {
   EtapeAdhesion,
   EtapeAnimateurs,
@@ -70,7 +72,7 @@ export default function App() {
   const montrerErreurs = vuesEtapes.has(etape.id) || etape.id === 'envoi';
   const erreur = (champ: string) => (montrerErreurs ? erreurs.find((e) => e.champ === champ)?.message : undefined);
   const maj = (chemin: string, valeur: unknown) => setD((prev) => avec(prev, chemin, valeur));
-  const props: PropsEtape = { d, maj, erreur };
+  const props: PropsEtape = { d, maj, erreur, onDossier: setD };
 
   function aller(n: number) {
     setVues((v) => new Set(v).add(etape.id));
@@ -112,10 +114,16 @@ export default function App() {
 
         <div className="mt-8">
           {etape.id === 'accueil' ? (
-            <Accueil brouillon={Boolean(brouillon?.association.nom)} nom={d.association.nom} onCommencer={() => aller(1)} onRecommencer={() => {
-              setD(dossierVide());
-              aller(1);
-            }} />
+            <Accueil
+              d={d}
+              onDossier={setD}
+              brouillon={Boolean(brouillon?.association.nom)}
+              nom={d.association.nom}
+              onCommencer={() => aller(1)}
+              onRecommencer={() => {
+                setD(dossierVide());
+              }}
+            />
           ) : null}
           {etape.id === 'association' ? <EtapeAssociation {...props} /> : null}
           {etape.id === 'lieux' ? <EtapeLieux {...props} /> : null}
@@ -170,16 +178,21 @@ export default function App() {
 }
 
 function Accueil({
+  d,
+  onDossier,
   brouillon,
   nom,
   onCommencer,
   onRecommencer,
 }: {
+  d: Dossier;
+  onDossier: (next: Dossier) => void;
   brouillon: boolean;
   nom: string;
   onCommencer: () => void;
   onRecommencer: () => void;
 }) {
+  const choisi = prereglageParId(d.typeAsso);
   return (
     <div className="space-y-6 text-[17px] leading-relaxed">
       <p>
@@ -191,9 +204,42 @@ function Accueil({
         <ul className="mt-2 list-disc pl-5 space-y-1">
           <li>les horaires de vos cours et l’adresse des salles ;</li>
           <li>le tarif de la cotisation ;</li>
+          <li>un fichier Excel ou CSV du planning ou des adhérents, si vous en avez ;</li>
           <li>votre logo et une photo de cours, si vous en avez (sinon, pas grave).</li>
         </ul>
       </Encadre>
+
+      <section className="space-y-3">
+        <h2 className="text-[20px] font-bold">Quel type d’association ?</h2>
+        <p className="text-[16px] text-slate-600">
+          Nous pré-remplissons des cours types, une FAQ, une couleur et la fédération habituelle. Vous pourrez tout modifier ensuite.
+        </p>
+        <div className="grid sm:grid-cols-2 gap-3">
+          {listePrereglages().map((p) => {
+            const on = (d.typeAsso || '') === p.id;
+            return (
+              <button
+                key={p.id || 'aucun'}
+                type="button"
+                aria-pressed={on}
+                onClick={() => onDossier(appliquerPrereglage(d, p.id))}
+                className={`min-h-[44px] text-left rounded-2xl border px-4 py-3 ${on ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-300 bg-white hover:border-slate-800'}`}
+              >
+                <span className="block font-bold text-[17px]">{p.titre}</span>
+                <span className={`block text-[15px] mt-1 ${on ? 'text-slate-200' : 'text-slate-600'}`}>{p.resume}</span>
+              </button>
+            );
+          })}
+        </div>
+        {choisi && d.typeAsso ? (
+          <p className="text-[15px] text-slate-700">
+            Cours, FAQ, couleur et fédération proposés pour « {choisi.titre} ». Relisez les étapes suivantes : rien n’est figé.
+          </p>
+        ) : null}
+      </section>
+
+      <ImportExistant d={d} onDossier={onDossier} />
+
       <p className="text-[15px] text-slate-600">Vous pouvez vous arrêter à tout moment : vos réponses sont gardées dans ce navigateur, sur cet appareil.</p>
       <div className="flex flex-wrap gap-3">
         {brouillon ? (

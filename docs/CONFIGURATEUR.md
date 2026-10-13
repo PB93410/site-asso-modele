@@ -25,6 +25,8 @@ Vérifiez dans votre offre Netlify les quotas des formulaires (nombre d’envois
 
 ### Ce que fait le questionnaire
 
+- **Propose un préréglage** selon le type d’association (gym volontaire FFEPGV, yoga, chorale, danse, club omnisport, ou autre) : cours types, FAQ, bienfaits, couleur, modules conseillés, fédération. Tout reste modifiable. Les fichiers sont dans `src/lib/prereglages/` : pour en ajouter un, copiez un JSON existant et déclarez-le dans `src/lib/prereglages.js`.
+- **Importe le planning depuis un Excel ou un CSV** : le bénévole vérifie la correspondance des colonnes, puis intègre ; les créneaux rejoignent les horaires du dossier. **Une liste d’adhérents est refusée** (un onglet avec des noms, téléphones ou e-mails n’est ni affiché, ni gardé, ni envoyé) : le dossier passe par Netlify Forms et vous arrive avant tout accord avec l’association, il ne doit contenir aucune donnée d’adhérent. La liste se reprend après l’installation, avec l’association : `npm run donnees -- restaurer` (voir [DOC-DONNEES.md](DOC-DONNEES.md)) ou directement dans son tableau Google.
 - **Retrouve l’association** dans le répertoire officiel (API « Recherche d’entreprises ») : nom, RNA, SIRET, siège, année. Les associations sans SIRET n’y sont pas : on remplit à la main.
 - **Recherche les adresses** des salles (Base Adresse Nationale / Géoplateforme), avec la position GPS.
 - **Tire la couleur du logo** et l’assombrit si elle n’est pas lisible en blanc (WCAG 4,5:1).
@@ -33,6 +35,8 @@ Vérifiez dans votre offre Netlify les quotas des formulaires (nombre d’envois
 - **Garde un brouillon** dans le navigateur : on peut reprendre le lendemain sur le même appareil.
 
 Rien n’est envoyé avant le bouton « Envoyer », sauf les recherches (nom ou numéro d’association, adresses) aux API publiques.
+
+La reprise des textes d’un ancien site par URL n’est pas proposée : le navigateur ne peut pas lire un site tiers (blocage CORS), un serveur qui irait chercher la page serait fragile (mises en page très différentes, publicités, menus), et le bénévole devrait de toute façon relire chaque phrase. Un fichier Excel ou CSV du planning reste le moyen fiable.
 
 ---
 
@@ -93,3 +97,5 @@ Textes à trous, remplis avec `asso.config.js` : `{tarif}`, `{ville}`, `{lieux}`
 ## Format du dossier
 
 `src/lib/dossier.js` (+ `dossier.d.ts`) : forme, valeurs par défaut, contrôles (`erreursDossier`), conversion en configuration (`configDepuisDossier`). Le champ `version` permet d’importer d’anciens dossiers. Un champ ajouté à `asso.config.js` doit l’être aussi dans `scripts/_config-gabarit.mjs` (un test le vérifie) et, s’il doit être demandé à l’association, dans le dossier et le questionnaire.
+
+`typeAsso` mémorise le préréglage choisi.

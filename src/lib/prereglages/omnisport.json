@@ -1,0 +1,70 @@
+{
+  "id": "omnisport",
+  "titre": "Club omnisport",
+  "resume": "Plusieurs activités dans le même club : gym, jeux, marche…",
+  "accroche": "Gym, Badminton, Marche",
+  "slogan": "Un club, plusieurs activités, le même accueil",
+  "inclus": "assurance comprise",
+  "federation": {
+    "nom": "Union française des œuvres laïques d’éducation physique",
+    "sigle": "UFOLEP",
+    "url": "https://www.ufolep.org"
+  },
+  "couleurs": {
+    "primaire": "#1D4ED8",
+    "secondaire": "#3F5C4A"
+  },
+  "modules": {
+    "essais": true,
+    "adhesion": true,
+    "bureau": true,
+    "listeAttente": true
+  },
+  "cours": [
+    {
+      "nom": "Gym",
+      "niveau": "Tous niveaux",
+      "description": "Séance complète : échauffement, renforcement, étirements. Chacun garde son rythme.",
+      "bienfaits": ["Forme", "Souplesse", "Groupe"]
+    },
+    {
+      "nom": "Badminton",
+      "niveau": "Tous niveaux",
+      "description": "Jeu en double, sans compétition obligatoire. Raquettes prêtées pour commencer.",
+      "bienfaits": ["Réflexes", "Souffle", "Jeu"]
+    },
+    {
+      "nom": "Marche",
+      "niveau": "Tous niveaux",
+      "description": "Sortie d’une heure, pas de chrono. On discute, on s’arrête si besoin.",
+      "bienfaits": ["Plein air", "Cardio doux", "Convivialité"]
+    }
+  ],
+  "faq": [
+    {
+      "question": "Je dois choisir une seule activité ?",
+      "reponse": "Non. La cotisation donne accès à l’ensemble des activités de la saison, dans la limite des places.",
+      "populaire": true
+    },
+    {
+      "question": "Faut-il un certificat médical ?",
+      "reponse": "Non pour la pratique de loisir : un questionnaire de santé QS-SPORT suffit. Si une réponse est positive, un certificat vous sera demandé."
+    },
+    {
+      "question": "Le matériel est-il fourni ?",
+      "reponse": "Pour commencer, oui (raquettes, tapis). Des chaussures de sport propres restent à vous."
+    },
+    {
+      "question": "Un cours est complet, je fais quoi ?",
+      "reponse": "Vous pouvez être mis en liste d’attente. Une place libérée vous est proposée, avec un délai pour répondre."
+    },
+    {
+      "question": "Je peux m’inscrire en cours d’année ?",
+      "reponse": "Oui. L’adhésion est de {tarif} pour la saison en cours.{?essais| Les {essais} premières séances sont gratuites.}"
+    },
+    {
+      "question": "Je n’habite pas {ville}, je peux venir ?",
+      "reponse": "Oui. Les activités sont à {ville}. Des adhérents viennent aussi des communes autour."
+    }
+  ]
+}

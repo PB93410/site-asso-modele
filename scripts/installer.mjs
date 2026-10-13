@@ -66,6 +66,7 @@ export function recapitulatif(dossier, config) {
     `## FAQ : ${d.faq.length ? `${d.faq.length} questions relues par l’association` : 'celle du modèle (à relire)'}`,
     '',
   ];
+  if (d.typeAsso) lignes.push(`## Type d’association (préréglage)`, '', d.typeAsso, '');
   if (d.remarques.trim()) lignes.push('## Remarques de l’association', '', d.remarques.trim(), '');
   lignes.push(
     '## À faire',

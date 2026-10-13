@@ -57,6 +57,12 @@ describe('npm run verifier — configuration', () => {
     const r = erreurs(verifierConfig(ASSO, AUCUN, (p: string) => !p.includes('carte-verso'), '2627'));
     expect(r).toEqual([]);
   });
+
+  it('typeAsso inconnu : avertissement, pas une erreur', () => {
+    const r = verifierConfig({ ...ASSO, typeAsso: 'karate' }, AUCUN, () => true, '2627');
+    expect(erreurs(r)).toEqual([]);
+    expect(r.some((x) => /typeAsso/.test(x.texte) && x.niveau === 'attention')).toBe(true);
+  });
 });
 
 describe('npm run verifier — variables', () => {

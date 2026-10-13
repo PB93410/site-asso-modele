@@ -1,0 +1,69 @@
+{
+  "id": "danse",
+  "titre": "Danse",
+  "resume": "Danse de salon, country, danses en ligne. On peut venir seul ou à deux.",
+  "accroche": "Danse de salon, Country, Danses en ligne",
+  "slogan": "Danser pour le plaisir, sans se prendre la tête",
+  "inclus": "assurance comprise",
+  "federation": {
+    "nom": "Fédération française de danse",
+    "sigle": "FFD",
+    "url": "https://www.ffdanse.fr"
+  },
+  "couleurs": {
+    "primaire": "#BE185D",
+    "secondaire": "#57534E"
+  },
+  "modules": {
+    "essais": true,
+    "adhesion": true,
+    "bureau": true
+  },
+  "cours": [
+    {
+      "nom": "Danse de salon",
+      "niveau": "Tous niveaux",
+      "description": "Valses, rock, cha-cha. On tourne les partenaires. Venir seul est tout à fait habituel.",
+      "bienfaits": ["Équilibre", "Mémoire", "Convivialité"]
+    },
+    {
+      "nom": "Danses en ligne",
+      "niveau": "Tous niveaux",
+      "description": "Pas simples, répétés en groupe, sans partenaire. Idéal pour commencer.",
+      "bienfaits": ["Coordination", "Sans partenaire", "Bonne humeur"]
+    },
+    {
+      "nom": "Country",
+      "niveau": "Tous niveaux",
+      "description": "Danses country en ligne et quelques danses à deux. Musique claire, pas qui reviennent.",
+      "bienfaits": ["Rythme", "Groupe", "Plein pied"]
+    }
+  ],
+  "faq": [
+    {
+      "question": "Faut-il venir en couple ?",
+      "reponse": "Non. Beaucoup de personnes viennent seules. En danse de salon, on change souvent de partenaire. Les danses en ligne se font sans partenaire.",
+      "populaire": true
+    },
+    {
+      "question": "Faut-il déjà savoir danser ?",
+      "reponse": "Non. Les premiers pas sont montrés lentement. Personne ne vous laisse au milieu de la piste."
+    },
+    {
+      "question": "Faut-il un certificat médical ?",
+      "reponse": "Non pour la pratique de loisir : un questionnaire de santé QS-SPORT suffit. Si une réponse est positive, un certificat vous sera demandé."
+    },
+    {
+      "question": "Quelles chaussures ?",
+      "reponse": "Des chaussures souples, qui glissent un peu, à talons plats ou petits talons. Pas de baskets crantées sur un parquet."
+    },
+    {
+      "question": "Je peux m’inscrire en cours d’année ?",
+      "reponse": "Oui. L’adhésion est de {tarif} pour la saison en cours.{?essais| Les {essais} premières séances sont gratuites.}"
+    },
+    {
+      "question": "Je n’habite pas {ville}, je peux venir ?",
+      "reponse": "Oui. Les cours sont à {ville}. Des adhérents viennent aussi des communes autour."
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "id": "chorale",
+  "titre": "Chorale",
+  "resume": "Chant choral et atelier vocal. Pas besoin de savoir lire la musique.",
+  "accroche": "Chorale, Atelier vocal",
+  "slogan": "Chanter ensemble, simplement",
+  "inclus": "assurance comprise",
+  "federation": {
+    "nom": "À Cœur Joie",
+    "sigle": "ACJ",
+    "url": "https://www.choralies.fr"
+  },
+  "couleurs": {
+    "primaire": "#6D28D9",
+    "secondaire": "#57534E"
+  },
+  "modules": {
+    "essais": true,
+    "adhesion": true,
+    "bureau": true
+  },
+  "cours": [
+    {
+      "nom": "Chorale",
+      "niveau": "Tous niveaux",
+      "description": "Répétition hebdomadaire. Répertoire mixte, appris à l’oreille et avec des partitions simples. Concerts dans l’année.",
+      "bienfaits": ["Voix", "Mémoire", "Ensemble"]
+    },
+    {
+      "nom": "Atelier vocal",
+      "niveau": "Débutants",
+      "description": "Échauffement, justesse, respiration. Idéal avant de rejoindre la chorale, ou pour se remettre à chanter.",
+      "bienfaits": ["Respiration", "Confiance", "Oreille"]
+    }
+  ],
+  "faq": [
+    {
+      "question": "Faut-il savoir lire la musique ?",
+      "reponse": "Non. On apprend d’abord à l’oreille. Les partitions aident ensuite, sans être obligatoires.",
+      "populaire": true
+    },
+    {
+      "question": "Y a-t-il une audition ?",
+      "reponse": "Non. Venez à une répétition : on vous place dans un pupitre (soprano, alto, ténor ou basse) selon votre voix."
+    },
+    {
+      "question": "Je n’ai pas chanté depuis longtemps, c’est pour moi ?",
+      "reponse": "Oui. L’atelier vocal est fait pour ça. La chorale accueille aussi les personnes qui reprennent.",
+      "populaire": true
+    },
+    {
+      "question": "Faut-il un certificat médical ?",
+      "reponse": "Non pour le chant amateur. Un questionnaire de santé peut être demandé à l’inscription."
+    },
+    {
+      "question": "Je peux m’inscrire en cours d’année ?",
+      "reponse": "Oui. L’adhésion est de {tarif} pour la saison en cours.{?essais| Vous pouvez venir aux {essais} premières répétitions sans engagement.}"
+    },
+    {
+      "question": "Je n’habite pas {ville}, je peux venir ?",
+      "reponse": "Oui. Les répétitions sont à {ville}. Des choristes viennent aussi des communes autour."
+    }
+  ]
+}

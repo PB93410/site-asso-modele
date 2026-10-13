@@ -51,6 +51,8 @@ const ASSO = {
   nomCourt: 'ASE',
   /** Préfixe des numéros d'adhérent (ex. ASE-2627-0001). Lettres, sans espace. */
   sigle: 'ASE',
+  /** Préréglage du questionnaire (gym-volontaire, yoga, chorale, danse, omnisport). Vide = aucun. */
+  typeAsso: '',
   /** Type d'activité, utilisé dans les titres : « Gym, Pilates, Zumba ». */
   accroche: 'Gym, Pilates, Zumba',
   /** Phrase courte du hero. */

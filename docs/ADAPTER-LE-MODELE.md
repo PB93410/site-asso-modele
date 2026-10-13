@@ -61,7 +61,7 @@ Vous pouvez ensuite remplacer `public/assets/logo.svg` par votre vrai logo (et r
 
 ## Étape 3 — Contenus
 
-Le plus simple : faites remplir le **questionnaire en ligne** à l’association, puis `npm run installer` (voir [CONFIGURATEUR.md](CONFIGURATEUR.md)). À la main, tout est dans `contenu/` (JSON) :
+Le plus simple : faites remplir le **questionnaire en ligne** à l’association (préréglage par type, import Excel ou CSV), puis `npm run installer` (voir [CONFIGURATEUR.md](CONFIGURATEUR.md)). À la main, tout est dans `contenu/` (JSON) :
 
 - **`cours.json`** : chaque cours (nom, niveau, résumé, animateur, bienfaits, image) et le texte de sa page (accroche, texte, bienfaits détaillés, FAQ du cours).
   Le **nom d’un cours** doit être le même partout : `cours.json`, planning. `npm run verifier` le contrôle.

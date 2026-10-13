@@ -13,8 +13,10 @@ import {
 import { remplir, valeursTexte } from '../../src/lib/gabarit.js';
 import MODELE from '../../asso.config.js';
 import FAQ_MODELE from '../../contenu/faq.json';
+import { couleursProposees } from '../../src/lib/prereglages.js';
 import { chercherAdresse, chercherAssociation, type AdresseTrouvee, type AssociationTrouvee } from './api';
 import { ApercuAccueil, ApercuCarte } from './Apercu';
+import { ImportExistant } from './ImportExistant';
 import { couleurDuLogo, preparerLogo, preparerPhoto, preparerPortrait } from './images';
 import { Bouton, Case, Champ, Choix, Encadre, Texte, ZoneTexte } from './ui';
 
@@ -22,6 +24,7 @@ export type PropsEtape = {
   d: Dossier;
   maj: (chemin: string, valeur: unknown) => void;
   erreur: (champ: string) => string | undefined;
+  onDossier?: (next: Dossier) => void;
 };
 
 // ---------------------------------------------------------------------------
@@ -471,7 +474,7 @@ export function EtapeAdhesion({ d, maj, erreur }: PropsEtape) {
 
 const NIVEAUX = ['Tous niveaux', 'Débutants', 'Reprise en douceur', 'Intermédiaire', 'Confirmés'];
 
-export function EtapeCours({ d, maj, erreur }: PropsEtape) {
+export function EtapeCours({ d, maj, erreur, onDossier }: PropsEtape) {
   const saison = saisonCourante();
   const [an] = saison.split('-').map(Number);
   const saisons = [saison, `${an + 1}-${an + 2}`];
@@ -533,6 +536,10 @@ export function EtapeCours({ d, maj, erreur }: PropsEtape) {
         </Bouton>
       </section>
 
+      {onDossier ? (
+        <ImportExistant d={d} onDossier={onDossier} variante="planning" />
+      ) : null}
+
       <section className="space-y-3">
         <h3 className="text-[18px] font-bold">Les horaires de la semaine</h3>
         {!nomsCours.length ? (
@@ -579,7 +586,7 @@ export function EtapeCours({ d, maj, erreur }: PropsEtape) {
 
 // ---------------------------------------------------------------------------
 
-const TEINTES = ['#C45309', '#B91C1C', '#BE185D', '#7C3AED', '#1D4ED8', '#0E7490', '#047857', '#4D7C0F'];
+const TEINTES = [...new Set(['#C45309', '#B91C1C', '#BE185D', '#7C3AED', '#1D4ED8', '#0E7490', '#047857', '#4D7C0F', ...couleursProposees()])];
 
 export function EtapeApparence({ d, maj, erreur }: PropsEtape) {
   const ap = d.apparence;

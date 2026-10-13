@@ -154,6 +154,7 @@ export function dossierVide(date = new Date()) {
     },
     lieux: [],
     contacts: { email: '', telephone: '', whatsapp: true, siteSouhaite: '', instagram: '', facebook: '', avisGoogle: '' },
+    typeAsso: '',
     federation: { nom: '', sigle: '', url: '' },
     adhesion: { tarif: 0, inclus: '', essais: 2, paiementNom: '', paiementUrl: '', autresPaiements: ['chèque', 'espèces'], iban: '' },
     saison: { label: saison, reprise: `${an}-09-07` },
@@ -173,7 +174,9 @@ export function dossierVide(date = new Date()) {
 /** Complète un dossier (ancien, partiel ou tapé à la main) avec les valeurs par défaut. */
 export function normaliserDossier(raw) {
   const base = dossierVide();
-  const d = raw && typeof raw === 'object' ? raw : {};
+  const d = raw && typeof raw === 'object' ? { ...raw } : {};
+  // Ancienne version du questionnaire : une liste d’adhérents importée n’est ni gardée ni envoyée.
+  delete d.adherentsImport;
   const merge = (a, b) => ({ ...a, ...(b && typeof b === 'object' ? b : {}) });
   return {
     ...base,
@@ -182,6 +185,7 @@ export function normaliserDossier(raw) {
     contact: merge(base.contact, d.contact),
     association: merge(base.association, d.association),
     contacts: merge(base.contacts, d.contacts),
+    typeAsso: String(d.typeAsso ?? base.typeAsso ?? ''),
     federation: merge(base.federation, d.federation),
     adhesion: merge(base.adhesion, d.adhesion),
     saison: merge(base.saison, d.saison),
@@ -326,6 +330,7 @@ export function configDepuisDossier(dossier, base) {
     nom: a.nom.trim(),
     nomCourt: (a.nomCourt || a.sigle).trim(),
     sigle: a.sigle.trim(),
+    typeAsso: String(d.typeAsso || '').trim(),
     accroche: a.accroche.trim(),
     slogan: a.slogan.trim() || base.slogan,
     anneeCreation: a.anneeCreation.trim(),

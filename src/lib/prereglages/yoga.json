@@ -1,0 +1,69 @@
+{
+  "id": "yoga",
+  "titre": "Yoga",
+  "resume": "Yoga doux, hatha, yoga sur chaise. Respiration et postures simples.",
+  "accroche": "Yoga doux, Hatha, Yoga sur chaise",
+  "slogan": "Respirer, s’étirer, se poser",
+  "inclus": "assurance comprise",
+  "federation": {
+    "nom": "",
+    "sigle": "",
+    "url": ""
+  },
+  "couleurs": {
+    "primaire": "#9A3412",
+    "secondaire": "#57534E"
+  },
+  "modules": {
+    "essais": true,
+    "adhesion": true,
+    "bureau": true
+  },
+  "cours": [
+    {
+      "nom": "Yoga doux",
+      "niveau": "Reprise en douceur",
+      "description": "Postures simples, respiration, quelques minutes de calme à la fin. On n’a pas besoin d’être souple.",
+      "bienfaits": ["Souplesse", "Calme", "Respiration"]
+    },
+    {
+      "nom": "Hatha yoga",
+      "niveau": "Tous niveaux",
+      "description": "Enchaînement lent de postures. Le professeur propose toujours une version plus douce.",
+      "bienfaits": ["Posture", "Souffle", "Concentration"]
+    },
+    {
+      "nom": "Yoga sur chaise",
+      "niveau": "Reprise en douceur",
+      "description": "Les mêmes bienfaits, assis. Utile si l’équilibre au sol est difficile, ou après une opération.",
+      "bienfaits": ["Accessibilité", "Mobilité", "Sans se mettre au sol"]
+    }
+  ],
+  "faq": [
+    {
+      "question": "Faut-il être souple pour venir ?",
+      "reponse": "Non. Le yoga s’adapte à votre corps, pas l’inverse. Chacun reste dans son amplitude.",
+      "populaire": true
+    },
+    {
+      "question": "Faut-il un certificat médical ?",
+      "reponse": "Non pour la pratique de loisir : un questionnaire de santé QS-SPORT suffit. Si une réponse est positive, un certificat vous sera demandé."
+    },
+    {
+      "question": "Le tapis est-il fourni ?",
+      "reponse": "Oui, tapis et couvertures sont sur place. Venez en tenue souple, sans chaussures dans la salle."
+    },
+    {
+      "question": "Le yoga sur chaise, c’est pour qui ?",
+      "reponse": "Pour celles et ceux qui préfèrent ne pas s’allonger au sol, ou qui reprennent après une pause. Ce n’est pas un yoga « au rabais »."
+    },
+    {
+      "question": "Je peux m’inscrire en cours d’année ?",
+      "reponse": "Oui. L’adhésion est de {tarif} pour la saison en cours.{?essais| Les {essais} premières séances sont gratuites.}"
+    },
+    {
+      "question": "Je n’habite pas {ville}, je peux venir ?",
+      "reponse": "Oui. Les cours sont à {ville}. Des adhérents viennent aussi des communes autour."
+    }
+  ]
+}
