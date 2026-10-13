@@ -154,6 +154,7 @@ export function dossierVide(date = new Date()) {
     },
     lieux: [],
     contacts: { email: '', telephone: '', whatsapp: true, siteSouhaite: '', instagram: '', facebook: '', avisGoogle: '' },
+    typeAsso: '',
     federation: { nom: '', sigle: '', url: '' },
     adhesion: { tarif: 0, inclus: '', essais: 2, paiementNom: '', paiementUrl: '', autresPaiements: ['chèque', 'espèces'], iban: '' },
     saison: { label: saison, reprise: `${an}-09-07` },
@@ -167,6 +168,7 @@ export function dossierVide(date = new Date()) {
     financement: { passSport: 50, ancvMax: 40, comiteEntreprise: 30 },
     attestations: { recuFiscal: false, objet: '' },
     remarques: '',
+    adherentsImport: { source: '', importeLe: '', fiches: [] },
   };
 }
 
@@ -182,6 +184,7 @@ export function normaliserDossier(raw) {
     contact: merge(base.contact, d.contact),
     association: merge(base.association, d.association),
     contacts: merge(base.contacts, d.contacts),
+    typeAsso: String(d.typeAsso ?? base.typeAsso ?? ''),
     federation: merge(base.federation, d.federation),
     adhesion: merge(base.adhesion, d.adhesion),
     saison: merge(base.saison, d.saison),
@@ -195,6 +198,11 @@ export function normaliserDossier(raw) {
     planning: Array.isArray(d.planning) ? d.planning : [],
     coachs: Array.isArray(d.coachs) ? d.coachs : [],
     faq: Array.isArray(d.faq) ? d.faq : [],
+    adherentsImport: {
+      source: String(d.adherentsImport?.source || ''),
+      importeLe: String(d.adherentsImport?.importeLe || ''),
+      fiches: Array.isArray(d.adherentsImport?.fiches) ? d.adherentsImport.fiches : [],
+    },
   };
 }
 
@@ -326,6 +334,7 @@ export function configDepuisDossier(dossier, base) {
     nom: a.nom.trim(),
     nomCourt: (a.nomCourt || a.sigle).trim(),
     sigle: a.sigle.trim(),
+    typeAsso: String(d.typeAsso || '').trim(),
     accroche: a.accroche.trim(),
     slogan: a.slogan.trim() || base.slogan,
     anneeCreation: a.anneeCreation.trim(),

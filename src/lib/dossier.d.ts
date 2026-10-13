@@ -58,6 +58,8 @@ export interface Dossier {
     region: string;
     communesVoisines: string[];
   };
+  /** Préréglage du questionnaire (gym-volontaire, yoga…). Vide = autre / aucun. */
+  typeAsso: string;
   lieux: DossierLieu[];
   contacts: {
     email: string;
@@ -91,6 +93,11 @@ export interface Dossier {
   financement: { passSport: number; ancvMax: number; comiteEntreprise: number };
   attestations: { recuFiscal: boolean; objet: string };
   remarques: string;
+  /**
+   * Liste d’adhérents importée (Excel/CSV). Reste dans le dossier et tmp/.
+   * Ne jamais l’écrire dans contenu/ ni la committer.
+   */
+  adherentsImport: { source: string; importeLe: string; fiches: Record<string, string>[] };
 }
 
 export interface ErreurDossier {

@@ -76,6 +76,7 @@ describe('dossier', () => {
     expect(c.lieux[1]).toMatchObject({ id: 'dojo-de-saint-fictif', codePostal: '99010', ville: 'Saint-Fictif' });
     expect(c.logo).toBe('/assets/logo-asso.svg');
     expect(c.federation.logo).toBe('/assets/logo-federation.svg');
+    expect(c.typeAsso).toBe('gym-volontaire');
     expect(c.modules).toEqual({
       essais: true,
       adhesion: false,
@@ -132,6 +133,27 @@ describe('asso.config.js écrit par l’outil', () => {
     const relu = (await import(pathToFileURL(path.join(root, 'asso.config.js')).href)).default;
     expect(relu).toEqual(JSON.parse(JSON.stringify(config)));
     expect(fs.readFileSync(path.join(root, 'tmp/installation-sst.md'), 'utf8')).toContain('Marche nordique');
+    fs.rmSync(root, { recursive: true, force: true });
+  });
+
+  it('les fiches d’adhérents importées vont dans tmp/, jamais dans contenu/ ni public/', () => {
+    const d = dossier();
+    d.adherentsImport = {
+      source: 'liste.csv',
+      importeLe: '2026-10-13T10:00:00.000Z',
+      fiches: [{ NOM: 'Durand', PRENOM: 'Alice', MAIL: 'alice.fictive@example.org', TEL: '0600000001' }],
+    };
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'installer-adh-'));
+    const { ecrits } = installerDossier({ dossier: d, root, base: ASSO });
+    expect(ecrits).toContain('tmp/adherents-import-sst.csv');
+    const csv = fs.readFileSync(path.join(root, 'tmp/adherents-import-sst.csv'), 'utf8');
+    expect(csv).toContain('alice.fictive@example.org');
+    expect(fs.readFileSync(path.join(root, 'tmp/installation-sst.md'), 'utf8')).toMatch(/1 fiche/);
+    expect(fs.readFileSync(path.join(root, 'tmp/installation-sst.md'), 'utf8')).not.toContain('alice.fictive@example.org');
+    const contenu = fs.readFileSync(path.join(root, 'asso.config.js'), 'utf8') + fs.readFileSync(path.join(root, 'contenu/cours.json'), 'utf8');
+    expect(contenu).not.toContain('alice.fictive@example.org');
+    expect(contenu).not.toContain('Durand');
+    expect(fs.existsSync(path.join(root, 'public/data/adherents.csv'))).toBe(false);
     fs.rmSync(root, { recursive: true, force: true });
   });
 });

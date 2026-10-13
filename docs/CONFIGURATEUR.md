@@ -25,6 +25,8 @@ Vérifiez dans votre offre Netlify les quotas des formulaires (nombre d’envois
 
 ### Ce que fait le questionnaire
 
+- **Propose un préréglage** selon le type d’association (gym volontaire FFEPGV, yoga, chorale, danse, club omnisport, ou autre) : cours types, FAQ, bienfaits, couleur, modules conseillés, fédération. Tout reste modifiable. Les fichiers sont dans `src/lib/prereglages/` : pour en ajouter un, copiez un JSON existant et déclarez-le dans `src/lib/prereglages.js`.
+- **Importe un Excel ou un CSV** (planning et/ou liste d’adhérents) : le bénévole vérifie la correspondance des colonnes, puis intègre. Le planning rejoint les horaires du dossier. Les fiches d’adhérents restent dans le dossier et, à l’installation, dans `tmp/adherents-import-<sigle>.csv` (jamais dans `contenu/`, ni dans le dépôt).
 - **Retrouve l’association** dans le répertoire officiel (API « Recherche d’entreprises ») : nom, RNA, SIRET, siège, année. Les associations sans SIRET n’y sont pas : on remplit à la main.
 - **Recherche les adresses** des salles (Base Adresse Nationale / Géoplateforme), avec la position GPS.
 - **Tire la couleur du logo** et l’assombrit si elle n’est pas lisible en blanc (WCAG 4,5:1).
@@ -33,6 +35,10 @@ Vérifiez dans votre offre Netlify les quotas des formulaires (nombre d’envois
 - **Garde un brouillon** dans le navigateur : on peut reprendre le lendemain sur le même appareil.
 
 Rien n’est envoyé avant le bouton « Envoyer », sauf les recherches (nom ou numéro d’association, adresses) aux API publiques.
+
+La reprise des textes d’un ancien site par URL n’est pas proposée : le navigateur ne peut pas lire un site tiers (blocage CORS), un serveur qui irait chercher la page serait fragile (mises en page très différentes, publicités, menus), et le bénévole devrait de toute façon relire chaque phrase. Un fichier Excel ou CSV du planning reste le moyen fiable.
+
+---
 
 ---
 
@@ -61,7 +67,8 @@ L’installation :
 - assombrit la couleur si besoin et calcule les couleurs de survol ;
 - lance `npm run identite` (favicons, image de partage, verso de carte **à partir du logo de l’association**) ;
 - lance `npm run verifier` ;
-- écrit `tmp/installation-<sigle>.md` : contact, cours à enrichir, remarques, liste « à faire ». Ce fichier n’est jamais commité (il contient le contact du bénévole).
+- écrit `tmp/installation-<sigle>.md` : contact, cours à enrichir, remarques, liste « à faire ». Ce fichier n’est jamais commité (il contient le contact du bénévole) ;
+- s’il y a une liste d’adhérents dans le dossier : écrit `tmp/adherents-import-<sigle>.csv` (colonnes du bureau). À charger dans l’espace bénévoles. **Ne jamais committer** : données personnelles. Le site public n’en reçoit aucune.
 
 Un projet déjà configuré pour une autre association est protégé : ajoutez `--force` pour le remplacer.
 
@@ -93,3 +100,5 @@ Textes à trous, remplis avec `asso.config.js` : `{tarif}`, `{ville}`, `{lieux}`
 ## Format du dossier
 
 `src/lib/dossier.js` (+ `dossier.d.ts`) : forme, valeurs par défaut, contrôles (`erreursDossier`), conversion en configuration (`configDepuisDossier`). Le champ `version` permet d’importer d’anciens dossiers. Un champ ajouté à `asso.config.js` doit l’être aussi dans `scripts/_config-gabarit.mjs` (un test le vérifie) et, s’il doit être demandé à l’association, dans le dossier et le questionnaire.
+
+`typeAsso` mémorise le préréglage choisi. `adherentsImport` porte la liste importée jusqu’à `tmp/` : elle ne passe pas dans `asso.config.js` ni dans `contenu/`.

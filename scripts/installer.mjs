@@ -24,6 +24,7 @@ import {
   normaliserDossier,
   planningCsv,
 } from '../src/lib/dossier.js';
+import { csvAdherents } from '../src/lib/import-existant.js';
 import { rendreConfig } from './_config-gabarit.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -66,6 +67,18 @@ export function recapitulatif(dossier, config) {
     `## FAQ : ${d.faq.length ? `${d.faq.length} questions relues par l’association` : 'celle du modèle (à relire)'}`,
     '',
   ];
+  if (d.typeAsso) lignes.push(`## Type d’association (préréglage)`, '', d.typeAsso, '');
+  const nbFiches = d.adherentsImport?.fiches?.length || 0;
+  if (nbFiches) {
+    lignes.push(
+      '## Liste d’adhérents importée',
+      '',
+      `${nbFiches} fiche(s) (fichier d’origine : ${d.adherentsImport.source || '—'}).`,
+      `Écrites dans tmp/adherents-import-${config.sigle.toLowerCase()}.csv — à charger dans le bureau.`,
+      'Ne jamais committer ce fichier : il contient des données personnelles.',
+      '',
+    );
+  }
   if (d.remarques.trim()) lignes.push('## Remarques de l’association', '', d.remarques.trim(), '');
   lignes.push(
     '## À faire',
@@ -116,6 +129,8 @@ export function installerDossier({ dossier, root = ROOT, base, essai = false }) 
   ecrire('public/data/planning.csv', planningCsv(d));
   ecrire('public/data/evenements.csv', 'date,month,year,title,description,time,location,highlight,image,type\n');
   ecrire(`tmp/installation-${config.sigle.toLowerCase()}.md`, recapitulatif(d, config));
+  const csvAdh = csvAdherents(d.adherentsImport?.fiches);
+  if (csvAdh) ecrire(`tmp/adherents-import-${config.sigle.toLowerCase()}.csv`, csvAdh);
   return { config, ecrits };
 }
 
