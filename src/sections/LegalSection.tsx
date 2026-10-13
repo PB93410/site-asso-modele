@@ -236,7 +236,12 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                     l&apos;espace) garde l&apos;appareil connecté 90 jours au plus ; « Me déconnecter »
                     l&apos;efface. Vous y consultez votre fiche, votre carte, ce qu&apos;il reste à payer, vos
                     attestations et vos présences, téléchargez toutes vos données (droit d&apos;accès) et
-                    signalez un changement, transmis par mail au bureau qui corrige la fiche. De juin à
+                    signalez un changement, transmis par mail au bureau qui corrige la fiche. Vous pouvez
+                    y indiquer les cours que vous suivez (gardés par le site, sous une clé qui ne contient
+                    pas votre adresse, pour afficher vos prochaines séances) et abonner l&apos;agenda de
+                    votre téléphone à vos cours (lien personnel signé, sans votre e-mail). Vous pouvez
+                    aussi y changer votre réponse pour les photos : votre fiche est mise à jour et le
+                    bureau est prévenu par mail. De juin à
                     septembre, vous pouvez vous y réinscrire pour la saison suivante : votre fiche est
                     reprise, vous corrigez vos coordonnées et répondez aux questions de la saison ; une
                     nouvelle fiche est créée pour cette saison, conservée comme les autres. Base :

@@ -13,10 +13,14 @@
  * POST action=lien-bureau {numero|row} (bureau) lien à usage unique, 72 h, à envoyer par SMS ou WhatsApp
  * POST action=reinscrire {cle, …}    réinscription pour la saison suivante (juin → septembre, src/lib/reinscription.js)
  * GET  action=reinscriptions         (bureau) liste des réinscrits de la saison suivante
+ * POST action=mes-cours {cle, cours}  cours suivis (gardés dans Netlify Blobs, pas dans la fiche)
+ * POST action=droit-image {cle, valeur: Oui|Non}  change DROIT_IMAGE sur la fiche, prévient le bureau
+ * GET  action=ics&cle=…&t=…          mes cours en agenda (abonnement, lien signé, sans session)
  *
  * L'adhérent ne modifie jamais sa fiche lui-même : le bureau garde la main.
  */
 
+import { createHmac, timingSafeEqual } from 'node:crypto';
 import { getStore } from '@netlify/blobs';
 import { ASSO, MODULES, PAYMENT_MODES, SITE_URL } from '../../asso.derive.js';
 import { attestationPdf, estAJour, libelleType, nomFichier, typesDisponibles } from '../../src/lib/attestations.js';
@@ -38,6 +42,7 @@ import {
   texteMailCode,
   verifierCode,
 } from '../../src/lib/espace.js';
+import { coursDeNotes, heureParis, seances } from '../../src/lib/mesCours.ts';
 import { ONGLET_PRESENCES, PRESENCES_HEADERS } from '../../src/lib/presence.js';
 import {
   controlerReponses,
@@ -65,7 +70,9 @@ import {
   readSheetAsObjects,
   readSheetValues,
   requireAuth,
+  updateRowByHeaders,
 } from './_bureau-lib.mjs';
+import { calendrierIcs } from './_agenda.mjs';
 import { renderRecto } from './_carte-recto.mjs';
 import { carteFiche } from './carte-image.mjs';
 import { DEMO } from './_demo.mjs';
@@ -74,7 +81,7 @@ import { lireOngletSite } from './_onglet.mjs';
 import { lireReference, nouvelleReference, paiementIntegre } from './_paiement.mjs';
 import { brancherStockage } from './_stockage.mjs';
 import { versV2 } from './_v2.mjs';
-import { payloadPour } from './wallet.mjs';
+import { lirePlanning, payloadPour } from './wallet.mjs';
 import COURS from '../../contenu/cours.json';
 
 const STORE_ESPACE = 'espace';
@@ -132,6 +139,89 @@ async function presencesDe(fiche, mail) {
 }
 
 // ---------------------------------------------------------------------------
+// Mes cours, agenda, droit à l'image
+// ---------------------------------------------------------------------------
+
+const cleCours = (secret, mail, cle) => `cours-${cleMail(secret, mail)}-${String(cle).replace(/[^A-Za-z0-9-]/g, '_')}`;
+
+/** Cours suivis : ceux choisis dans l'espace, sinon ceux notés à l'inscription. */
+async function coursSuivis(secret, mail, f) {
+  const choix = await storeEspace().get(cleCours(secret, mail, cleFiche(f)), { type: 'json' }).catch(() => null);
+  if (Array.isArray(choix?.cours)) return { cours: choix.cours, choisis: true };
+  return { cours: coursDeNotes(pickRow(f, 'NOTES')).filter((c) => coursConnus().includes(c)), choisis: false };
+}
+
+/** Lien d'abonnement de l'agenda : numéro (ou référence) + signature, jamais l'e-mail. */
+const jetonAgenda = (secret, cle, mail) => createHmac('sha256', secret).update(`espace-agenda:${cle}:${foldMail(mail)}`).digest('hex').slice(0, 32);
+const lienAgenda = (event, secret, f) =>
+  `${basePublique(event)}/api/espace?${new URLSearchParams({ action: 'ics', cle: cleFiche(f), t: jetonAgenda(secret, cleFiche(f), pickRow(f, 'MAIL', 'Mail', 'EMAIL')) })}`;
+
+const ymdParis = (d = new Date()) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(d);
+
+/** Agenda .ics des cours suivis : séances des 4 prochains mois (et du mois passé). */
+async function agendaIcs(event, secret) {
+  const q = event.queryStringParameters || {};
+  const { rows } = await readSheetAsObjects(getAdherentsSheetId(), `'${getAdherentsTab()}'!A:Z`);
+  const f = rows.find((r) => cleFiche(r) === String(q.cle || '') && !estTest(r));
+  const attendu = f ? jetonAgenda(secret, cleFiche(f), pickRow(f, 'MAIL', 'Mail', 'EMAIL')) : '';
+  const recu = String(q.t || '');
+  if (!f || recu.length !== attendu.length || !timingSafeEqual(Buffer.from(recu), Buffer.from(attendu))) {
+    return { statusCode: 404, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' }, body: 'Introuvable' };
+  }
+  const mail = foldMail(pickRow(f, 'MAIL', 'Mail', 'EMAIL'));
+  const { cours } = await coursSuivis(secret, mail, f);
+  const debut = ymdParis(new Date(Date.now() - 31 * 86400000));
+  const liste = seances(await lirePlanning(), cours, { du: debut, jours: 150, saison: ASSO.saison });
+  const evenements = liste.map((s) => ({
+    id: `cours-${cleFiche(f)}-${s.ymd}-${s.debut}-${s.creneau.course}`.replace(/[^\w.-]+/g, '_'),
+    start: { dateTime: heureParis(s.ymd, s.debut) },
+    end: { dateTime: heureParis(s.ymd, s.fin) },
+    summary: s.creneau.course,
+    location: s.creneau.location || '',
+    description: `${ASSO.nom}${s.creneau.note ? ` — ${s.creneau.note}` : ''}`,
+  }));
+  return {
+    statusCode: 200,
+    headers: {
+      'Content-Type': 'text/calendar; charset=utf-8',
+      'Content-Disposition': 'inline; filename="mes-cours.ics"',
+      'Cache-Control': 'private, no-store',
+    },
+    body: calendrierIcs(evenements, { nom: `Mes cours — ${ASSO.nomCourt || ASSO.nom}` }),
+  };
+}
+
+async function mesCours(body, mail, fiches, secret) {
+  const f = fiches.find((x) => cleFiche(x) === String(pickValue(body, 'cle') || ''));
+  if (!f) return json(404, { error: 'Fiche introuvable.' });
+  const connus = coursConnus();
+  const cours = [...new Set((Array.isArray(body.cours) ? body.cours : []).map(String))].filter((c) => connus.includes(c)).slice(0, 8);
+  await storeEspace().setJSON(cleCours(secret, mail, cleFiche(f)), { cours, le: new Date().toISOString() });
+  return json(200, { ok: true, cours });
+}
+
+async function droitImage(body, mail) {
+  const valeur = String(pickValue(body, 'valeur') || '');
+  if (!['Oui', 'Non'].includes(valeur)) return json(400, { error: 'Répondez Oui ou Non.' });
+  const { headers, rows, colIndices } = await readSheetAsObjects(getAdherentsSheetId(), `'${getAdherentsTab()}'!A:Z`);
+  const f = fichesDuMail(rows, mail, estTest).find((x) => cleFiche(x) === String(pickValue(body, 'cle') || ''));
+  if (!f) return json(404, { error: 'Fiche introuvable.' });
+  if (pickRow(f, 'DROIT_IMAGE') === valeur) return json(200, { ok: true, valeur });
+  await updateRowByHeaders(getAdherentsSheetId(), getAdherentsTab(), f._row, { DROIT_IMAGE: valeur }, headers, colIndices);
+  if (modeEnvoi()) {
+    await envoyerMail({
+      to: adresseAsso(),
+      replyTo: mail,
+      subject: `Photos : ${noms(f)} répond « ${valeur} »`,
+      text: `${noms(f)}${numeroDe(f) ? ` (${numeroDe(f)})` : ''} a changé sa réponse pour les photos depuis son espace adhérent : « ${valeur} ».
+
+La fiche est déjà à jour (colonne DROIT_IMAGE).${valeur === 'Non' ? ' Pensez aux photos déjà publiées où la personne est reconnaissable.' : ''}`,
+    }).catch((err) => console.error('droit image mail', err?.message || err));
+  }
+  return json(200, { ok: true, valeur });
+}
+
+// ---------------------------------------------------------------------------
 // Réinscription : onglet de la saison suivante
 // ---------------------------------------------------------------------------
 
@@ -168,11 +258,6 @@ async function lignesSuivante(suivante) {
 }
 
 const noms = (f) => `${pickRow(f, 'PRENOM', 'Prénom', 'Prenom') || ''} ${pickRow(f, 'NOM', 'Nom') || ''}`.trim();
-const coursDeNotes = (f) =>
-  (String(pickRow(f, 'NOTES') || '').match(/Cours: ([^|]+)/)?.[1] || '')
-    .split(',')
-    .map((c) => c.trim())
-    .filter(Boolean);
 const coursConnus = () => [...new Set(COURS.map((c) => c.nom))];
 
 async function reinscrire(body, mail, fiches) {
@@ -217,7 +302,7 @@ ${ASSO.nom}`,
 }
 
 /** Ce que voit l'adhérent pour une fiche. */
-async function vueFiche(f, mail, suivantes = null) {
+async function vueFiche(f, mail, suivantes = null, extra = {}) {
   const numero = numeroDe(f);
   const statut = String(pickRow(f, 'STATUT') || '').trim();
   const aJour = estAJour(f);
@@ -249,6 +334,8 @@ async function vueFiche(f, mail, suivantes = null) {
     wallet: Boolean(MODULES.wallet) && aJour && Boolean(numero),
     attestations: MODULES.attestations && aJour ? typesDisponibles(ASSO).map((id) => ({ id, label: libelleType(id) })) : [],
     presences: presences ? { total: presences.length, dernieres: presences.slice(0, 12) } : null,
+    droitImage: pickRow(f, 'DROIT_IMAGE') || '',
+    ...extra,
     reinscription: suivantes
       ? {
           possible: aJour,
@@ -258,7 +345,7 @@ async function vueFiche(f, mail, suivantes = null) {
           codePostal: pickRow(f, 'CP') || '',
           ville: pickRow(f, 'VILLE') || '',
           droitImage: pickRow(f, 'DROIT_IMAGE') || '',
-          cours: coursDeNotes(f),
+          cours: coursDeNotes(pickRow(f, 'NOTES')),
         }
       : null,
   };
@@ -418,6 +505,8 @@ async function handler(event) {
     if (action === 'deconnecter') return avecCookie(json(200, { ok: true }), '', 0);
   }
 
+  if (action === 'ics' && event.httpMethod === 'GET') return agendaIcs(event, secret);
+
   if (action === 'reinscriptions') {
     const auth = requireAuth(event, { roles: ['admin', 'seance'] });
     if (!auth.ok) return auth.response;
@@ -428,7 +517,7 @@ async function handler(event) {
       ouverte: periode.ouverte,
       liste: lignes
         .filter((r) => pickRow(r, 'SOURCE') === 'Réinscription')
-        .map((r) => ({ nom: noms(r), date: pickRow(r, 'DATE_DEMANDE') || '', cours: coursDeNotes(r).join(', '), mode: pickRow(r, 'MODE') || '' })),
+        .map((r) => ({ nom: noms(r), date: pickRow(r, 'DATE_DEMANDE') || '', cours: coursDeNotes(pickRow(r, 'NOTES')).join(', '), mode: pickRow(r, 'MODE') || '' })),
     });
   }
 
@@ -441,6 +530,8 @@ async function handler(event) {
 
   if (event.httpMethod === 'POST' && action === 'signaler') return signaler(event, body, mail, fiches);
   if (event.httpMethod === 'POST' && action === 'reinscrire') return reinscrire(body, mail, fiches);
+  if (event.httpMethod === 'POST' && action === 'mes-cours') return mesCours(body, mail, fiches, secret);
+  if (event.httpMethod === 'POST' && action === 'droit-image') return droitImage(body, mail);
 
   if (action === 'moi') {
     const periode = periodeReinscription(ASSO.saison.label, new Date(), process.env.REINSCRIPTION);
@@ -448,7 +539,15 @@ async function handler(event) {
     return json(200, {
       connecte: true,
       mail,
-      fiches: await Promise.all(fiches.map((f) => vueFiche(f, mail, suivantes))),
+      fiches: await Promise.all(
+        fiches.map(async (f) =>
+          vueFiche(f, mail, suivantes, {
+            mesCours: await coursSuivis(secret, mail, f),
+            agenda: lienAgenda(event, secret, f),
+          }),
+        ),
+      ),
+      coursClub: coursConnus(),
       reinscription: periode.ouverte ? { saison: periode.suivante, au: periode.au, cours: coursConnus(), modes: PAYMENT_MODES } : null,
       signaler: Boolean(modeEnvoi()),
       contact: ASSO.email,

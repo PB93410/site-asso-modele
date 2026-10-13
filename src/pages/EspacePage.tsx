@@ -2,6 +2,9 @@ import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from
 import { Link } from 'react-router-dom';
 import { ASSO, MODULES } from '../data/asso';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { useScheduleFromSheet } from '../hooks/useSheetData';
+import { libelleDate, libelleHeure, parisMaintenant, sansCoursLe } from '../lib/accueil';
+import { seances } from '../lib/mesCours';
 import Footer from '../sections/Footer';
 import NotFoundPage from './NotFoundPage';
 
@@ -23,6 +26,9 @@ type Fiche = {
   wallet: boolean;
   attestations: Doc[];
   presences: { total: number; dernieres: { date: string; cours: string; horaire: string }[] } | null;
+  droitImage: string;
+  mesCours: { cours: string[]; choisis: boolean };
+  agenda: string;
   reinscription: {
     possible: boolean;
     faite: string;
@@ -41,6 +47,7 @@ type Moi = {
   fiches?: Fiche[];
   signaler?: boolean;
   contact?: string;
+  coursClub?: string[];
   reinscription?: PeriodeReinscription | null;
 };
 type Etape = 'chargement' | 'mail' | 'code' | 'lien' | 'espace';
@@ -294,6 +301,147 @@ function Reinscription({ f, periode, onFait }: { f: Fiche; periode: PeriodeReins
   );
 }
 
+const majuscule = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
+
+/** « 2026-10-19 » → « lundi 19 octobre ». */
+const jourLong = (ymd: string) =>
+  new Intl.DateTimeFormat('fr-FR', { timeZone: 'UTC', weekday: 'long', day: 'numeric', month: 'long' }).format(new Date(`${ymd}T12:00:00Z`));
+
+/** Mes cours : ceux que je suis, les prochaines séances (vacances comprises), et l'agenda du téléphone. */
+function MesCours({ f, coursClub }: { f: Fiche; coursClub: string[] }) {
+  const { schedule } = useScheduleFromSheet();
+  const [cours, setCours] = useState<string[]>(f.mesCours.cours);
+  const [edition, setEdition] = useState(!f.mesCours.cours.length);
+  const [busy, setBusy] = useState(false);
+  const [info, setInfo] = useState('');
+  const [aujourdhui] = useState(() => parisMaintenant(new Date()).ymd);
+  const prochaines = seances(schedule, cours, { du: aujourdhui, jours: 14, saison: ASSO.saison });
+  const sans = sansCoursLe(aujourdhui, ASSO.saison);
+  // Vacances qui commencent dans les deux semaines : on les annonce.
+  const dans14 = new Date(Date.parse(`${aujourdhui}T12:00:00Z`) + 14 * 86400000).toISOString().slice(0, 10);
+  const pause = (ASSO.saison.pauses || []).find((p) => p.du > aujourdhui && p.du <= dans14);
+
+  async function enregistrer() {
+    setBusy(true);
+    setInfo('');
+    try {
+      const d = await poster('mes-cours', { cle: f.cle, cours });
+      setCours(d.cours);
+      setEdition(false);
+    } catch (x) {
+      setInfo(x instanceof Error ? x.message : 'Enregistrement impossible.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function copier() {
+    await navigator.clipboard.writeText(f.agenda).catch(() => window.prompt('Lien de l’agenda :', f.agenda));
+    setInfo('Lien copié : collez-le dans votre agenda (« Ajouter un calendrier » → « Par URL »).');
+  }
+
+  return (
+    <Carte titre="Mes cours">
+      {edition ? (
+        <>
+          <p className="font-body text-[15px] text-brand-gray">Cochez les cours que vous suivez cette saison.</p>
+          <div className="flex flex-wrap gap-2">
+            {coursClub.map((c) => (
+              <Choix key={c} actif={cours.includes(c)} onClick={() => setCours((p) => (p.includes(c) ? p.filter((x) => x !== c) : [...p, c]))}>
+                {c}
+              </Choix>
+            ))}
+          </div>
+          <button type="button" disabled={busy || !cours.length} onClick={() => void enregistrer()} className={bouton}>
+            {busy ? 'Enregistrement…' : 'Enregistrer mes cours'}
+          </button>
+        </>
+      ) : (
+        <>
+          <p className="font-body text-[16px] text-brand-black">
+            {cours.join(', ')}{' '}
+            <button type="button" onClick={() => setEdition(true)} className="font-semibold text-brand-olive underline min-h-[44px]">
+              changer
+            </button>
+          </p>
+          {sans?.raison === 'vacances' ? (
+            <p className="font-body text-[15px] text-brand-gray">
+              Pas de cours pendant les {sans.libelle} : reprise {libelleDate(sans.reprise)}.
+            </p>
+          ) : null}
+          {prochaines.length ? (
+            <ul className="font-body text-[15px] text-brand-black space-y-1">
+              {prochaines.slice(0, 6).map((s, i) => (
+                <li key={i}>
+                  {majuscule(s.ymd === aujourdhui ? 'aujourd’hui' : jourLong(s.ymd))} · {libelleHeure(s.debut)} ·{' '}
+                  <strong>{s.creneau.course}</strong>
+                  {s.creneau.location ? <span className="text-brand-gray"> — {s.creneau.location}</span> : null}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="font-body text-[15px] text-brand-gray">Pas de séance dans les deux semaines qui viennent.</p>
+          )}
+          {pause ? (
+            <p className="font-body text-[15px] text-brand-gray">
+              {majuscule(pause.libelle)} à partir du {jourLong(pause.du)}, reprise {libelleDate(pause.reprise)}.
+            </p>
+          ) : null}
+          <div className="flex flex-wrap gap-3 pt-1">
+            <a href={f.agenda.replace(/^https?:/, 'webcal:')} className={boutonSecondaire}>
+              Ajouter à mon agenda
+            </a>
+            <button type="button" onClick={() => void copier()} className="min-h-[44px] font-semibold text-brand-olive">
+              Copier le lien de l’agenda
+            </button>
+          </div>
+          <p className="font-body text-[14px] text-brand-gray">
+            L’agenda de votre téléphone se met à jour tout seul : vacances, jours fériés et cours annulés compris.
+          </p>
+        </>
+      )}
+      {info ? <p className="font-body text-[15px] text-brand-gray">{info}</p> : null}
+    </Carte>
+  );
+}
+
+/** Photos : l'adhérent change sa réponse ; la fiche est mise à jour et le bureau prévenu. */
+function Photos({ f }: { f: Fiche }) {
+  const [valeur, setValeur] = useState(f.droitImage);
+  const [busy, setBusy] = useState(false);
+  const [info, setInfo] = useState('');
+  async function choisir(v: 'Oui' | 'Non') {
+    if (v === valeur) return;
+    setBusy(true);
+    setInfo('');
+    try {
+      await poster('droit-image', { cle: f.cle, valeur: v });
+      setValeur(v);
+      setInfo(v === 'Non' ? 'C’est noté : plus de photo où l’on vous reconnaît. Le bureau est prévenu.' : 'C’est noté, merci. Le bureau est prévenu.');
+    } catch (x) {
+      setInfo(x instanceof Error ? x.message : 'Enregistrement impossible.');
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <Carte titre="Photos pendant les cours">
+      <p className="font-body text-[15px] text-brand-gray">
+        Parfois une photo de groupe pour le site ou les réseaux de l’association. Vous pouvez changer d’avis à tout moment.
+      </p>
+      <div className="flex flex-wrap gap-2">
+        <Choix actif={valeur === 'Oui'} onClick={() => void choisir('Oui')}>
+          {busy && valeur !== 'Oui' ? '…' : 'Oui, pas de souci'}
+        </Choix>
+        <Choix actif={valeur === 'Non'} onClick={() => void choisir('Non')}>
+          {busy && valeur !== 'Non' ? '…' : 'Non, je préfère éviter'}
+        </Choix>
+      </div>
+      {info ? <p className="font-body text-[15px] text-brand-olive">{info}</p> : null}
+    </Carte>
+  );
+}
+
 function VueFiche({ f, moi, onMaj }: { f: Fiche; moi: Moi; onMaj: () => void }) {
   const statut = f.aJour ? 'À jour' : f.statut === 'En attente' ? 'En attente de paiement' : f.statut || '—';
   return (
@@ -325,6 +473,8 @@ function VueFiche({ f, moi, onMaj }: { f: Fiche; moi: Moi; onMaj: () => void }) 
           ) : null}
         </dl>
       </Carte>
+
+      {f.mesCours && f.agenda ? <MesCours f={f} coursClub={moi.coursClub || []} /> : null}
 
       {f.paiement ? (
         <Carte titre="Reste à payer">
@@ -405,6 +555,8 @@ function VueFiche({ f, moi, onMaj }: { f: Fiche; moi: Moi; onMaj: () => void }) 
           ) : null}
         </Carte>
       ) : null}
+
+      <Photos f={f} />
 
       <Carte titre="Signaler un changement">
         {moi.signaler ? (

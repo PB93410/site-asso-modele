@@ -120,6 +120,7 @@ Les adhérents ouvrent leur espace sur le site (lien « Mon espace adhérent » 
 
 - **« Je ne reçois pas le code »** : vérifiez l’e-mail de la fiche (une faute suffit), faites regarder dans les indésirables. Sinon, dans **Cartes**, bouton **Lien d’accès à son espace** : le lien est copié, collez-le dans un SMS ou un WhatsApp. Il marche 72 heures, une seule fois.
 - **« J’ai changé d’adresse »** : l’adhérent le signale depuis son espace, vous recevez un mail. C’est vous qui corrigez la fiche.
+- **Photos** : un adhérent peut changer sa réponse depuis son espace. Sa fiche est mise à jour toute seule, et vous recevez un mail. S’il dit « Non », retirez les photos publiées où on le reconnaît.
 - **Réinscriptions (juin à septembre)** : les adhérents à jour se réinscrivent depuis leur espace pour la saison suivante. Ils paient à la rentrée. La liste est dans **Autre → Réinscriptions**. À la rentrée, après le changement de saison, leur paiement se confirme dans **À payer**, comme d’habitude.
 
 ## Carte Wallet, si la fonction est activée

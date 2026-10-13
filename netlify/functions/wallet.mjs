@@ -35,7 +35,8 @@ function planningDepuis(values) {
   })).filter((p) => p.day && p.course);
 }
 
-async function lirePlanning() {
+/** Planning du site (tableur, sinon public/data/planning.csv). */
+export async function lirePlanning() {
   try {
     const values = await readSheetValues(getSiteSheetId(), getPlanningTab());
     const p = planningDepuis(values);
