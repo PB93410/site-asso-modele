@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   dejaPointe,
   identifiantPointage,
@@ -60,6 +60,9 @@ describe('présences — fonction démo', () => {
   let auth: Record<string, string>;
 
   beforeAll(async () => {
+    // Un lundi : le planning de démo a des cours ce jour-là (pas le mardi, le vendredi ni le dimanche).
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-10-12T10:00:00+02:00'));
     vi.resetModules();
     vi.doMock('../asso.derive.js', async (orig) => {
       const m = await orig<Record<string, unknown>>();
@@ -79,6 +82,10 @@ describe('présences — fonction démo', () => {
   beforeEach(async () => {
     const { resetDemo } = await import('../netlify/functions/_demo.mjs');
     resetDemo();
+  });
+
+  afterAll(() => {
+    vi.useRealTimers();
   });
 
   const call = (event: Record<string, unknown>) =>
