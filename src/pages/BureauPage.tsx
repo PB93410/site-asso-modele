@@ -38,6 +38,8 @@ import BureauEssaisTab from '../components/bureau/BureauEssaisTab';
 import BureauPersonSheet from '../components/bureau/BureauPersonSheet';
 import BureauRelancesTab from '../components/bureau/BureauRelancesTab';
 import BureauTodayTab, { type CreneauDuJour } from '../components/bureau/BureauTodayTab';
+import BureauApercu from '../components/bureau/BureauApercu';
+import { adherentsTotal } from '../lib/bureauApercu';
 import { EnTete, MenuGroupe, MenuLigne, Retour } from '../components/bureau/ui';
 import { bouton } from '../components/bureau/styles';
 import BureauSheetLinks from '../components/BureauSheetLinks';
@@ -1200,6 +1202,22 @@ export default function BureauPage() {
         )}
 
         {/* ---- ACCUEIL (admin) ---- */}
+        {tab === 'today' && porte === 'admin' && !qPeople && (
+          <div className="mb-6">
+            <BureauApercu
+              loading={loading && !essaisData}
+              essaisARappeler={nouveauxEssais.length}
+              paiementsEnAttente={pendingCount}
+              adherents={adherentsTotal(adhesionsAll)}
+              todayYmd={todayYmd}
+              onTab={(id) => {
+                if (id === 'essais') setEssaisVue('nouveaux');
+                setTab(id);
+                window.scrollTo({ top: 0 });
+              }}
+            />
+          </div>
+        )}
         {tab === 'today' && porte === 'admin' && (
           <BureauTodayTab
             qPeople={qPeople}

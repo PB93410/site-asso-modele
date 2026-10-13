@@ -1,10 +1,54 @@
-import { BANDEAU_END, ESSAI_CTA_UNTIL } from '../data/CONFIG';
+import { useEffect, useState } from 'react';
+import { AlertTriangle, CalendarClock } from 'lucide-react';
+import { BANDEAU_END } from '../data/CONFIG';
 import { ASSO, MODULES, NB_ESSAIS } from '../data/asso';
+import { useScheduleFromSheet } from '../hooks/useSheetData';
+import { useAlertes } from '../hooks/useAlertes';
+import { compteARebours, ctaSaison, libelleHeure, prochaineSeance } from '../lib/accueil';
+
+/** Saison suivante : « 2026-2027 » → « 2027-2028 ». */
+function saisonSuivante(label: string) {
+  const m = label.match(/^(\d{4})\D(\d{4})$/);
+  return m ? `${Number(m[1]) + 1}/${Number(m[2]) + 1}` : 'la saison prochaine';
+}
+
+const CTA = {
+  essai: { href: '/essai', label: 'Venir essayer', analytics: 'CTA-Hero-Essai-Gratuit' },
+  reinscription: {
+    href: '/inscription',
+    label: `Me réinscrire pour ${saisonSuivante(ASSO.saison.label)}`,
+    analytics: 'CTA-Hero-Reinscription',
+  },
+  adhesion: { href: '/inscription', label: 'Adhérer au club', analytics: 'CTA-Hero-Adherer' },
+} as const;
+
+/** Heure courante, rafraîchie chaque minute ; null au premier rendu (pré-rendu stable). */
+function useMaintenant() {
+  const [now, setNow] = useState<Date | null>(null);
+  useEffect(() => {
+    const tick = () => setNow(new Date());
+    const premier = window.setTimeout(tick, 0);
+    const t = window.setInterval(tick, 60 * 1000);
+    return () => {
+      window.clearTimeout(premier);
+      window.clearInterval(t);
+    };
+  }, []);
+  return now;
+}
 
 export default function HeroSection() {
-  const now = Date.now();
+  const maintenant = useMaintenant();
+  const [rendu] = useState(() => Date.now());
+  const now = maintenant ? maintenant.getTime() : rendu;
   const showBandeau = now < BANDEAU_END;
-  const essaiCta = now < ESSAI_CTA_UNTIL;
+  const choix = ctaSaison(new Date(now), ASSO.saison, NB_ESSAIS);
+  const essaiCta = choix === 'essai';
+  const cta = CTA[choix];
+  const { schedule } = useScheduleFromSheet();
+  const prochaine = maintenant ? prochaineSeance(schedule, maintenant, ASSO.saison.reprise) : null;
+  const rebours = prochaine ? compteARebours(prochaine.dans) : null;
+  const alerte = useAlertes()[0];
 
   return (
     <section
@@ -65,13 +109,45 @@ export default function HeroSection() {
               : `${ASSO.accroche} à ${ASSO.ville}`}
           </p>
 
+          {alerte ? (
+            <p
+              role="status"
+              className="mt-4 mx-auto max-w-[480px] flex items-start gap-2 text-left rounded-2xl bg-amber-50 text-amber-950 border border-amber-200 px-4 py-3 font-body text-[15px] leading-snug"
+            >
+              <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-amber-800" aria-hidden="true" />
+              <span>
+                <strong>{alerte.libelle}.</strong> {alerte.cours}
+                {alerte.date ? ` (${alerte.date})` : ''}. {alerte.message}
+              </span>
+            </p>
+          ) : null}
+
+          {prochaine ? (
+            <p
+              className="mt-4 mx-auto inline-flex items-start gap-2 text-left rounded-2xl px-4 py-2.5 font-body text-[15px] sm:text-[16px] text-white leading-snug border border-white/40"
+              style={{ backgroundColor: 'rgba(17, 17, 16, 0.72)' }}
+              data-testid="prochain-cours"
+            >
+              <CalendarClock className="w-5 h-5 shrink-0 mt-0.5" aria-hidden="true" />
+              <span>
+                <span className="font-semibold">Prochain cours :</span> {prochaine.creneau.course} à{' '}
+                {libelleHeure(prochaine.debut)}
+                {prochaine.creneau.location ? `, ${prochaine.creneau.location}` : ''}
+                <span className="block text-white/90 text-[14px]">
+                  {prochaine.quand.charAt(0).toUpperCase() + prochaine.quand.slice(1)}
+                  {rebours ? <> · <strong className="font-semibold text-white">{rebours}</strong></> : null}
+                </span>
+              </span>
+            </p>
+          ) : null}
+
           <div className="mt-5 sm:mt-8 flex flex-col items-center gap-3">
             <a
-              href={essaiCta ? '/essai' : '/inscription'}
-              data-analytics={essaiCta ? 'CTA-Hero-Essai-Gratuit' : 'CTA-Hero-Adherer'}
+              href={cta.href}
+              data-analytics={cta.analytics}
               className="font-body font-semibold text-[16px] sm:text-[15px] text-white px-8 py-4 rounded-full transition-all duration-250 inline-flex items-center justify-center min-h-[48px] bg-orange-primary hover:bg-orange-hover"
             >
-              {essaiCta ? 'Venir essayer' : 'Adhérer au club'}
+              {cta.label}
             </a>
             {essaiCta ? (
               <p
@@ -105,7 +181,7 @@ export default function HeroSection() {
                   data-analytics="CTA-Hero-Essai-Secondaire"
                   className="underline underline-offset-2 decoration-white/50 hover:decoration-white font-semibold text-white"
                 >
-                  D'abord un essai gratuit
+                  {choix === 'reinscription' ? 'Nouveau ? Un essai gratuit d’abord' : 'D’abord un essai gratuit'}
                 </a>
               </p>
             )}
