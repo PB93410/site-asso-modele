@@ -1,0 +1,35 @@
+# Vérification automatique à chaque envoi sur GitHub (push) et à chaque PR.
+# Rien n'est déployé ici : Netlify déploie de son côté.
+name: Vérification
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verifier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # Chrome du prérendu inutile ici (pas de `npm run build` complet).
+      PUPPETEER_SKIP_DOWNLOAD: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Données personnelles (numéros, e-mails réels)
+        run: npm run verifier:donnees
+      - name: Types
+        run: npx tsc -b
+      - name: Tests
+        run: npm test
+      - name: Compilation du site
+        run: npx vite build
+      - name: Compilation du questionnaire
+        run: npm run build:configurateur

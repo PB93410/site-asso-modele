@@ -68,6 +68,25 @@ export function verifierConfig(asso, modules, existe, saisonCourte) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(asso.saison?.reprise || '') || Number.isNaN(Date.parse(asso.saison?.reprise))) {
     r.push(erreur('saison.reprise : date au format AAAA-MM-JJ attendue.'));
   }
+  const date = (s) => /^\d{4}-\d{2}-\d{2}$/.test(s || '') && !Number.isNaN(Date.parse(s));
+  if (asso.saison?.fin && !date(asso.saison.fin)) r.push(erreur('saison.fin : date au format AAAA-MM-JJ attendue (ou vide).'));
+  const pausesFausses = (asso.saison?.pauses || []).filter((p) => !p.libelle || !date(p.du) || !date(p.reprise) || p.du >= p.reprise);
+  if (pausesFausses.length) {
+    r.push(
+      erreur(
+        `saison.pauses : ${pausesFausses.map((p) => p.libelle || '(sans nom)').join(', ')} à corriger.`,
+        'Chaque pause : libelle, du (premier jour sans cours) et reprise (après du), au format AAAA-MM-JJ.',
+      ),
+    );
+  }
+  if (date(asso.saison?.reprise) && date(asso.saison?.fin) && !(asso.saison.pauses || []).some((p) => p.du >= asso.saison.reprise && p.du < asso.saison.fin)) {
+    r.push(
+      attention(
+        'saison.pauses : aucune vacance dans la saison.',
+        'Sans elles, l’accueil annonce des cours pendant les vacances. Laissez vide seulement si les cours continuent.',
+      ),
+    );
+  }
 
   const lieux = (asso.lieux || []).filter((l) => l.nom && l.rue);
   r.push(lieux.length ? ok(`${lieux.length} lieu(x) de cours.`) : erreur('Aucun lieu de cours avec nom et rue.', 'Ajoutez-en un dans lieux.'));

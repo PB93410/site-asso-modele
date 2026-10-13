@@ -165,6 +165,20 @@ const ASSO = {
     reprise: '2026-09-07',
     /** Fin de la période où le bouton principal pousse l'essai plutôt que l'adhésion. */
     finCampagneEssai: '2026-10-31',
+    /** Premier jour sans cours de l'été (AAAA-MM-JJ). Vide = non annoncé. */
+    fin: '2027-07-04',
+    /**
+     * Vacances sans cours (dates de la zone scolaire : education.gouv.fr/calendrier-scolaire).
+     * du = premier jour sans cours, reprise = jour où les cours reprennent. Vide = cours toute l'année.
+     */
+    pauses: [
+      { libelle: 'vacances de la Toussaint', du: '2026-10-18', reprise: '2026-11-02' },
+      { libelle: 'vacances de Noël', du: '2026-12-20', reprise: '2027-01-04' },
+      { libelle: 'vacances d’hiver', du: '2027-02-07', reprise: '2027-02-22' },
+      { libelle: 'vacances de printemps', du: '2027-04-04', reprise: '2027-04-19' },
+    ],
+    /** Pas de cours les jours fériés (calculés tout seuls), sauf ces dates (AAAA-MM-JJ). */
+    feriesAvecCours: [],
   },
 
   // ---- Apparence ----

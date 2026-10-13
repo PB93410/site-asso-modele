@@ -72,6 +72,7 @@ export function recapitulatif(dossier, config) {
     '',
     '- [ ] Relire le site : `npm run demo` (bureau : mot de passe demo), le montrer à l’association',
     '- [ ] Relire contenu/*.json (cours, animateurs, FAQ)',
+    '- [ ] Vacances sans cours et fin de saison : asso.config.js → saison.pauses et saison.fin (sinon l’accueil annonce des cours pendant les vacances)',
     ...(config.modules.essais || config.modules.adhesion || config.modules.bureau
       ? ['- [ ] Données : sur Netlify par défaut, rien à créer (Google Sheets possible : docs/DOC-DONNEES.md)']
       : []),

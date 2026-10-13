@@ -4,7 +4,7 @@ import { BANDEAU_END } from '../data/CONFIG';
 import { ASSO, MODULES, NB_ESSAIS } from '../data/asso';
 import { useScheduleFromSheet } from '../hooks/useSheetData';
 import { useAlertes } from '../hooks/useAlertes';
-import { compteARebours, ctaSaison, libelleHeure, prochaineSeance } from '../lib/accueil';
+import { compteARebours, ctaSaison, libelleDate, libelleHeure, prochaineSeance } from '../lib/accueil';
 
 /** Saison suivante : « 2026-2027 » → « 2027-2028 ». */
 function saisonSuivante(label: string) {
@@ -46,8 +46,8 @@ export default function HeroSection() {
   const essaiCta = choix === 'essai';
   const cta = CTA[choix];
   const { schedule } = useScheduleFromSheet();
-  const prochaine = maintenant ? prochaineSeance(schedule, maintenant, ASSO.saison.reprise) : null;
-  const rebours = prochaine ? compteARebours(prochaine.dans) : null;
+  const prochaine = maintenant ? prochaineSeance(schedule, maintenant, ASSO.saison) : null;
+  const rebours = prochaine?.type === 'cours' ? compteARebours(prochaine.dans) : null;
   const alerte = useAlertes()[0];
 
   return (
@@ -129,15 +129,23 @@ export default function HeroSection() {
               data-testid="prochain-cours"
             >
               <CalendarClock className="w-5 h-5 shrink-0 mt-0.5" aria-hidden="true" />
-              <span>
-                <span className="font-semibold">Prochain cours :</span> {prochaine.creneau.course} à{' '}
-                {libelleHeure(prochaine.debut)}
-                {prochaine.creneau.location ? `, ${prochaine.creneau.location}` : ''}
-                <span className="block text-white/90 text-[14px]">
-                  {prochaine.quand.charAt(0).toUpperCase() + prochaine.quand.slice(1)}
-                  {rebours ? <> · <strong className="font-semibold text-white">{rebours}</strong></> : null}
+              {prochaine.type === 'pause' ? (
+                <span>
+                  <span className="font-semibold">Pas de cours pendant les {prochaine.libelle}</span>
+                  {prochaine.enCours ? '' : ` à partir du ${libelleDate(prochaine.du)}`}
+                  <span className="block text-white/90 text-[14px]">Reprise {libelleDate(prochaine.reprise)}</span>
                 </span>
-              </span>
+              ) : (
+                <span>
+                  <span className="font-semibold">Prochain cours :</span> {prochaine.creneau.course} à{' '}
+                  {libelleHeure(prochaine.debut)}
+                  {prochaine.creneau.location ? `, ${prochaine.creneau.location}` : ''}
+                  <span className="block text-white/90 text-[14px]">
+                    {prochaine.quand.charAt(0).toUpperCase() + prochaine.quand.slice(1)}
+                    {rebours ? <> · <strong className="font-semibold text-white">{rebours}</strong></> : null}
+                  </span>
+                </span>
+              )}
             </p>
           ) : null}
 

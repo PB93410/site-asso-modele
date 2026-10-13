@@ -1,0 +1,33 @@
+{
+  "_lisez-moi": "Numéros et e-mails acceptés par scripts/verifier-donnees-perso.mjs : des valeurs d’exemple fictives (config d’exemple, démo, tests). Jamais le numéro ou l’e-mail d’une vraie personne. Une association qui adopte le modèle ajoute ici le numéro et l’adresse publics du club.",
+  "telephones": [
+    "06 12 34 56 78",
+    "06 98 76 54 32",
+    "06 77 88 99 00",
+    "06 99 99 99 99",
+    "06 11 11 11 11"
+  ],
+  "motifs": [
+    "^0[67]0000\\d{4}$"
+  ],
+  "_motifs": "Numéros d’exemple 06 00 00 xx xx / 07 00 00 xx xx (tests, démo).",
+  "emails": [
+    "marie.dupont@gmail.com",
+    "club@gmail.com",
+    "bureau@club.fr",
+    "a1@club.fr"
+  ],
+  "domaines": [
+    "exemple.fr",
+    "exemple-asso.fr",
+    "votre-asso.fr",
+    "example",
+    "example.fr",
+    "example.org",
+    "example.com",
+    "b.fr",
+    "d.fr",
+    "x.fr",
+    "projet.iam.gserviceaccount.com"
+  ]
+}

@@ -3,6 +3,7 @@ import { useScheduleFromSheet } from '../hooks/useSheetData';
 import WhatsAppNotice from '../components/WhatsAppNotice';
 import { ASSO, ESSAIS_LABEL } from '../data/asso';
 import { ACTIVITIES } from '../data/siteData';
+import { libelleDate, parisMaintenant, sansCoursLe, type SansCours } from '../lib/accueil';
 
 /** Couleur de pastille par lieu : 1er lieu = couleur principale, les autres = secondaire. */
 function lieuDot(location: string) {
@@ -23,6 +24,15 @@ const DAYS_FR = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 
 
 function getTodayLabel(): string {
   return DAYS_FR[new Date().getDay()];
+}
+
+/** Phrase du bloc « Aujourd'hui » quand le planning ne s'applique pas. */
+function texteSansCours(s: SansCours | null): string {
+  if (s?.raison === 'avant-reprise') return `Les cours reprennent ${libelleDate(s.reprise)}. Consultez le planning ci-dessous.`;
+  if (s?.raison === 'vacances') return `Pas de cours pendant les ${s.libelle} : reprise ${libelleDate(s.reprise)}.`;
+  if (s?.raison === 'ferie') return 'Pas de cours aujourd’hui (jour férié). Consultez le planning complet ci-dessous.';
+  if (s?.raison === 'fin') return 'La saison est terminée : à bientôt pour la reprise.';
+  return 'Pas de cours prévu aujourd’hui. Consultez le planning complet ci-dessous.';
 }
 
 function isSameDay(rowDay: string, todayLabel: string): boolean {
@@ -58,9 +68,10 @@ export default function ScheduleSection() {
   const tableRef = useRef<HTMLDivElement>(null);
   const { schedule } = useScheduleFromSheet();
   const todayLabel = useMemo(() => getTodayLabel(), []);
+  const sansCours = useMemo(() => sansCoursLe(parisMaintenant(new Date()).ymd, ASSO.saison), []);
   const todayRows = useMemo(
-    () => schedule.filter((row) => isSameDay(row.day, todayLabel)),
-    [schedule, todayLabel]
+    () => (sansCours ? [] : schedule.filter((row) => isSameDay(row.day, todayLabel))),
+    [schedule, todayLabel, sansCours]
   );
 
   return (
@@ -88,9 +99,7 @@ export default function ScheduleSection() {
               ))}
             </ul>
           ) : (
-            <p className="font-body text-[15px] text-white/70">
-              Pas de cours prévu aujourd&apos;hui. Consultez le planning complet ci-dessous.
-            </p>
+            <p className="font-body text-[15px] text-white/70">{texteSansCours(sansCours)}</p>
           )}
         </div>
 
@@ -116,7 +125,7 @@ export default function ScheduleSection() {
           {schedule.map((row, i) => {
             const daytime = isDaytime(row.time);
             const dot = lieuDot(row.location);
-            const isToday = isSameDay(row.day, todayLabel);
+            const isToday = !sansCours && isSameDay(row.day, todayLabel);
             return (
               <div
                 key={i}
@@ -155,7 +164,7 @@ export default function ScheduleSection() {
           {schedule.map((row, i) => {
             const daytime = isDaytime(row.time);
             const dot = lieuDot(row.location);
-            const isToday = isSameDay(row.day, todayLabel);
+            const isToday = !sansCours && isSameDay(row.day, todayLabel);
             return (
               <div
                 key={i}

@@ -91,7 +91,17 @@ export interface AssoConfig {
   listeAttente: AssoListeAttente;
   financement: AssoFinancement;
   attestations: AssoAttestations;
-  saison: { label: string; reprise: string; finCampagneEssai: string };
+  saison: {
+    label: string;
+    reprise: string;
+    finCampagneEssai: string;
+    /** Premier jour sans cours de l'été (AAAA-MM-JJ), ou vide. */
+    fin: string;
+    /** Vacances sans cours : du = premier jour sans cours, reprise = jour où les cours reprennent. */
+    pauses: { libelle: string; du: string; reprise: string }[];
+    /** Jours fériés où les cours ont lieu quand même. */
+    feriesAvecCours: string[];
+  };
   couleurs: { primaire: string; primaireHover: string; secondaire: string; secondaireHover: string };
   logo: string;
   heroImage: string;

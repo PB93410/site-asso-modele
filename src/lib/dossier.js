@@ -382,6 +382,9 @@ export function configDepuisDossier(dossier, base) {
       label: d.saison.label,
       reprise: d.saison.reprise,
       finCampagneEssai: `${an}-10-31`,
+      fin: '',
+      pauses: [],
+      feriesAvecCours: [],
     },
     couleurs: {
       primaire,

@@ -8,6 +8,7 @@
     "dev": "vite",
     "demo": "vite --mode demo",
     "verifier": "node scripts/verifier.mjs",
+    "verifier:donnees": "node scripts/verifier-donnees-perso.mjs",
     "installer": "node scripts/installer.mjs",
     "configurateur": "vite --config vite.configurateur.ts",
     "build:configurateur": "vite build --config vite.configurateur.ts",

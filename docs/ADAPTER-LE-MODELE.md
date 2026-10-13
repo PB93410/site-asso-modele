@@ -44,6 +44,7 @@ Ouvrez [`asso.config.js`](../asso.config.js) à la racine et remplissez chaque c
 | `adhesion.paiementUrl` | Vide = pas de paiement en ligne ; seuls les moyens « au bureau » sont proposés. Avec HelloAsso branché, l’adhésion est validée toute seule au paiement : [DOC-PAIEMENT.md](DOC-PAIEMENT.md). |
 | `adhesion.iban` | Facultatif : IBAN affiché pour payer par virement, avec la référence de la demande. |
 | `saison.finCampagneEssai` | Après cette date, le bouton principal passe d’« Essai » à « Adhérer ». |
+| `saison.pauses`, `saison.fin` | Vacances sans cours et fin de saison : l’accueil annonce « Pas de cours pendant les vacances de la Toussaint, reprise lundi 2 novembre » au lieu d’un cours qui n’a pas lieu. `du` = premier jour sans cours, `reprise` = jour où les cours reprennent. Les jours fériés sont calculés tout seuls ; `saison.feriesAvecCours` liste ceux où l’on fait cours quand même. |
 | `couleurs.primaire` | Contraste ≥ 4,5:1 avec le blanc (texte des boutons). Vérifiez sur webaim.org/resources/contrastchecker. |
 
 Choisissez aussi les **fonctions** (`modules`) : commencez par tout mettre à `false` sauf ce que vous brancherez tout de suite. Le site vitrine marche sans rien.
@@ -145,7 +146,7 @@ Pour que le bureau lise la boîte mail et l’agenda de l’asso sans ouvrir Gma
 
 ## Chaque saison
 
-- Mettre à jour `asso.config.js → saison` (libellé, reprise, fin de campagne d’essai) et le tarif si besoin.
+- Mettre à jour `asso.config.js → saison` (libellé, reprise, fin de campagne d’essai, vacances, fin des cours) et le tarif si besoin.
 - Relancer `npm run identite -- --force` (le verso de carte porte la saison).
 - Suivre [CHANGEMENT-SAISON.md](CHANGEMENT-SAISON.md) pour les Sheets.
 

@@ -7,6 +7,10 @@
 /** Chaîne JS entre apostrophes droites. */
 const q = (s) => `'${String(s ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n')}'`;
 const liste = (a) => `[${(a || []).map(q).join(', ')}]`;
+const pauses = (a) =>
+  a?.length
+    ? `[\n${a.map((p) => `      { libelle: ${q(p.libelle)}, du: ${q(p.du)}, reprise: ${q(p.reprise)} },`).join('\n')}\n    ]`
+    : '[]';
 const bool = (v) => (v === false ? 'false' : 'true');
 
 function lieu(l) {
@@ -176,6 +180,15 @@ ${(c.lieux || []).map(lieu).join('\n')}
     reprise: ${q(c.saison?.reprise)},
     /** Fin de la période où le bouton principal pousse l'essai plutôt que l'adhésion. */
     finCampagneEssai: ${q(c.saison?.finCampagneEssai)},
+    /** Premier jour sans cours de l'été (AAAA-MM-JJ). Vide = non annoncé. */
+    fin: ${q(c.saison?.fin)},
+    /**
+     * Vacances sans cours (dates de la zone scolaire : education.gouv.fr/calendrier-scolaire).
+     * du = premier jour sans cours, reprise = jour où les cours reprennent. Vide = cours toute l'année.
+     */
+    pauses: ${pauses(c.saison?.pauses)},
+    /** Pas de cours les jours fériés (calculés tout seuls), sauf ces dates (AAAA-MM-JJ). */
+    feriesAvecCours: ${liste(c.saison?.feriesAvecCours)},
   },
 
   // ---- Apparence ----

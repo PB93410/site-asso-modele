@@ -44,6 +44,15 @@ describe('npm run verifier — configuration', () => {
     expect(r.some((t) => t.includes('carte-verso-2627.png'))).toBe(true);
   });
 
+  it('vacances mal saisies, ou oubliées', () => {
+    const pauses = [{ libelle: 'vacances de Noël', du: '2027-01-04', reprise: '2026-12-20' }];
+    expect(erreurs(verifierConfig({ ...ASSO, saison: { ...ASSO.saison, pauses } }, TOUS, () => true, '2627'))).toEqual([
+      expect.stringContaining('saison.pauses : vacances de Noël'),
+    ]);
+    const r = verifierConfig({ ...ASSO, saison: { ...ASSO.saison, pauses: [] } }, TOUS, () => true, '2627');
+    expect(r.some((x) => x.texte.includes('aucune vacance'))).toBe(true);
+  });
+
   it('pas de verso de carte demandé sans bureau', () => {
     const r = erreurs(verifierConfig(ASSO, AUCUN, (p: string) => !p.includes('carte-verso'), '2627'));
     expect(r).toEqual([]);
