@@ -1,29 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useAlertes } from '../hooks/useAlertes';
 import { MODULES } from '../data/asso';
 
-type Alerte = { id: string; libelle: string; cours: string; date: string; message: string };
-
 export default function AlerteBandeau() {
-  const [alertes, setAlertes] = useState<Alerte[]>([]);
-
-  useEffect(() => {
-    if (!MODULES.alertes) return;
-    let stop = false;
-    const charger = () => {
-      fetch('/api/alertes?action=liste')
-        .then((r) => (r.ok ? r.json() : { alertes: [] }))
-        .then((d) => {
-          if (!stop) setAlertes(Array.isArray(d.alertes) ? d.alertes : []);
-        })
-        .catch(() => {});
-    };
-    charger();
-    const t = window.setInterval(charger, 5 * 60 * 1000);
-    return () => {
-      stop = true;
-      window.clearInterval(t);
-    };
-  }, []);
+  const alertes = useAlertes();
 
   if (!MODULES.alertes || !alertes.length) return null;
 
