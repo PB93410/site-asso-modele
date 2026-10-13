@@ -15,7 +15,8 @@ function saisonSuivante(label: string) {
 const CTA = {
   essai: { href: '/essai', label: 'Venir essayer', analytics: 'CTA-Hero-Essai-Gratuit' },
   reinscription: {
-    href: '/inscription',
+    // Avec l'espace adhérent : fiche reprise, réinscription en un clic.
+    href: MODULES.espace ? '/espace' : '/inscription',
     label: `Me réinscrire pour ${saisonSuivante(ASSO.saison.label)}`,
     analytics: 'CTA-Hero-Reinscription',
   },

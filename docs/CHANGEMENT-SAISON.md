@@ -6,7 +6,9 @@ Pour le référent, quand la saison AAAA-AAAA se termine. Rien ici ne s’exécu
 
 ## 1. Nouvel onglet Adhérents
 
-Dans le tableur Adhérents, créez l’onglet **Saison AAAA+1-AAAA+1**.
+Avec l’espace adhérent (`modules.espace`), l’onglet **Saison AAAA+1-AAAA+1** existe peut-être déjà : la première réinscription de juin le crée, avec les bonnes colonnes, et y range les réinscrits (voir 5). Vérifiez seulement les en-têtes.
+
+Sinon, dans le tableur Adhérents, créez l’onglet **Saison AAAA+1-AAAA+1**.
 
 Recopiez les en-têtes, dans le même ordre, de A à T :
 
@@ -61,7 +63,11 @@ Il lui faut les variables déjà utilisées par le bureau (`GOOGLE_SERVICE_ACCOU
 
 ## 5. Réinscription
 
-Une personne qui revient a une **nouvelle ligne** dans le nouvel onglet, et un **nouveau numéro**. L’ancien numéro n’est pas réutilisé. Les adhérents déjà à jour ne sont pas effacés par ce script : leur conservation est la saison plus 3 ans, comme le registre.
+Une personne qui revient a une **nouvelle ligne** dans le nouvel onglet, et un **nouveau numéro**. L’ancien numéro n’est pas réutilisé.
+
+Avec l’espace adhérent, du **1er juin au 30 septembre**, l’adhérent à jour se réinscrit lui-même depuis `/espace` (le bouton du hero y mène en juin) : sa fiche est reprise, il corrige ses coordonnées, choisit ses cours, dit comment il paiera et répond aux questions de la saison (photos, questionnaire santé). La ligne part dans l’onglet de la saison suivante, statut **En attente**, source **Réinscription**, avec une référence de paiement et l’ancien numéro dans les notes. Rien n’est encaissé en juin. La liste est dans **Bureau → Autre → Réinscriptions**.
+
+Après le changement de saison (étapes 1 à 3), ces lignes sont dans l’onglet courant : le bureau confirme les paiements à la rentrée dans **À payer**, comme pour une première inscription, et le numéro de la nouvelle saison est donné à ce moment-là. Pensez à changer de saison avant le 30 septembre : passé cette date, la réinscription se referme. Pour l'ouvrir plus tôt (le soir de l'assemblée générale, par exemple) ou la fermer, variable Netlify `REINSCRIPTION` = `ouverte` ou `fermee` ; retirez-la ensuite. Les adhérents déjà à jour ne sont pas effacés par ce script : leur conservation est la saison plus 3 ans, comme le registre.
 
 ## 6. Rectos de carte
 

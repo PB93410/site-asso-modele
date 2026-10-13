@@ -20,6 +20,7 @@ const BureauAlertesPage = lazy(() => import('./pages/BureauAlertesPage'));
 const BureauListeAttentePage = lazy(() => import('./pages/BureauListeAttentePage'));
 const BureauRapportPage = lazy(() => import('./pages/BureauRapportPage'));
 const BureauAttestationsPage = lazy(() => import('./pages/BureauAttestationsPage'));
+const BureauReinscriptionsPage = lazy(() => import('./pages/BureauReinscriptionsPage'));
 const ListeAttentePlacePage = lazy(() => import('./pages/ListeAttentePlacePage'));
 const AttestationsPage = lazy(() => import('./pages/AttestationsPage'));
 const EspacePage = lazy(() => import('./pages/EspacePage'));
@@ -152,6 +153,7 @@ export default function App() {
                 {MODULES.listeAttente ? <Route path="/bureau/liste-attente" element={<BureauListeAttentePage />} /> : null}
                 {MODULES.rapport ? <Route path="/bureau/rapport" element={<BureauRapportPage />} /> : null}
                 {MODULES.attestations ? <Route path="/bureau/attestations" element={<BureauAttestationsPage />} /> : null}
+                {MODULES.espace ? <Route path="/bureau/reinscriptions" element={<BureauReinscriptionsPage />} /> : null}
                 <Route path="/bureau" element={<BureauPage />} />
                 {CartesApercuPage ? (
                   <Route path="/bureau/apercu-cartes" element={<CartesApercuPage />} />

@@ -171,6 +171,8 @@ L’adhérent à jour saisit son **numéro + e-mail** sur `/attestations`, ou re
 **Espace adhérent (`modules.espace`)**  
 Sans mot de passe : sur `/espace`, l’adhérent tape l’e-mail de sa fiche et reçoit un **code à 6 chiffres** (15 minutes, 5 essais) et un lien qui porte ce code. L’appareil reste ensuite connecté **90 jours** (cookie signé avec `BUREAU_SECRET`, HttpOnly, limité à `/api/espace`). Il y retrouve sa fiche, sa **carte** (et Wallet si `wallet`), le **reste à payer** (bouton HelloAsso si branché, IBAN et référence sinon), ses **attestations** (si `attestations`), ses **présences** (si `presences`), **télécharge ses données** et **signale un changement** (mail au bureau : la fiche n’est jamais modifiée par l’adhérent). Une famille qui partage un e-mail voit toutes ses fiches. Sans e-mail sur la fiche ou sans envoi de mails : bouton **« Lien d’accès à son espace »** dans Bureau → Cartes (72 h, une fois), à envoyer par SMS ou WhatsApp. Demande l’envoi des mails (docs/DOC-MAIL.md). Changer `BUREAU_SECRET` déconnecte tout le monde.
 
+**Réinscription en un clic** (avec `espace`) : du 1er juin au 30 septembre, l’adhérent à jour garde sa place pour la saison suivante depuis son espace (fiche reprise, cours, mode de paiement prévu, photos, questionnaire santé). Il paie à la rentrée. Les lignes vont dans l’onglet `Saison AAAA-AAAA` suivant (créé tout seul, statut « En attente », source « Réinscription ») ; liste dans **Bureau → Autre → Réinscriptions**. Voir [docs/CHANGEMENT-SAISON.md](docs/CHANGEMENT-SAISON.md).
+
 Mode d’emploi bénévoles : [docs/MODE-EMPLOI-BUREAU.md](docs/MODE-EMPLOI-BUREAU.md).
 
 ## Licence

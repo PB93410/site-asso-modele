@@ -61,6 +61,15 @@
     "node_modules/@resvg/resvg-wasm/index_bg.wasm",
   ]
 
+# Espace adhérent : recto de la carte (comme carte-image) et planning de départ (carte Wallet).
+[functions.espace]
+  included_files = [
+    "public/data/*.csv",
+    "public/assets/logo-512.png",
+    "netlify/cartes/fonts/*.ttf",
+    "node_modules/@resvg/resvg-wasm/index_bg.wasm",
+  ]
+
 # ──────────────────────────────────────────────
 # Redirects API + SPA bureau
 # ──────────────────────────────────────────────

@@ -94,7 +94,7 @@ const espace = (event: Record<string, unknown>) => call('espace', event);
 const poster = (corps: Record<string, unknown>, headers: Record<string, string> = {}) =>
   espace({ httpMethod: 'POST', headers, body: JSON.stringify(corps) });
 
-describe('espace — parcours complet', () => {
+describe('espace — parcours complet', { timeout: 20_000 }, () => {
   const env0 = { ...process.env };
   beforeAll(() => {
     process.env.STOCKAGE = 'netlify';

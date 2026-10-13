@@ -1328,6 +1328,9 @@ export default function BureauPage() {
                 compte={cartesAPreparer}
                 onClick={() => setMoreKind('cartes')}
               />
+              {MODULES.espace ? (
+                <MenuLigne icone={ListOrdered} label="Réinscriptions" aide="Saison prochaine, faites depuis l’espace adhérent" to="/bureau/reinscriptions" />
+              ) : null}
             </MenuGroupe>
             <MenuGroupe titre="Le site">
               <MenuLigne icone={Clock} label="Horaires" aide="Ce que voit le site" onClick={() => setMoreKind('planning')} />

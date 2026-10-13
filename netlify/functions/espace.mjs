@@ -11,12 +11,14 @@
  * GET  action=donnees                tout ce que le site garde sur la personne (JSON, droit d'accès)
  * POST action=signaler {cle, message} demande de changement, envoyée à l'association
  * POST action=lien-bureau {numero|row} (bureau) lien à usage unique, 72 h, à envoyer par SMS ou WhatsApp
+ * POST action=reinscrire {cle, …}    réinscription pour la saison suivante (juin → septembre, src/lib/reinscription.js)
+ * GET  action=reinscriptions         (bureau) liste des réinscrits de la saison suivante
  *
  * L'adhérent ne modifie jamais sa fiche lui-même : le bureau garde la main.
  */
 
 import { getStore } from '@netlify/blobs';
-import { ASSO, MODULES, SITE_URL } from '../../asso.derive.js';
+import { ASSO, MODULES, PAYMENT_MODES, SITE_URL } from '../../asso.derive.js';
 import { attestationPdf, estAJour, libelleType, nomFichier, typesDisponibles } from '../../src/lib/attestations.js';
 import {
   DUREE_LIEN_BUREAU_MS,
@@ -37,13 +39,23 @@ import {
   verifierCode,
 } from '../../src/lib/espace.js';
 import { ONGLET_PRESENCES, PRESENCES_HEADERS } from '../../src/lib/presence.js';
+import {
+  controlerReponses,
+  dejaReinscrit,
+  ligneReinscription,
+  ongletSaison,
+  periodeReinscription,
+} from '../../src/lib/reinscription.js';
 import { fabriquerPkpass } from '../../src/lib/wallet.js';
 import {
+  ADHERENTS_HEADERS,
+  appendRow,
   assertBrowserOrigin,
   clientIp,
   consumeRateLimit,
   getAdherentsSheetId,
   getAdherentsTab,
+  getSheets,
   handleOptions,
   isTestPrenom,
   json,
@@ -51,6 +63,7 @@ import {
   pickRow,
   pickValue,
   readSheetAsObjects,
+  readSheetValues,
   requireAuth,
 } from './_bureau-lib.mjs';
 import { renderRecto } from './_carte-recto.mjs';
@@ -58,10 +71,11 @@ import { carteFiche } from './carte-image.mjs';
 import { DEMO } from './_demo.mjs';
 import { adresseAsso, envoyerMail, modeEnvoi } from './_envoi.mjs';
 import { lireOngletSite } from './_onglet.mjs';
-import { lireReference, paiementIntegre } from './_paiement.mjs';
+import { lireReference, nouvelleReference, paiementIntegre } from './_paiement.mjs';
 import { brancherStockage } from './_stockage.mjs';
 import { versV2 } from './_v2.mjs';
 import { payloadPour } from './wallet.mjs';
+import COURS from '../../contenu/cours.json';
 
 const STORE_ESPACE = 'espace';
 
@@ -117,8 +131,93 @@ async function presencesDe(fiche, mail) {
     .sort((a, b) => b.date.localeCompare(a.date));
 }
 
+// ---------------------------------------------------------------------------
+// Réinscription : onglet de la saison suivante
+// ---------------------------------------------------------------------------
+
+/** Crée l'onglet de la saison suivante s'il manque (Google), et y met les en-têtes. */
+async function assurerOnglet(tab) {
+  const id = getAdherentsSheetId();
+  const sheets = await getSheets();
+  let valeurs;
+  try {
+    valeurs = await readSheetValues(id, tab);
+  } catch (err) {
+    if (typeof sheets.spreadsheets.batchUpdate !== 'function') throw err;
+    await sheets.spreadsheets.batchUpdate({ spreadsheetId: id, requestBody: { requests: [{ addSheet: { properties: { title: tab } } }] } });
+    valeurs = [];
+  }
+  if (!(valeurs[0] || []).some((c) => String(c ?? '').trim())) {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: id,
+      range: `'${tab}'!A1`,
+      valueInputOption: 'RAW',
+      requestBody: { values: [[...ADHERENTS_HEADERS, 'NUMERO', 'CARTE']] },
+    });
+  }
+}
+
+/** Lignes déjà inscrites pour la saison suivante (vide si l'onglet n'existe pas encore). */
+async function lignesSuivante(suivante) {
+  try {
+    const { rows } = await readSheetAsObjects(getAdherentsSheetId(), `'${ongletSaison(suivante)}'!A:Z`);
+    return rows;
+  } catch {
+    return [];
+  }
+}
+
+const noms = (f) => `${pickRow(f, 'PRENOM', 'Prénom', 'Prenom') || ''} ${pickRow(f, 'NOM', 'Nom') || ''}`.trim();
+const coursDeNotes = (f) =>
+  (String(pickRow(f, 'NOTES') || '').match(/Cours: ([^|]+)/)?.[1] || '')
+    .split(',')
+    .map((c) => c.trim())
+    .filter(Boolean);
+const coursConnus = () => [...new Set(COURS.map((c) => c.nom))];
+
+async function reinscrire(body, mail, fiches) {
+  const periode = periodeReinscription(ASSO.saison.label, new Date(), process.env.REINSCRIPTION);
+  if (!periode.ouverte) return json(409, { error: 'La réinscription n’est pas ouverte en ce moment.' });
+  const f = fiches.find((x) => cleFiche(x) === String(pickValue(body, 'cle') || ''));
+  if (!f) return json(404, { error: 'Fiche introuvable.' });
+  if (!estAJour(f)) return json(409, { error: 'Seule une adhésion à jour cette saison peut être reconduite. Écrivez au bureau.' });
+  const r = controlerReponses(body, { modes: PAYMENT_MODES, coursConnus: coursConnus() });
+  if (!r.ok) return json(400, { error: r.erreur });
+  const tab = ongletSaison(periode.suivante);
+  try {
+    await assurerOnglet(tab);
+  } catch (err) {
+    console.error('reinscription onglet', err?.message || err);
+    return json(503, { error: `La réinscription n’est pas encore prête. Écrivez au bureau (${ASSO.email}).` });
+  }
+  const deja = dejaReinscrit(await lignesSuivante(periode.suivante), f);
+  if (deja) return json(409, { error: `Déjà réinscrit(e) le ${pickRow(deja, 'DATE_DEMANDE')}.` });
+  const date = new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris', day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date());
+  await appendRow(
+    getAdherentsSheetId(),
+    tab,
+    ligneReinscription(f, r.champs, { tarif: ASSO.adhesion.tarif, date, reference: nouvelleReference(), ancienNumero: numeroDe(f) }),
+  );
+  if (modeEnvoi()) {
+    const saison = periode.suivante.replace('-', '/');
+    await envoyerMail({
+      to: mail,
+      subject: `${ASSO.nomCourt || ASSO.nom} — réinscription ${saison} reçue`,
+      text: `Bonjour ${pickRow(f, 'PRENOM', 'Prénom') || ''},
+
+Votre réinscription pour la saison ${saison} est bien enregistrée.
+Cours choisis : ${r.champs.cours.join(', ')}.
+Règlement prévu à la rentrée : ${r.champs.mode_paiement}.
+
+Votre nouvelle carte arrivera quand le paiement sera confirmé. À bientôt !
+${ASSO.nom}`,
+    }).catch((err) => console.error('reinscription mail', err?.message || err));
+  }
+  return json(200, { ok: true, saison: periode.suivante });
+}
+
 /** Ce que voit l'adhérent pour une fiche. */
-async function vueFiche(f, mail) {
+async function vueFiche(f, mail, suivantes = null) {
   const numero = numeroDe(f);
   const statut = String(pickRow(f, 'STATUT') || '').trim();
   const aJour = estAJour(f);
@@ -150,6 +249,18 @@ async function vueFiche(f, mail) {
     wallet: Boolean(MODULES.wallet) && aJour && Boolean(numero),
     attestations: MODULES.attestations && aJour ? typesDisponibles(ASSO).map((id) => ({ id, label: libelleType(id) })) : [],
     presences: presences ? { total: presences.length, dernieres: presences.slice(0, 12) } : null,
+    reinscription: suivantes
+      ? {
+          possible: aJour,
+          faite: pickRow(dejaReinscrit(suivantes, f) || {}, 'DATE_DEMANDE') || '',
+          tel: pickRow(f, 'TEL', 'Téléphone') || '',
+          adresse: pickRow(f, 'ADRESSE') || '',
+          codePostal: pickRow(f, 'CP') || '',
+          ville: pickRow(f, 'VILLE') || '',
+          droitImage: pickRow(f, 'DROIT_IMAGE') || '',
+          cours: coursDeNotes(f),
+        }
+      : null,
   };
 }
 
@@ -307,6 +418,20 @@ async function handler(event) {
     if (action === 'deconnecter') return avecCookie(json(200, { ok: true }), '', 0);
   }
 
+  if (action === 'reinscriptions') {
+    const auth = requireAuth(event, { roles: ['admin', 'seance'] });
+    if (!auth.ok) return auth.response;
+    const periode = periodeReinscription(ASSO.saison.label, new Date(), process.env.REINSCRIPTION);
+    const lignes = await lignesSuivante(periode.suivante);
+    return json(200, {
+      saison: periode.suivante,
+      ouverte: periode.ouverte,
+      liste: lignes
+        .filter((r) => pickRow(r, 'SOURCE') === 'Réinscription')
+        .map((r) => ({ nom: noms(r), date: pickRow(r, 'DATE_DEMANDE') || '', cours: coursDeNotes(r).join(', '), mode: pickRow(r, 'MODE') || '' })),
+    });
+  }
+
   const mail = lireSession(lireCookie(event.headers), secret);
   if (!mail) {
     if (action === 'moi') return json(200, { connecte: false });
@@ -315,12 +440,16 @@ async function handler(event) {
   const fiches = await fichesDe(mail);
 
   if (event.httpMethod === 'POST' && action === 'signaler') return signaler(event, body, mail, fiches);
+  if (event.httpMethod === 'POST' && action === 'reinscrire') return reinscrire(body, mail, fiches);
 
   if (action === 'moi') {
+    const periode = periodeReinscription(ASSO.saison.label, new Date(), process.env.REINSCRIPTION);
+    const suivantes = periode.ouverte ? await lignesSuivante(periode.suivante) : null;
     return json(200, {
       connecte: true,
       mail,
-      fiches: await Promise.all(fiches.map((f) => vueFiche(f, mail))),
+      fiches: await Promise.all(fiches.map((f) => vueFiche(f, mail, suivantes))),
+      reinscription: periode.ouverte ? { saison: periode.suivante, au: periode.au, cours: coursConnus(), modes: PAYMENT_MODES } : null,
       signaler: Boolean(modeEnvoi()),
       contact: ASSO.email,
     });

@@ -23,8 +23,26 @@ type Fiche = {
   wallet: boolean;
   attestations: Doc[];
   presences: { total: number; dernieres: { date: string; cours: string; horaire: string }[] } | null;
+  reinscription: {
+    possible: boolean;
+    faite: string;
+    tel: string;
+    adresse: string;
+    codePostal: string;
+    ville: string;
+    droitImage: string;
+    cours: string[];
+  } | null;
 };
-type Moi = { connecte: boolean; mail?: string; fiches?: Fiche[]; signaler?: boolean; contact?: string };
+type PeriodeReinscription = { saison: string; au: string; cours: string[]; modes: string[] };
+type Moi = {
+  connecte: boolean;
+  mail?: string;
+  fiches?: Fiche[];
+  signaler?: boolean;
+  contact?: string;
+  reinscription?: PeriodeReinscription | null;
+};
 type Etape = 'chargement' | 'mail' | 'code' | 'lien' | 'espace';
 
 const API = '/api/espace';
@@ -35,7 +53,7 @@ const boutonSecondaire =
 const url = (action: string, f: Fiche, extra: Record<string, string> = {}) =>
   `${API}?${new URLSearchParams({ action, cle: f.cle, ...extra })}`;
 
-async function poster(action: string, corps: Record<string, string> = {}) {
+async function poster(action: string, corps: Record<string, unknown> = {}) {
   const res = await fetch(API, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -104,10 +122,185 @@ function Signaler({ fiche, contact }: { fiche: Fiche; contact: string }) {
   );
 }
 
-function VueFiche({ f, moi }: { f: Fiche; moi: Moi }) {
+function Choix({ actif, onClick, children }: { actif: boolean; onClick: () => void; children: ReactNode }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={actif}
+      onClick={onClick}
+      className={`min-h-[44px] px-4 rounded-full font-semibold text-[15px] ${actif ? 'bg-brand-black text-white' : 'bg-white ring-1 ring-black/15 text-brand-black'}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+/** Réinscription pour la saison suivante : fiche reprise, on ne demande que ce qui change. */
+function Reinscription({ f, periode, onFait }: { f: Fiche; periode: PeriodeReinscription; onFait: () => void }) {
+  const r = f.reinscription!;
+  const saison = periode.saison.replace('-', '/');
+  const [ouvert, setOuvert] = useState(false);
+  const [tel, setTel] = useState(r.tel);
+  const [adresse, setAdresse] = useState(r.adresse);
+  const [codePostal, setCodePostal] = useState(r.codePostal);
+  const [ville, setVille] = useState(r.ville);
+  const [cours, setCours] = useState<string[]>(r.cours.filter((c) => periode.cours.includes(c)));
+  const [mode, setMode] = useState('');
+  const [droitImage, setDroitImage] = useState(r.droitImage === 'Oui' || r.droitImage === 'Non' ? r.droitImage : '');
+  const [qsSport, setQsSport] = useState('');
+  const [message, setMessage] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+
+  if (r.faite) {
+    return (
+      <Carte titre={`Saison ${saison}`}>
+        <p className="font-body text-[16px] text-brand-olive font-semibold">Réinscription reçue le {r.faite}.</p>
+        <p className="font-body text-[15px] text-brand-gray">
+          Vous paierez à la rentrée. La nouvelle carte arrivera quand le paiement sera confirmé.
+        </p>
+      </Carte>
+    );
+  }
+
+  async function envoyer(e: FormEvent) {
+    e.preventDefault();
+    setErr('');
+    setBusy(true);
+    try {
+      await poster('reinscrire', {
+        cle: f.cle,
+        telephone: tel,
+        adresse,
+        code_postal: codePostal,
+        ville,
+        cours,
+        mode_paiement: mode,
+        droit_image: droitImage,
+        qs_sport: qsSport,
+        message,
+      });
+      onFait();
+    } catch (x) {
+      setErr(x instanceof Error ? x.message : 'Envoi impossible.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (!ouvert) {
+    return (
+      <Carte titre={`Saison ${saison}`}>
+        <p className="font-body text-[16px] text-brand-gray">
+          Gardez votre place : votre fiche est déjà remplie, vous vérifiez et vous choisissez vos cours. Le paiement se
+          fait à la rentrée.
+        </p>
+        <button type="button" onClick={() => setOuvert(true)} className={bouton}>
+          Me réinscrire pour {saison}
+        </button>
+      </Carte>
+    );
+  }
+
+  const legende = 'font-semibold text-brand-black';
+  return (
+    <Carte titre={`Réinscription ${saison}`}>
+      <form onSubmit={(e) => void envoyer(e)} className="space-y-5">
+        <fieldset className="space-y-3">
+          <legend className={legende}>Vos coordonnées (corrigez si besoin)</legend>
+          <label className="block">
+            <span className="font-body text-[15px] text-brand-gray">Téléphone</span>
+            <input className={champ} inputMode="tel" autoComplete="tel" value={tel} onChange={(e) => setTel(e.target.value)} required />
+          </label>
+          <label className="block">
+            <span className="font-body text-[15px] text-brand-gray">Adresse</span>
+            <input className={champ} autoComplete="street-address" value={adresse} onChange={(e) => setAdresse(e.target.value)} />
+          </label>
+          <div className="grid grid-cols-[8rem_1fr] gap-3">
+            <label className="block">
+              <span className="font-body text-[15px] text-brand-gray">Code postal</span>
+              <input className={champ} inputMode="numeric" autoComplete="postal-code" value={codePostal} onChange={(e) => setCodePostal(e.target.value)} />
+            </label>
+            <label className="block">
+              <span className="font-body text-[15px] text-brand-gray">Ville</span>
+              <input className={champ} autoComplete="address-level2" value={ville} onChange={(e) => setVille(e.target.value)} />
+            </label>
+          </div>
+          <p className="font-body text-[14px] text-brand-gray">Nom, date de naissance ou e-mail à changer ? Dites-le dans le message en bas.</p>
+        </fieldset>
+
+        <fieldset className="space-y-2">
+          <legend className={legende}>Vos cours en {saison}</legend>
+          <div className="flex flex-wrap gap-2">
+            {periode.cours.map((c) => (
+              <Choix key={c} actif={cours.includes(c)} onClick={() => setCours((p) => (p.includes(c) ? p.filter((x) => x !== c) : [...p, c]))}>
+                {c}
+              </Choix>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset className="space-y-2">
+          <legend className={legende}>Vous paierez à la rentrée par…</legend>
+          <div className="flex flex-wrap gap-2">
+            {periode.modes.map((m) => (
+              <Choix key={m} actif={mode === m} onClick={() => setMode(m)}>
+                {m}
+              </Choix>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset className="space-y-2">
+          <legend className={legende}>Photos pendant les cours</legend>
+          <p className="font-body text-[14px] text-brand-gray">Parfois une photo de groupe (site, réseaux de l’association).</p>
+          <div className="flex flex-wrap gap-2">
+            <Choix actif={droitImage === 'Oui'} onClick={() => setDroitImage('Oui')}>
+              Oui, pas de souci
+            </Choix>
+            <Choix actif={droitImage === 'Non'} onClick={() => setDroitImage('Non')}>
+              Non, je préfère éviter
+            </Choix>
+          </div>
+        </fieldset>
+
+        <fieldset className="space-y-2">
+          <legend className={legende}>Questionnaire santé QS-SPORT pour {saison}</legend>
+          <p className="font-body text-[14px] text-brand-gray">À remplir chaque saison. Vous l’avez fait ?</p>
+          <div className="flex flex-wrap gap-2">
+            <Choix actif={qsSport === 'Oui'} onClick={() => setQsSport('Oui')}>
+              Oui, c’est fait
+            </Choix>
+            <Choix actif={qsSport === 'Non'} onClick={() => setQsSport('Non')}>
+              Pas encore
+            </Choix>
+          </div>
+        </fieldset>
+
+        <label className="block">
+          <span className={legende}>Un message pour le bureau ? (facultatif)</span>
+          <textarea className={`${champ} min-h-[80px] py-2`} value={message} onChange={(e) => setMessage(e.target.value)} maxLength={800} />
+        </label>
+
+        <button type="submit" disabled={busy || !cours.length || !mode || !droitImage || !qsSport} className={bouton}>
+          {busy ? 'Envoi…' : 'Valider ma réinscription'}
+        </button>
+        {!busy && (!cours.length || !mode || !droitImage || !qsSport) ? (
+          <p className="font-body text-[14px] text-brand-gray">Choisissez au moins un cours et répondez aux trois questions.</p>
+        ) : null}
+        {err ? <p className="font-body text-[15px] text-red-800">{err}</p> : null}
+      </form>
+    </Carte>
+  );
+}
+
+function VueFiche({ f, moi, onMaj }: { f: Fiche; moi: Moi; onMaj: () => void }) {
   const statut = f.aJour ? 'À jour' : f.statut === 'En attente' ? 'En attente de paiement' : f.statut || '—';
   return (
     <div className="space-y-4">
+      {moi.reinscription && f.reinscription?.possible ? (
+        <Reinscription f={f} periode={moi.reinscription} onFait={onMaj} />
+      ) : null}
       <Carte titre={`${f.prenom} ${f.nom}`.trim() || 'Ma fiche'}>
         <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 font-body text-[16px]">
           <dt className="text-brand-gray">Saison</dt>
@@ -408,7 +601,7 @@ export default function EspacePage() {
               </div>
             ) : null}
             {fiche ? (
-              <VueFiche key={fiche.cle} f={fiche} moi={moi} />
+              <VueFiche key={fiche.cle} f={fiche} moi={moi} onMaj={() => void charger()} />
             ) : (
               <p className="font-body text-[16px] text-brand-gray">
                 Aucune fiche avec cette adresse pour la saison. Écrivez au bureau : {moi.contact}.

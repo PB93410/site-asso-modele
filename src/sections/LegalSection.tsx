@@ -236,7 +236,10 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                     l&apos;espace) garde l&apos;appareil connecté 90 jours au plus ; « Me déconnecter »
                     l&apos;efface. Vous y consultez votre fiche, votre carte, ce qu&apos;il reste à payer, vos
                     attestations et vos présences, téléchargez toutes vos données (droit d&apos;accès) et
-                    signalez un changement, transmis par mail au bureau qui corrige la fiche. Base :
+                    signalez un changement, transmis par mail au bureau qui corrige la fiche. De juin à
+                    septembre, vous pouvez vous y réinscrire pour la saison suivante : votre fiche est
+                    reprise, vous corrigez vos coordonnées et répondez aux questions de la saison ; une
+                    nouvelle fiche est créée pour cette saison, conservée comme les autres. Base :
                     exécution de l&apos;adhésion (art. 6.1.b).
                   </li>
                   <li id="paiement-en-ligne">
