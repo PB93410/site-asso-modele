@@ -7,6 +7,7 @@ import EssaiPage from './pages/EssaiPage';
 import InscriptionPage from './pages/InscriptionPage';
 import TarifsPage from './pages/TarifsPage';
 import { ASSO, AUTOUR_PATH, MODULES } from './data/asso';
+import AlerteBandeau from './components/AlerteBandeau';
 
 // Espace bureau : chargé seulement quand on ouvre /bureau (jamais pour les visiteurs).
 const BureauPage = lazy(() => import('./pages/BureauPage'));
@@ -14,6 +15,17 @@ const BureauMailPage = lazy(() => import('./pages/BureauMailPage'));
 const BureauAgendaPage = lazy(() => import('./pages/BureauAgendaPage'));
 const BureauGoogleConnectPage = lazy(() => import('./pages/BureauGoogleConnectPage'));
 const BureauRelancesPage = lazy(() => import('./pages/BureauRelancesPage'));
+const BureauPresencesPage = lazy(() => import('./pages/BureauPresencesPage'));
+const BureauAlertesPage = lazy(() => import('./pages/BureauAlertesPage'));
+const BureauListeAttentePage = lazy(() => import('./pages/BureauListeAttentePage'));
+const BureauRapportPage = lazy(() => import('./pages/BureauRapportPage'));
+const BureauAttestationsPage = lazy(() => import('./pages/BureauAttestationsPage'));
+const ListeAttentePlacePage = lazy(() => import('./pages/ListeAttentePlacePage'));
+const AttestationsPage = lazy(() => import('./pages/AttestationsPage'));
+const QuizPage = lazy(() => import('./pages/QuizPage'));
+const PresencePage = lazy(() => import('./pages/PresencePage'));
+const AlertesPage = lazy(() => import('./pages/AlertesPage'));
+const AlertesDesaboPage = lazy(() => import('./pages/AlertesDesaboPage'));
 
 const ActivityPage = lazy(() => import('./pages/ActivityPage'));
 const MentionsLegalesPage = lazy(() => import('./pages/MentionsLegalesPage'));
@@ -113,6 +125,7 @@ export default function App() {
   return (
     <div className="relative">
       {!hidePublicChrome && <Navigation />}
+      {!hidePublicChrome && <AlerteBandeau />}
       <DemoBanner />
       <ErrorBoundary>
         <Suspense fallback={<PageFallback />}>
@@ -133,6 +146,11 @@ export default function App() {
               <>
                 <Route path="/bureau/agenda" element={<BureauAgendaPage />} />
                 <Route path="/bureau/relances" element={<BureauRelancesPage />} />
+                {MODULES.presences ? <Route path="/bureau/presences" element={<BureauPresencesPage />} /> : null}
+                {MODULES.alertes ? <Route path="/bureau/alertes" element={<BureauAlertesPage />} /> : null}
+                {MODULES.listeAttente ? <Route path="/bureau/liste-attente" element={<BureauListeAttentePage />} /> : null}
+                {MODULES.rapport ? <Route path="/bureau/rapport" element={<BureauRapportPage />} /> : null}
+                {MODULES.attestations ? <Route path="/bureau/attestations" element={<BureauAttestationsPage />} /> : null}
                 <Route path="/bureau" element={<BureauPage />} />
                 {CartesApercuPage ? (
                   <Route path="/bureau/apercu-cartes" element={<CartesApercuPage />} />
@@ -141,6 +159,12 @@ export default function App() {
             ) : (
               <Route path="/bureau/*" element={<NotFoundPage />} />
             )}
+            <Route path="/quiz" element={<QuizPage />} />
+            <Route path="/presence" element={<PresencePage />} />
+            <Route path="/alertes/desabo" element={<AlertesDesaboPage />} />
+            <Route path="/alertes" element={<AlertesPage />} />
+            <Route path="/liste-attente/place" element={<ListeAttentePlacePage />} />
+            <Route path="/attestations" element={<AttestationsPage />} />
             <Route path="/inscription" element={<InscriptionPage />} />
             <Route path="/tarifs" element={<TarifsPage />} />
             <Route path="/essai" element={<EssaiPage />} />

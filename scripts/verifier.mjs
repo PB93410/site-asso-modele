@@ -138,7 +138,7 @@ async function verifierConnexions(env) {
 
 /** Se connecte au fournisseur de mail, sans rien envoyer. */
 async function verifierEnvoiEnLigne(env) {
-  if (!MODULES.essais && !MODULES.adhesion && !MODULES.bureau) return [];
+  if (!MODULES.essais && !MODULES.adhesion && !MODULES.bureau && !MODULES.presences && !MODULES.alertes) return [];
   const mode = modeEnvoi(env, false);
   if (mode === 'smtp' && env.SMTP_PASS) {
     const { default: nodemailer } = await import('nodemailer');

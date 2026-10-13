@@ -85,6 +85,9 @@ export interface Dossier {
   faq: { question: string; reponse: string; populaire?: boolean }[];
   apparence: { couleur: string; secondaire: string; logo: string; hero: string; heroAlt: string };
   modules: AssoModules;
+  listeAttente: { capaciteDefaut: number; delaiReponseHeures: number };
+  financement: { passSport: number; ancvMax: number; comiteEntreprise: number };
+  attestations: { recuFiscal: boolean; objet: string };
   remarques: string;
 }
 

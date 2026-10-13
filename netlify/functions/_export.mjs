@@ -29,6 +29,16 @@ export async function ongletsBureau() {
     onglets.push({ nom: 'Horaires', lignes: await readSheetValues(getSiteSheetId(), getPlanningTab()) });
     onglets.push({ nom: 'Événements', lignes: await readSheetValues(getSiteSheetId(), getEventsTab()) });
   }
+  if (MODULES.presences) {
+    onglets.push({ nom: 'Présences', lignes: await readSheetValues(getSiteSheetId(), 'PRESENCES') });
+  }
+  if (MODULES.alertes) {
+    onglets.push({ nom: 'Alertes', lignes: await readSheetValues(getSiteSheetId(), 'ALERTES') });
+    onglets.push({ nom: 'Alertes-abonnés', lignes: await readSheetValues(getSiteSheetId(), 'ALERTES_ABOS') });
+  }
+  if (MODULES.listeAttente) {
+    onglets.push({ nom: 'Liste-attente', lignes: await readSheetValues(getSiteSheetId(), 'LISTE_ATTENTE') });
+  }
   return onglets;
 }
 

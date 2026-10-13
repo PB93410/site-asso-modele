@@ -58,6 +58,14 @@ Dans `asso.config.js → modules`, chaque fonction s’active séparément :
 | `adhesion` | Inscription en ligne → tableau Adhérents du bureau | Rien (données sur Netlify) ; pour l’alerte par mail : SMTP ou Brevo |
 | `bureau` | Espace `/bureau` des bénévoles, agenda (abonnement téléphone), export Excel, sauvegarde chaque lundi par mail | Mot de passe + secret |
 | `mail` | Boîte mail de l’asso lue dans le bureau | IMAP de la boîte (mêmes identifiants que l’envoi), ou compte Gmail connecté |
+| `presences` | Pointage par QR (un code par séance et par jour), stats au bureau, relance des absents | Bureau + secret déjà en place. **Désactivé par défaut.** |
+| `quiz` | Page « Quel cours pour moi ? » (6 questions, recommandation, lien essai ou adhésion) | Rien. **Désactivé par défaut.** |
+| `alertes` | Annulation / changement : bandeau sur le site, mail aux inscrits, notification sur le téléphone | Bureau. Envoi de mail (SMTP, Brevo ou Gmail). Notification : `VAPID_PUBLIC_KEY` et `VAPID_PRIVATE_KEY` (facultatif). **Désactivé par défaut.** |
+| `listeAttente` | Capacité par cours / créneau ; file d’attente ; place proposée (mail + WhatsApp) avec un délai | Bureau + secret. Mail si le module `mail` / SMTP est branché. **Désactivé par défaut.** |
+| `wallet` | Carte adhérent dans Apple Wallet (.pkpass) et Google Wallet | Bureau. En prod : certificats (voir ci-dessous). En démo : aperçu non signé, boutons visibles. **Désactivé par défaut.** |
+| `financement` | Aides Pass'Sport, chèques ANCV, comité d’entreprise sur le formulaire d’adhésion ; reste à payer noté sur la fiche | Module `adhesion`. Montants dans `asso.config.js → financement`. **Désactivé par défaut.** |
+| `rapport` | Rapport annuel (AG, subvention) : effectifs, conversion essais, présences si activées, âges, communes ; PDF et CSV | Bureau. **Désactivé par défaut.** |
+| `attestations` | PDF d’adhésion, reçu fiscal (si éligible), attestation CE ; accès n° + e-mail ou lien mail ; aussi depuis le bureau | Bureau pour la vue bénévoles. Reçu fiscal : `attestations.recuFiscal`. **Désactivé par défaut.** |
 
 Les données sont rangées sur Netlify, avec le site : aucun compte Google n’est nécessaire. Google Sheets reste possible ([docs/DOC-DONNEES.md](docs/DOC-DONNEES.md)).
 
@@ -122,7 +130,42 @@ Si le site est relié à GitHub, Netlify lance lui-même `npm run build` à chaq
 
 ## Données personnelles
 
-Le dépôt ne contient **aucune donnée d’adhérent**. Les inscriptions et essais vont dans vos Google Sheets, jamais dans le code. `.gitignore` bloque les `.csv`/`.xlsx` hors `public/data/`, les clés et les cartes générées. Adaptez la page Confidentialité (`src/sections/LegalSection.tsx`) à vos traitements réels.
+Le dépôt ne contient **aucune donnée d’adhérent**. Les inscriptions et essais vont dans le stockage du bureau (Netlify ou Google Sheets), jamais dans le code. `.gitignore` bloque les `.csv`/`.xlsx` hors `public/data/`, les clés et les cartes générées. Adaptez la page Confidentialité (`src/sections/LegalSection.tsx`) à vos traitements réels.
+
+### Fonctions facultatives (RGPD)
+
+Elles sont **éteintes** tant que vous ne les cochez pas (`asso.config.js` → `modules`, ou le questionnaire). En démo (`npm run demo`), tout reste fictif : aucun mail ni notification ne part vraiment.
+
+**Présences (`modules.presences`)**  
+L’adhérent scanne le QR du jour et indique son **numéro ou son e-mail**. On enregistre : date, cours, horaire, numéro, prénom, nom, e-mail, heure. Pas de téléphone, pas d’adresse, pas de géolocalisation. Un seul pointage par personne, par séance et par jour. Conservation : **jusqu’à la fin de la saison**, puis suppression (export Excel avant si besoin). Base : organisation des cours (intérêt légitime / adhésion). Les fiches « test » sont ignorées.
+
+**Quiz (`modules.quiz`)**  
+Les réponses ne quittent pas le navigateur. Rien n’est stocké.
+
+**Alertes (`modules.alertes`)**  
+Inscription sur `/alertes` : **e-mail + case à cocher**. Lien de retrait dans chaque mail et sur `/alertes/desabo`. Notification sur le téléphone seulement si la personne l’accepte (et si des clés VAPID sont posées). Conservation : **jusqu’au retrait**, ou **2 ans** sans envoi. Base : consentement. Le quiz et le bandeau public n’affichent aucun nom.
+
+**Liste d’attente (`modules.listeAttente`)**  
+Si le créneau ou le cours est complet : prénom, nom, téléphone, e-mail, cours, rang. Une place libre : mail (si l’envoi est branché) + lien WhatsApp comme les relances, et un **lien personnel limité dans le temps** (`/liste-attente/place`). Conservation : jusqu’à acceptation, expiration, ou fin de saison. Les lignes « test » ne comptent pas dans la capacité.
+
+**Wallet (`modules.wallet`)**  
+Le bureau fabrique une carte à partir de la fiche (nom, numéro, prochain cours ; alerte de dernière minute si `alertes` est allumé). En démo : fichier `.pkpass` **non signé** et boutons visibles. En prod, variables d’environnement (ne jamais les commiter) :
+
+- Apple : `APPLE_PASS_TYPE_ID`, `APPLE_PASS_TEAM_ID`, `APPLE_PASS_CERT` (PEM du certificat Pass Type ID), `APPLE_PASS_KEY` (clé privée PEM), éventuellement `APPLE_PASS_WWDR` (certificat intermédiaire Apple).
+- Google : `GOOGLE_WALLET_SA_JSON` (compte de service Wallet), `GOOGLE_WALLET_ISSUER_ID`.
+
+Sans ces clés, les boutons restent visibles et l’aperçu n’est pas signé.
+
+**Aides (`modules.financement`)**  
+Sur `/inscription` : cases Pass'Sport / ANCV / comité d’entreprise, montants plafonnés dans `asso.config.js → financement`. Le **reste à payer** est écrit dans `MONTANT` et les aides dans `NOTES` / `DETAIL` de la fiche. Aucun paiement n’est prélevé ici.
+
+**Rapport (`modules.rapport`)**  
+Totaux sans noms (adhérents à jour, conversion essai → adhésion, pointages si `presences`, tranches d’âge, communes). PDF et CSV depuis `/bureau/rapport`. Les lignes « test » sont exclues.
+
+**Attestations (`modules.attestations`)**  
+L’adhérent à jour saisit son **numéro + e-mail** sur `/attestations`, ou reçoit un **lien personnel** (7 jours) par mail. Documents : attestation d’adhésion, attestation comité d’entreprise (montant et saison), **reçu fiscal** seulement si `attestations.recuFiscal` est à `true` (éligibilité intérêt général — à cocher dans le questionnaire). Le PDF est fabriqué à la demande, **aucune copie n’est gardée**. Le bureau peut aussi les télécharger ou envoyer le lien. Mentions type Cerfa 11580 sur le reçu (organisme, objet, bénéficiaire, montant, articles 200 / 238 bis).
+
+Mode d’emploi bénévoles : [docs/MODE-EMPLOI-BUREAU.md](docs/MODE-EMPLOI-BUREAU.md).
 
 ## Licence
 

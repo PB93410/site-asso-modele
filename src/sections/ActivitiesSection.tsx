@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Clock } from 'lucide-react';
 import { ACTIVITIES } from '../data/siteData';
-import { ASSO } from '../data/asso';
+import { ASSO, MODULES } from '../data/asso';
 import { ACTIVITY_PAGES } from '../data/activityPages';
 import { useScheduleFromSheet } from '../hooks/useSheetData';
 
@@ -31,6 +31,14 @@ export default function ActivitiesSection() {
         </h2>
         <p className="font-body text-[16px] text-brand-gray mt-3 max-w-[600px]">
           {ACTIVITIES.length} cours par semaine. Le planning ci-dessus donne l’horaire ; ici, l’intention.
+          {MODULES.quiz ? (
+            <>
+              {' '}
+              <Link to="/quiz" className="text-orange-primary font-semibold underline underline-offset-2">
+                Quel cours pour moi ?
+              </Link>
+            </>
+          ) : null}
         </p>
       </div>
 

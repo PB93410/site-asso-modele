@@ -16,10 +16,43 @@ export interface AssoModules {
   adhesion: boolean;
   bureau: boolean;
   mail: boolean;
+  /** Pointage par QR. Absent = désactivé. */
+  presences: boolean;
+  /** Quiz « Quel cours pour moi ? ». Absent = désactivé. */
+  quiz: boolean;
+  /** Alertes de dernière minute. Absent = désactivé. */
+  alertes: boolean;
+  /** File d’attente. Absent = désactivé. */
+  listeAttente: boolean;
+  /** Carte Apple / Google Wallet. Absent = désactivé. */
+  wallet: boolean;
+  /** Aides sur l’adhésion. Absent = désactivé. */
+  financement: boolean;
+  /** Rapport annuel. Absent = désactivé. */
+  rapport: boolean;
+  /** Attestations PDF. Absent = désactivé. */
+  attestations: boolean;
+}
+
+export interface AssoListeAttente {
+  capaciteDefaut: number;
+  delaiReponseHeures: number;
+}
+
+export interface AssoFinancement {
+  passSport: number;
+  ancvMax: number;
+  comiteEntreprise: number;
+}
+
+export interface AssoAttestations {
+  /** Reçu fiscal : seulement si l’association est éligible. */
+  recuFiscal: boolean;
+  objet: string;
 }
 
 export interface AssoConfig {
-  /** Fonctions activées (toutes par défaut). */
+  /** Fonctions activées. essais / adhesion / bureau / mail : absentes = on. Autres modules : absentes = off. */
   modules?: Partial<AssoModules>;
   nom: string;
   nomCourt: string;
@@ -53,6 +86,9 @@ export interface AssoConfig {
     paiementUrl: string;
     autresPaiements: string[];
   };
+  listeAttente: AssoListeAttente;
+  financement: AssoFinancement;
+  attestations: AssoAttestations;
   saison: { label: string; reprise: string; finCampagneEssai: string };
   couleurs: { primaire: string; primaireHover: string; secondaire: string; secondaireHover: string };
   logo: string;

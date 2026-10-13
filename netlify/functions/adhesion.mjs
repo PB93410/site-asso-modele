@@ -16,9 +16,11 @@ import {
   moduleOff,
 } from './_bureau-lib.mjs';
 import { sendAdhesionNotification } from './_adhesion-mail.mjs';
-import { ASSO, PAYMENT_MODES, SITE_URL } from '../../asso.derive.js';
+import { ASSO, MODULES, PAYMENT_MODES, SITE_URL } from '../../asso.derive.js';
 import { brancherStockage, modeStockage } from './_stockage.mjs';
 import { versV2 } from './_v2.mjs';
+import { calculerReste, notesFinancement } from '../../src/lib/financement.js';
+import { etatPlace, inscrireFile } from './_liste-attente.mjs';
 
 const CORS = {
   'Access-Control-Allow-Origin': SITE_URL,
@@ -81,6 +83,9 @@ function extractFields(raw) {
     message,
     notes: notesParts.join(' | '),
     date_demande: dateDemande,
+    pass_sport: String(d.pass_sport || d.passSport || '').trim(),
+    ancv: String(d.ancv || d.ancv_montant || '').trim(),
+    ce: String(d.ce || d.comite || '').trim(),
   };
 }
 
@@ -156,6 +161,52 @@ async function handler(event) {
       return publicJson(400, { ok: false, error: 'Photos de cours et QS-SPORT sont requis' });
     }
 
+    let notes = f.notes;
+    let montant = String(ASSO.adhesion.tarif);
+    let detail = f.detail || '';
+    let financement = null;
+    if (MODULES.financement) {
+      financement = calculerReste(
+        ASSO.adhesion.tarif,
+        {
+          passSport: /^(1|oui|true|on)$/i.test(f.pass_sport),
+          ancv: f.ancv,
+          ce: f.ce,
+        },
+        ASSO.financement,
+      );
+      const nf = notesFinancement(financement);
+      if (nf) notes = notes ? `${notes} | ${nf}` : nf;
+      montant = String(financement.reste);
+      if (financement.aides) {
+        detail = detail ? `${detail} · ${nf}` : nf;
+      }
+    }
+
+    let listeAttente = false;
+    let rang = null;
+    const premierCours = f.cours.split(',')[0].trim();
+    if (MODULES.listeAttente && premierCours && premierCours !== 'Non précisé') {
+      const place = await etatPlace({ type: 'adhesion', cours: premierCours });
+      if (place.complet) {
+        const file = await inscrireFile(
+          {
+            type: 'adhesion',
+            cours: premierCours,
+            prenom: f.prenom,
+            nom: f.nom,
+            tel: f.telephone,
+            mail: f.email,
+            notes,
+          },
+          event,
+        );
+        listeAttente = true;
+        rang = file.rang;
+        notes = notes ? `${notes} | Liste d’attente n° ${rang}` : `Liste d’attente n° ${rang}`;
+      }
+    }
+
     const row = [
       f.nom,
       f.prenom,
@@ -167,13 +218,13 @@ async function handler(event) {
       f.ville,
       f.mode_paiement,
       'En attente',
-      String(ASSO.adhesion.tarif),
-      f.detail || '',
+      montant,
+      detail,
       '',
       f.droit_image,
       f.qs_sport,
       f.connu || 'Formulaire',
-      f.notes,
+      notes,
       f.date_demande,
     ];
 
@@ -203,7 +254,12 @@ async function handler(event) {
       console.error('adhesion mail:', mailErr?.message || mailErr);
     }
 
-    return publicJson(200, { ok: true, message: 'Ligne ajoutée' });
+    return publicJson(200, {
+      ok: true,
+      message: listeAttente ? 'Ce cours est complet. Vous êtes sur la liste d’attente.' : 'Ligne ajoutée',
+      listeAttente,
+      rang,
+    });
   } catch (err) {
     console.error('adhesion error:', err?.message || err);
     return publicJson(500, { ok: false, error: 'Erreur serveur' });

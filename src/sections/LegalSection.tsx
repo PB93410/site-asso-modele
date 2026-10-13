@@ -121,7 +121,7 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
         </p>
         <Title className={titleClass}>Politique de confidentialité</Title>
         <p className="font-body text-[13px] text-brand-gray -mt-6 mb-8">
-          Dernière mise à jour : 3 septembre 2026
+          Dernière mise à jour : 12 octobre 2026
         </p>
 
         <div className="grid grid-cols-1 gap-8">
@@ -171,6 +171,61 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                     <strong className="text-brand-black">Préférences d&apos;affichage</strong> : thème clair/sombre
                     stocké localement dans votre navigateur (localStorage). Pas de cookie publicitaire
                     ni analytics.
+                  </li>
+                  <li id="presences">
+                    <strong className="text-brand-black">Pointage par QR (/presence)</strong> — si la
+                    fonction est activée : numéro d&apos;adhérent ou e-mail, date, cours et heure.
+                    Finalité : savoir qui était à la séance. Base : intérêt légitime de l&apos;association
+                    (organisation des cours, art. 6.1.f) et exécution de l&apos;adhésion (art. 6.1.b).
+                    Pas de géolocalisation. Un seul enregistrement par personne, par séance et par jour.
+                  </li>
+                  <li id="alertes">
+                    <strong className="text-brand-black">Alertes de cours (/alertes)</strong> — si la
+                    fonction est activée : e-mail, case de consentement, éventuellement un identifiant
+                    de notification du navigateur. Finalité : prévenir d&apos;une annulation ou d&apos;un
+                    changement. Base : consentement (art. 6.1.a), retirable à tout moment (lien dans
+                    chaque mail, page /alertes/desabo).
+                  </li>
+                  <li>
+                    <strong className="text-brand-black">Quiz « Quel cours pour moi ? »</strong> — les
+                    réponses restent dans votre navigateur le temps de la page. Rien n&apos;est envoyé
+                    ni enregistré.
+                  </li>
+                  <li id="liste-attente">
+                    <strong className="text-brand-black">Liste d&apos;attente</strong> — si la fonction
+                    est activée et que le cours est complet : prénom, nom, téléphone, e-mail, cours
+                    demandé, rang et lien pour accepter une place. Finalité : proposer la première
+                    place libérée. Base : mesures précontractuelles à votre demande (art. 6.1.b).
+                    Conservation : jusqu&apos;à acceptation, expiration du délai, ou fin de saison.
+                    Le lien personnel n&apos;est pas indexé.
+                  </li>
+                  <li id="wallet">
+                    <strong className="text-brand-black">Carte Wallet</strong> — si la fonction est
+                    activée : le bureau peut fabriquer une carte Apple Wallet (.pkpass) ou un lien
+                    Google Wallet à partir de la fiche (nom, numéro, prochain cours, éventuellement
+                    une alerte de dernière minute). Destinataires : Apple ou Google, selon le
+                    téléphone. Base : exécution de l&apos;adhésion (art. 6.1.b).
+                  </li>
+                  <li id="financement">
+                    <strong className="text-brand-black">Aides à la cotisation</strong> — si la
+                    fonction est activée : indication Pass&apos;Sport, montant de chèques ANCV et
+                    aide comité d&apos;entreprise, reste à payer. Noté sur la fiche d&apos;adhésion
+                    pour le bureau. Aucun paiement n&apos;est prélevé ici. Base : exécution de
+                    l&apos;adhésion (art. 6.1.b).
+                  </li>
+                  <li id="rapport">
+                    <strong className="text-brand-black">Rapport annuel</strong> — si la fonction est
+                    activée : totaux (adhérents, essais, présences, âges, communes) pour l&apos;AG
+                    et les demandes de subvention. Aucun nom n&apos;apparaît dans le PDF ou le CSV.
+                    Base : intérêt légitime (art. 6.1.f) et obligations associatives.
+                  </li>
+                  <li id="attestations">
+                    <strong className="text-brand-black">Attestations PDF (/attestations)</strong> — si
+                    la fonction est activée : numéro d&apos;adhérent et e-mail pour télécharger
+                    l&apos;attestation d&apos;adhésion, le reçu fiscal (seulement si l&apos;association
+                    est déclarée éligible) et l&apos;attestation comité d&apos;entreprise. Un lien
+                    personnel peut être envoyé par mail (valable 7 jours). Le PDF est fabriqué à la
+                    demande, rien n&apos;est stocké. Base : exécution de l&apos;adhésion (art. 6.1.b).
                   </li>
                 </ul>
               </div>
@@ -324,10 +379,45 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                         <td className="p-2">Communication (site, Facebook, Instagram)</td>
                         <td className="p-2">Jusqu&apos;au retrait du consentement ou fin d&apos;usage</td>
                       </tr>
-                      <tr>
+                      <tr className="border-b border-black/[0.06]">
                         <td className="p-2">Thème d&apos;affichage (localStorage)</td>
                         <td className="p-2">Mode clair / sombre</td>
                         <td className="p-2">Jusqu&apos;à suppression par l&apos;utilisateur</td>
+                      </tr>
+                      <tr className="border-b border-black/[0.06]">
+                        <td className="p-2">Pointages QR (n° ou e-mail, cours, date, heure)</td>
+                        <td className="p-2">Présence aux séances, relance si longue absence</td>
+                        <td className="p-2">Jusqu&apos;à la fin de la saison, puis suppression</td>
+                      </tr>
+                      <tr className="border-b border-black/[0.06]">
+                        <td className="p-2">Abonnement alertes (e-mail, consentement, notification)</td>
+                        <td className="p-2">Prévenir d&apos;une annulation ou d&apos;un changement</td>
+                        <td className="p-2">Jusqu&apos;au retrait, ou 2 ans sans envoi</td>
+                      </tr>
+                      <tr className="border-b border-black/[0.06]">
+                        <td className="p-2">Liste d&apos;attente (identité, contact, cours, lien)</td>
+                        <td className="p-2">Proposer une place quand un cours se libère</td>
+                        <td className="p-2">Jusqu&apos;à acceptation, expiration, ou fin de saison</td>
+                      </tr>
+                      <tr className="border-b border-black/[0.06]">
+                        <td className="p-2">Carte Wallet (nom, n°, prochain cours)</td>
+                        <td className="p-2">Ajouter la carte adhérent au téléphone</td>
+                        <td className="p-2">Durée de l&apos;adhésion ; la carte reste sur l&apos;appareil</td>
+                      </tr>
+                      <tr className="border-b border-black/[0.06]">
+                        <td className="p-2">Aides (Pass&apos;Sport, ANCV, comité d&apos;entreprise)</td>
+                        <td className="p-2">Calculer le reste à payer, suivi par le bureau</td>
+                        <td className="p-2">Durée de l&apos;adhésion, puis suppression avec la fiche</td>
+                      </tr>
+                      <tr className="border-b border-black/[0.06]">
+                        <td className="p-2">Rapport annuel (totaux, âges, communes — sans noms)</td>
+                        <td className="p-2">AG et demandes de subvention</td>
+                        <td className="p-2">Selon les obligations associatives et de subvention</td>
+                      </tr>
+                      <tr>
+                        <td className="p-2">Attestations (n°, e-mail, lien personnel, PDF à la volée)</td>
+                        <td className="p-2">Justificatif d&apos;adhésion, reçu fiscal, employeur / CE</td>
+                        <td className="p-2">Pas de copie conservée ; le lien expire après 7 jours</td>
                       </tr>
                     </tbody>
                   </table>

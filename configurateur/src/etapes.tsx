@@ -690,13 +690,25 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
         label="S’inscrire en ligne"
         aide="Formulaire d’adhésion complet ; les fiches arrivent dans un tableau Google. Sinon : inscription sur place."
         checked={m.adhesion}
-        onChange={(v) => maj('modules.adhesion', v)}
+        onChange={(v) => maj('modules', { ...m, adhesion: v, financement: v ? m.financement : false })}
       />
       <Case
         label="Espace bénévoles"
         aide="Une page protégée par mot de passe : essais à confirmer, encaissements, cartes d’adhérent, horaires du site."
         checked={m.bureau}
-        onChange={(v) => maj('modules', { ...m, bureau: v, mail: v ? m.mail : false })}
+        onChange={(v) =>
+          maj('modules', {
+            ...m,
+            bureau: v,
+            mail: v ? m.mail : false,
+            presences: v ? m.presences : false,
+            alertes: v ? m.alertes : false,
+            listeAttente: v ? m.listeAttente : false,
+            wallet: v ? m.wallet : false,
+            rapport: v ? m.rapport : false,
+            attestations: v ? m.attestations : false,
+          })
+        }
       />
       {m.bureau ? (
         <Case
@@ -705,6 +717,125 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
           checked={m.mail}
           onChange={(v) => maj('modules.mail', v)}
         />
+      ) : null}
+      <Case
+        label="Quiz « Quel cours pour moi ? »"
+        aide="Une page publique avec 6 questions (niveau, âge, objectif, disponibilités). Le site propose les cours qui conviennent, puis un essai ou l’inscription."
+        checked={m.quiz}
+        onChange={(v) => maj('modules.quiz', v)}
+      />
+      {m.bureau ? (
+        <Case
+          label="Pointage aux séances par QR"
+          aide="Un code par cours et par jour. L’adhérent scanne et pointe. Le bureau voit les présences et les personnes absentes depuis plusieurs semaines."
+          checked={m.presences}
+          onChange={(v) => maj('modules.presences', v)}
+        />
+      ) : null}
+      {m.bureau ? (
+        <Case
+          label="Alertes de dernière minute"
+          aide="Annuler ou déplacer un cours : un bandeau s’affiche sur le site, un mail part aux personnes inscrites. Notification sur le téléphone si la personne l’a acceptée."
+          checked={m.alertes}
+          onChange={(v) => maj('modules.alertes', v)}
+        />
+      ) : null}
+      {m.bureau ? (
+        <Case
+          label="Liste d’attente"
+          aide="Quand un créneau d’essai ou un cours est complet, la personne est mise en file. Une place libérée lui est proposée (mail + WhatsApp), avec un délai pour accepter."
+          checked={m.listeAttente}
+          onChange={(v) => maj('modules.listeAttente', v)}
+        />
+      ) : null}
+      {m.bureau && m.listeAttente ? (
+        <div className="grid sm:grid-cols-2 gap-4 pl-1">
+          <Texte
+            label="Places par créneau / cours"
+            inputMode="numeric"
+            value={d.listeAttente.capaciteDefaut}
+            onChange={(v) => maj('listeAttente.capaciteDefaut', Number(v.replace(/\D/g, '')) || 0)}
+            aide="Quand ce nombre est atteint, les suivantes vont en liste d’attente."
+          />
+          <Texte
+            label="Délai pour accepter une place (heures)"
+            inputMode="numeric"
+            value={d.listeAttente.delaiReponseHeures}
+            onChange={(v) => maj('listeAttente.delaiReponseHeures', Number(v.replace(/\D/g, '')) || 0)}
+          />
+        </div>
+      ) : null}
+      {m.bureau ? (
+        <Case
+          label="Carte dans Apple Wallet et Google Wallet"
+          aide="L’adhérent ajoute sa carte au téléphone. En démo : aperçu, sans certificat. En prod : clés dans les variables d’environnement (voir le README)."
+          checked={m.wallet}
+          onChange={(v) => maj('modules.wallet', v)}
+        />
+      ) : null}
+      {m.adhesion ? (
+        <Case
+          label="Aides à la cotisation (Pass'Sport, ANCV, CE)"
+          aide="Sur le formulaire d’adhésion : cases et montants, reste à payer. Les aides sont notées sur la fiche pour le bureau."
+          checked={m.financement}
+          onChange={(v) => maj('modules.financement', v)}
+        />
+      ) : null}
+      {m.adhesion && m.financement ? (
+        <div className="grid sm:grid-cols-3 gap-4 pl-1">
+          <Texte
+            label="Pass'Sport (€)"
+            inputMode="numeric"
+            value={d.financement.passSport}
+            onChange={(v) => maj('financement.passSport', Number(v.replace(/\D/g, '')) || 0)}
+            aide="0 = non proposé."
+          />
+          <Texte
+            label="Plafond chèques ANCV (€)"
+            inputMode="numeric"
+            value={d.financement.ancvMax}
+            onChange={(v) => maj('financement.ancvMax', Number(v.replace(/\D/g, '')) || 0)}
+          />
+          <Texte
+            label="Aide comité d’entreprise (€)"
+            inputMode="numeric"
+            value={d.financement.comiteEntreprise}
+            onChange={(v) => maj('financement.comiteEntreprise', Number(v.replace(/\D/g, '')) || 0)}
+          />
+        </div>
+      ) : null}
+      {m.bureau ? (
+        <Case
+          label="Rapport annuel (AG, subvention)"
+          aide="Effectifs, essais devenus adhésions, présences si le module est allumé, âges et communes. PDF et CSV depuis le bureau."
+          checked={m.rapport}
+          onChange={(v) => maj('modules.rapport', v)}
+        />
+      ) : null}
+      <Case
+        label="Attestations PDF"
+        aide="L’adhérent télécharge son attestation d’adhésion, un reçu fiscal (si l’asso est éligible) et une attestation pour le comité d’entreprise. Numéro + e-mail, ou un lien reçu par mail. Le bureau peut aussi les fabriquer."
+        checked={m.attestations}
+        onChange={(v) => maj('modules.attestations', v)}
+      />
+      {m.attestations ? (
+        <div className="space-y-4 pl-1">
+          <Case
+            label="L’association peut délivrer un reçu fiscal"
+            aide="Uniquement si vous êtes éligible (intérêt général, articles 200 et 238 bis du CGI). Sinon, ne cochez pas : le reçu n’apparaît pas."
+            checked={d.attestations.recuFiscal}
+            onChange={(v) => maj('attestations.recuFiscal', v)}
+          />
+          {d.attestations.recuFiscal ? (
+            <Texte
+              label="Objet social (reçu fiscal)"
+              facultatif
+              value={d.attestations.objet}
+              onChange={(v) => maj('attestations.objet', v)}
+              placeholder="ex. pratique sportive amateur, gym douce"
+            />
+          ) : null}
+        </div>
       ) : null}
       <Encadre>Pas sûr ? Cochez seulement « essai gratuit » : c’est ce qui fait venir de nouveaux adhérents.</Encadre>
     </div>

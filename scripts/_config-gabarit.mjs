@@ -49,6 +49,22 @@ const ASSO = {
     /** Boîte mail de l'asso lue dans le bureau, en IMAP ou Gmail (demande le bureau). L'envoi des
      *  alertes et des cartes n'en dépend pas (docs/DOC-MAIL.md), l'agenda non plus (docs/DOC-AGENDA.md). */
     mail: ${bool(m.mail)},
+    /** Pointage aux séances par QR (un code par cours et par jour). Page publique + stats au bureau. */
+    presences: ${m.presences === true ? 'true' : 'false'},
+    /** Quiz public « Quel cours pour moi ? » (5 à 7 questions, recommandation, lien essai ou adhésion). */
+    quiz: ${m.quiz === true ? 'true' : 'false'},
+    /** Alertes de dernière minute (annulation / changement) : bandeau sur le site, mail, notification. */
+    alertes: ${m.alertes === true ? 'true' : 'false'},
+    /** File d’attente quand un cours ou un créneau est complet. Place proposée avec un délai. */
+    listeAttente: ${m.listeAttente === true ? 'true' : 'false'},
+    /** Carte adhérent dans Apple Wallet et Google Wallet. */
+    wallet: ${m.wallet === true ? 'true' : 'false'},
+    /** Aides (Pass'Sport, ANCV, comité d’entreprise) sur le formulaire d’adhésion. */
+    financement: ${m.financement === true ? 'true' : 'false'},
+    /** Rapport annuel (AG, subvention) : effectifs, essais, présences, âges, communes. */
+    rapport: ${m.rapport === true ? 'true' : 'false'},
+    /** Attestations PDF (adhésion, reçu fiscal si éligible, comité d’entreprise). */
+    attestations: ${m.attestations === true ? 'true' : 'false'},
   },
 
   // ---- Identité ----
@@ -121,6 +137,32 @@ ${(c.lieux || []).map(lieu).join('\n')}
     paiementUrl: ${q(c.adhesion?.paiementUrl)},
     /** Autres moyens acceptés au bureau. */
     autresPaiements: ${liste(c.adhesion?.autresPaiements)},
+  },
+
+  // ---- Liste d'attente (modules.listeAttente) ----
+  listeAttente: {
+    /** Places par défaut pour un créneau (essai) ou un cours (adhésion). */
+    capaciteDefaut: ${Number(c.listeAttente?.capaciteDefaut) || 20},
+    /** Heures pour accepter une place libérée. */
+    delaiReponseHeures: ${Number(c.listeAttente?.delaiReponseHeures) || 48},
+  },
+
+  // ---- Attestations (modules.attestations) ----
+  attestations: {
+    /** Reçu fiscal (modèle Cerfa) : seulement si l’association est éligible (intérêt général). */
+    recuFiscal: ${c.attestations?.recuFiscal === true ? 'true' : 'false'},
+    /** Objet social, mentionné sur le reçu fiscal. Vide = l’accroche. */
+    objet: ${q(c.attestations?.objet)},
+  },
+
+  // ---- Aides (modules.financement) ----
+  financement: {
+    /** Pass'Sport, en euros. 0 = non proposé. */
+    passSport: ${Number(c.financement?.passSport) || 0},
+    /** Plafond chèques ANCV, en euros. 0 = non proposé. */
+    ancvMax: ${Number(c.financement?.ancvMax) || 0},
+    /** Aide type comité d’entreprise, en euros. 0 = non proposée. */
+    comiteEntreprise: ${Number(c.financement?.comiteEntreprise) || 0},
   },
 
   // ---- Saison ----

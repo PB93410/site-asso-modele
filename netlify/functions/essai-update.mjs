@@ -18,6 +18,8 @@ import {
 } from './_bureau-lib.mjs';
 import { brancherStockage } from './_stockage.mjs';
 import { versV2 } from './_v2.mjs';
+import { MODULES } from '../../asso.derive.js';
+import { notifierSuivant } from './_liste-attente.mjs';
 
 const ESSAI_STATUTS = new Set(ESSAIS_STATUTS);
 
@@ -124,12 +126,30 @@ async function handler(event) {
 
     await updateRowByHeaders(sheetId, sheetName, row, updates, headers);
 
+    let listeAttente = null;
+    const nouveau = updates[headerName(headers, 'STATUT')];
+    if (MODULES.listeAttente && (nouveau === 'Annulé' || nouveau === 'Absent')) {
+      try {
+        listeAttente = await notifierSuivant(
+          {
+            type: 'essai',
+            cours: pickRow(target, 'COURS', 'Cours'),
+            creneau: pickRow(target, 'CRENEAU', 'Cours'),
+          },
+          event,
+        );
+      } catch (err) {
+        console.error('essai-update liste attente', err?.message || err);
+      }
+    }
+
     return json(200, {
       ok: true,
       source,
       row,
       updates,
       message: `${pickRow(target, 'PRENOM', 'Prénom', 'Prenom')} ${pickRow(target, 'NOM', 'Nom')} mis à jour`,
+      listeAttente,
     });
   } catch (err) {
     console.error('essai-update error', err);

@@ -27,6 +27,22 @@ const ASSO = {
     /** Boîte mail de l'asso lue dans le bureau, en IMAP ou Gmail (demande le bureau). L'envoi des
      *  alertes et des cartes n'en dépend pas (docs/DOC-MAIL.md), l'agenda non plus (docs/DOC-AGENDA.md). */
     mail: true,
+    /** Pointage aux séances par QR (un code par cours et par jour). Page publique + stats au bureau. */
+    presences: false,
+    /** Quiz public « Quel cours pour moi ? » (5 à 7 questions, recommandation, lien essai ou adhésion). */
+    quiz: false,
+    /** Alertes de dernière minute (annulation / changement) : bandeau sur le site, mail, notification. */
+    alertes: false,
+    /** File d’attente quand un cours ou un créneau est complet. Place proposée avec un délai. */
+    listeAttente: false,
+    /** Carte adhérent dans Apple Wallet et Google Wallet. */
+    wallet: false,
+    /** Aides (Pass'Sport, ANCV, comité d’entreprise) sur le formulaire d’adhésion. */
+    financement: false,
+    /** Rapport annuel (AG, subvention) : effectifs, essais, présences, âges, communes. */
+    rapport: false,
+    /** Attestations PDF (adhésion, reçu fiscal si éligible, comité d’entreprise). */
+    attestations: false,
   },
 
   // ---- Identité ----
@@ -110,6 +126,32 @@ const ASSO = {
     paiementUrl: 'https://www.helloasso.com/',
     /** Autres moyens acceptés au bureau. */
     autresPaiements: ['chèque', 'espèces', 'chèques ANCV'],
+  },
+
+  // ---- Liste d'attente (modules.listeAttente) ----
+  listeAttente: {
+    /** Places par défaut pour un créneau (essai) ou un cours (adhésion). */
+    capaciteDefaut: 20,
+    /** Heures pour accepter une place libérée. */
+    delaiReponseHeures: 48,
+  },
+
+  // ---- Attestations (modules.attestations) ----
+  attestations: {
+    /** Reçu fiscal (modèle Cerfa) : seulement si l’association est éligible (intérêt général). */
+    recuFiscal: false,
+    /** Objet social, mentionné sur le reçu fiscal. Vide = l’accroche. */
+    objet: '',
+  },
+
+  // ---- Aides (modules.financement) ----
+  financement: {
+    /** Pass'Sport, en euros. 0 = non proposé. */
+    passSport: 50,
+    /** Plafond chèques ANCV, en euros. 0 = non proposé. */
+    ancvMax: 40,
+    /** Aide type comité d’entreprise, en euros. 0 = non proposée. */
+    comiteEntreprise: 30,
   },
 
   // ---- Saison ----

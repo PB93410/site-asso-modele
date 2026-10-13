@@ -20,6 +20,8 @@ Tout se fait dans cet espace. Vous n’ouvrez pas Excel. WhatsApp s’ouvre tout
 | Rappeler une personne | Onglet **Essais** |
 | Les la cotisation sont reçus | Onglet **À payer** → « J’ai reçu l’argent » |
 | Tableaux / mail / agenda / horaires | Onglet **Autre** |
+| QR de la séance, qui est venu | **Autre → Présences** (si la fonction est activée) |
+| Annuler ou déplacer un cours | **Autre → Alertes cours** (si la fonction est activée) |
 
 ---
 
@@ -86,6 +88,50 @@ Choisissez, puis **Enregistrer**. Une confirmation s’affiche. Le site public s
 2. Connectez-vous au bureau, onglet Aide → **Ouvrir le canal d’alerte**.
 
 Le bip indique un prénom, un cours et une date — **pas** le numéro. Sans l’appli, rien ne sonne : regardez **Demande essai** de temps en temps.
+
+---
+
+## Présences (QR), si la fonction est activée
+
+1. **Autre → Présences**. Choisissez le jour.
+2. **QR** sur le cours du moment. Les adhérents scannent, tapent leur numéro ou leur e-mail, **Je suis là**.
+3. Un second passage le même jour est refusé.
+4. Plus bas : totaux par cours, et les personnes sans nouvelles depuis 3 semaines. Cochez, **Envoyer un mot** (mail, si l’envoi est branché).
+
+## Alertes de dernière minute, si la fonction est activée
+
+1. **Autre → Alertes cours**. Date, cours, type (annulé / modifié), un court message.
+2. **Publier** : un bandeau apparaît sur le site. Un mail part aux personnes inscrites sur `/alertes`.
+3. **Retirer** enlève le bandeau.
+
+Les adhérents s’inscrivent eux-mêmes (e-mail + case à cocher). Ils se retirent par le lien du mail.
+
+## Liste d’attente, si la fonction est activée
+
+1. Quand un essai ou un cours est complet, la personne est mise en file (elle le voit après l’envoi).
+2. **Autre → Liste d’attente**. Vous voyez qui attend, pour quel cours, et son rang.
+3. Une place se libère (essai annulé / absent, ou adhésion en arrêt) : la première personne est prévenue toute seule (mail si l’envoi est branché). Le bouton **Prévenir** ouvre aussi WhatsApp, comme les relances.
+4. Elle a un délai (souvent 48 h) pour cliquer « J’accepte la place ». Ensuite, confirmez le créneau comme d’habitude.
+
+## Carte Wallet, si la fonction est activée
+
+Dans **Cartes**, pour un adhérent à jour : boutons **Apple Wallet** et **Google Wallet**. En démo, la carte n’est pas vraiment signée : c’est un aperçu. En prod, le référent pose les certificats (README).
+
+## Aides (Pass'Sport, ANCV, CE), si la fonction est activée
+
+Sur le formulaire d’inscription, la personne indique ses aides. Le **reste à payer** arrive sur la fiche (colonne montant + notes). Vérifiez les justificatifs au bureau.
+
+## Rapport annuel, si la fonction est activée
+
+**Autre → Rapport annuel**. Effectifs, essais devenus adhésions, présences (si le pointage est allumé), âges et communes. **Aucun nom.** Téléchargez le PDF ou le CSV pour l’AG ou la mairie.
+
+## Attestations, si la fonction est activée
+
+1. L’adhérent va sur **/attestations** : numéro + e-mail, ou **Recevoir un lien par mail**.
+2. **Autre → Attestations** : pour chaque personne à jour, téléchargez le PDF (adhésion, reçu fiscal si l’asso est éligible, comité d’entreprise) ou envoyez le lien.
+3. Le reçu fiscal n’apparaît **que** si le référent a coché l’éligibilité (intérêt général). Sinon, seulement adhésion + CE.
+
+Rien n’est enregistré : le PDF est fabriqué au moment du clic.
 
 ---
 

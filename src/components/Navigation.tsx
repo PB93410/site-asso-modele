@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { BANDEAU_END, ESSAI_CTA_UNTIL } from '../data/CONFIG';
-import { ASSO, NB_ESSAIS } from '../data/asso';
+import { ASSO, MODULES, NB_ESSAIS } from '../data/asso';
 
 /** Tant que le bandeau essais est actif : CTA = Essai. Ensuite = Adhérer. */
 const SHOW_ESSAI_CTA = Date.now() < ESSAI_CTA_UNTIL;
@@ -14,6 +14,7 @@ type NavLink = { label: string; href: string; isPage?: boolean };
 const navLinks: NavLink[] = [
   { label: 'Cours & horaires', href: '#horaires' },
   { label: 'Tarifs', href: '/tarifs', isPage: true },
+  ...(MODULES.quiz ? [{ label: 'Quel cours ?', href: '/quiz', isPage: true } as NavLink] : []),
   { label: 'FAQ', href: '/faq', isPage: true },
   { label: 'Blog', href: '/blog', isPage: true },
 ];
@@ -22,6 +23,7 @@ const navLinks: NavLink[] = [
 const offHomeLinks: NavLink[] = [
   { label: 'Cours & horaires', href: '/#horaires' },
   { label: 'Tarifs', href: '/tarifs', isPage: true },
+  ...(MODULES.quiz ? [{ label: 'Quel cours ?', href: '/quiz', isPage: true } as NavLink] : []),
   { label: 'FAQ', href: '/faq', isPage: true },
   { label: 'Blog', href: '/blog', isPage: true },
 ];

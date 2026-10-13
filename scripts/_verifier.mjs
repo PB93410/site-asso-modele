@@ -117,6 +117,12 @@ export function verifierConfig(asso, modules, existe, saisonCourte) {
   if (asso.modules?.mail && asso.modules?.bureau === false) {
     r.push(attention('modules.mail est activé mais pas le bureau : le mail est ignoré.'));
   }
+  if (asso.modules?.presences && asso.modules?.bureau === false) {
+    r.push(attention('modules.presences est activé mais pas le bureau : le pointage se fera, sans page de stats.'));
+  }
+  if (asso.modules?.alertes && asso.modules?.bureau === false) {
+    r.push(attention('modules.alertes est activé mais pas le bureau : personne ne pourra publier d’alerte.'));
+  }
   return r;
 }
 
@@ -147,7 +153,7 @@ export function verifierEnv(env, modules) {
     return r;
   }
 
-  const besoinDonnees = modules.essais || modules.adhesion || modules.bureau;
+  const besoinDonnees = modules.essais || modules.adhesion || modules.bureau || modules.presences || modules.alertes;
   const stockage = modeStockage(env, false);
   const besoinSheets = besoinDonnees && stockage === 'google';
   const choixStockage = a('STOCKAGE').toLowerCase();
@@ -206,6 +212,32 @@ export function verifierEnv(env, modules) {
       } else r.push(ok(`Boîte mail du bureau : IMAP ${ri.host}:${ri.port}, compte ${ri.auth.user}.`));
     }
   }
+  if ((modules.presences || modules.alertes || modules.listeAttente || modules.wallet || modules.attestations) && !modules.bureau && !a('BUREAU_SECRET')) {
+    r.push(erreur('BUREAU_SECRET manquante.', 'Les QR, les liens de désabonnement, les cartes Wallet et les attestations sont signés avec le même secret que le bureau (32 caractères ou plus).'));
+    if (modules.presences) incomplets.add('presences');
+    if (modules.alertes) incomplets.add('alertes');
+    if (modules.listeAttente) incomplets.add('listeAttente');
+    if (modules.wallet) incomplets.add('wallet');
+    if (modules.attestations) incomplets.add('attestations');
+  }
+  if (modules.wallet && !process.env.DEMO && !a('APPLE_PASS_CERT') && !a('GOOGLE_WALLET_SA_JSON')) {
+    r.push(attention(
+      'Wallet : aucun certificat Apple ni compte Google Wallet.',
+      'En démo ce n’est pas nécessaire. En prod : voir le README (APPLE_PASS_* et GOOGLE_WALLET_*). Les boutons restent visibles.',
+    ));
+  }
+  if (modules.attestations && asso.attestations?.recuFiscal && !String(asso.rna || '').trim() && !String(asso.siret || '').trim()) {
+    r.push(attention(
+      'Reçu fiscal : RNA et SIRET vides.',
+      'Indiquez-les dans asso.config.js : ils figurent sur le modèle Cerfa.',
+    ));
+  }
+  if (modules.financement) {
+    const f = asso.financement || {};
+    if (!(Number(f.passSport) > 0) && !(Number(f.ancvMax) > 0) && !(Number(f.comiteEntreprise) > 0)) {
+      r.push(attention('Aides : tous les montants sont à 0.', 'Renseignez financement.passSport, ancvMax ou comiteEntreprise dans asso.config.js.'));
+    }
+  }
   if (incomplets.size) {
     const liste = [...incomplets];
     r.push(
@@ -243,7 +275,7 @@ export function verifierEnv(env, modules) {
  * @param {{essais: boolean, adhesion: boolean, bureau: boolean}} modules
  */
 export function verifierEnvoi(env, modules) {
-  if (!modules.essais && !modules.adhesion && !modules.bureau) return [];
+  if (!modules.essais && !modules.adhesion && !modules.bureau && !modules.presences && !modules.alertes) return [];
   const a = (k) => String(env[k] || '').trim();
   const r = [];
   const choix = a('MAIL_ENVOI').toLowerCase();

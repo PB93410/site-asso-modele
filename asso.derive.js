@@ -18,10 +18,26 @@ export const MODE_CARTE = ASSO.adhesion.paiementUrl
   : '';
 
 /**
- * Fonctions activées (asso.config.js → modules). Absentes = activées.
+ * Fonctions activées (asso.config.js → modules).
+ * essais, adhesion, bureau, mail : absentes = activées.
+ * presences, quiz, alertes, listeAttente, wallet, financement, rapport, attestations : absentes = désactivées.
  * Le mail du bureau demande le bureau.
  */
-export const MODULES = { essais: true, adhesion: true, bureau: true, mail: true, ...(ASSO.modules || {}) };
+export const MODULES = {
+  essais: true,
+  adhesion: true,
+  bureau: true,
+  mail: true,
+  presences: false,
+  quiz: false,
+  alertes: false,
+  listeAttente: false,
+  wallet: false,
+  financement: false,
+  rapport: false,
+  attestations: false,
+  ...(ASSO.modules || {}),
+};
 if (!MODULES.bureau) MODULES.mail = false;
 
 const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
