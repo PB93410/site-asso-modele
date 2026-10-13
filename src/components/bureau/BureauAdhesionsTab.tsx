@@ -44,7 +44,7 @@ export default function BureauAdhesionsTab<T extends AdhesionItem>({
 }: Props<T>) {
   return (
     <div className="space-y-5">
-      <EnTete titre="À payer" aide="Un paiement en ligne ne passe pas tout seul en À jour : confirmez-le ici quand l’argent est arrivé." />
+      <EnTete titre="À payer" aide="Paiement par carte avec HelloAsso branché : la fiche passe « À jour » toute seule. Sinon (chèque, espèces, virement, simple lien de paiement), confirmez ici quand l’argent est arrivé." />
       {pendingVisible.length === 0 && !loading ? (
         qPeople ? (
           <Vide icone={Search} titre="Personne avec ce nom ou ce numéro" />

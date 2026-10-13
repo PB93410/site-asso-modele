@@ -227,6 +227,16 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                     personnel peut être envoyé par mail (valable 7 jours). Le PDF est fabriqué à la
                     demande, rien n&apos;est stocké. Base : exécution de l&apos;adhésion (art. 6.1.b).
                   </li>
+                  <li id="paiement-en-ligne">
+                    <strong className="text-brand-black">Paiement en ligne ({PAIEMENT_NOM})</strong> — si le
+                    paiement intégré est activé : après la demande d&apos;inscription, le site crée le
+                    paiement chez {PAIEMENT_NOM} avec le montant à régler, le prénom, le nom, l&apos;e-mail
+                    et une référence de demande. {PAIEMENT_NOM} prévient le site du paiement ; le site le
+                    revérifie auprès de {PAIEMENT_NOM} avant de passer la fiche « À jour ». Les données de
+                    carte bancaire sont saisies chez {PAIEMENT_NOM}, jamais sur ce site. Destinataire :{' '}
+                    {PAIEMENT_NOM}. Base : exécution de l&apos;adhésion (art. 6.1.b). Conservation : celle de
+                    la fiche d&apos;adhérent.
+                  </li>
                 </ul>
               </div>
 
@@ -240,7 +250,7 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                   <li>
                     <strong className="text-brand-black">Formulaire d&apos;inscription (/inscription)</strong>{' '}
                     — enregistre une <strong className="text-brand-black">demande d&apos;inscription</strong>.
-                    Il <strong className="text-brand-black">ne prélève aucun paiement</strong> (chèque,
+                    Il <strong className="text-brand-black">ne prélève aucun paiement lui-même</strong> (chèque,
                     {PAIEMENTS_BUREAU} au bureau ; carte via {PAIEMENT_NOM} ensuite). Les données sont
                     envoyées à une <strong className="text-brand-black">fonction Netlify</strong> qui
                     les écrit dans le <strong className="text-brand-black">Google Sheet</strong> du
