@@ -127,6 +127,15 @@ export default function AttestationsPage() {
         <p className="font-body text-[16px] text-brand-gray mb-6">
           Attestation d’adhésion, reçu fiscal si l’association le propose, et papier pour le comité d’entreprise.
           Indiquez votre numéro et l’e-mail de la fiche.
+          {MODULES.espace ? (
+            <>
+              {' '}Plus simple : elles sont aussi dans{' '}
+              <Link to="/espace" className="font-semibold text-brand-olive underline">
+                votre espace adhérent
+              </Link>
+              .
+            </>
+          ) : null}
         </p>
         {!pret ? (
           <form onSubmit={(e) => void ouvrir(e)} className="rounded-2xl bg-white ring-1 ring-black/10 p-6 space-y-4">

@@ -18,7 +18,8 @@ const discoverLinks: { label: string; href: string; isPage?: boolean }[] = [
   { label: `Autour de ${ASSO.ville}`, href: AUTOUR_PATH, isPage: true },
   ...(MODULES.quiz ? [{ label: 'Quel cours pour moi ?', href: '/quiz', isPage: true }] : []),
   ...(MODULES.alertes ? [{ label: 'Alertes cours', href: '/alertes', isPage: true }] : []),
-  ...(MODULES.attestations ? [{ label: 'Attestations', href: '/attestations', isPage: true }] : []),
+  ...(MODULES.espace ? [{ label: 'Mon espace adhérent', href: '/espace', isPage: true }] : []),
+  ...(MODULES.attestations && !MODULES.espace ? [{ label: 'Attestations', href: '/attestations', isPage: true }] : []),
   { label: 'Mentions légales', href: '/mentions-legales', isPage: true },
   { label: 'Confidentialité', href: '/confidentialite', isPage: true },
 ];

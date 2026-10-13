@@ -114,6 +114,13 @@ Les adhérents s’inscrivent eux-mêmes (e-mail + case à cocher). Ils se retir
 3. Une place se libère (essai annulé / absent, ou adhésion en arrêt) : la première personne est prévenue toute seule (mail si l’envoi est branché). Le bouton **Prévenir** ouvre aussi WhatsApp, comme les relances.
 4. Elle a un délai (souvent 48 h) pour cliquer « J’accepte la place ». Ensuite, confirmez le créneau comme d’habitude.
 
+## Espace adhérent, si la fonction est activée
+
+Les adhérents ouvrent leur espace sur le site (lien « Mon espace adhérent » en bas de page) avec l’e-mail de leur fiche : ils reçoivent un code, sans mot de passe. Ils y trouvent leur carte, ce qu’il reste à payer, leurs attestations et leurs présences.
+
+- **« Je ne reçois pas le code »** : vérifiez l’e-mail de la fiche (une faute suffit), faites regarder dans les indésirables. Sinon, dans **Cartes**, bouton **Lien d’accès à son espace** : le lien est copié, collez-le dans un SMS ou un WhatsApp. Il marche 72 heures, une seule fois.
+- **« J’ai changé d’adresse »** : l’adhérent le signale depuis son espace, vous recevez un mail. C’est vous qui corrigez la fiche.
+
 ## Carte Wallet, si la fonction est activée
 
 Dans **Cartes**, pour un adhérent à jour : boutons **Apple Wallet** et **Google Wallet**. En démo, la carte n’est pas vraiment signée : c’est un aperçu. En prod, le référent pose les certificats (README).

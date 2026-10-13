@@ -419,6 +419,34 @@ export default function BureauCartesTab({
                 </button>
               </div>
             ) : null}
+            {MODULES.espace ? (
+              <button
+                type="button"
+                className={`${bouton.secondaire} w-full sm:w-auto`}
+                onClick={() => {
+                  const t = getBureauToken();
+                  fetch('/api/espace', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', ...(t ? { Authorization: `Bearer ${t}` } : {}) },
+                    body: JSON.stringify({ action: 'lien-bureau', row: item.row }),
+                  })
+                    .then(async (res) => {
+                      const d = await res.json().catch(() => ({}));
+                      if (!res.ok || !d.lien) throw new Error(d.error || 'Lien impossible.');
+                      await navigator.clipboard.writeText(d.lien).catch(() => window.prompt('Lien à copier :', d.lien));
+                      setRowInfo((prev) => ({
+                        ...prev,
+                        [item.row]: { kind: 'ok', text: 'Lien de l’espace adhérent copié : collez-le dans un SMS ou WhatsApp. Valable 72 h, une seule fois.' },
+                      }));
+                    })
+                    .catch((e) =>
+                      setRowInfo((prev) => ({ ...prev, [item.row]: { kind: 'cancel', text: e instanceof Error ? e.message : 'Lien impossible.' } })),
+                    );
+                }}
+              >
+                Lien d’accès à son espace
+              </button>
+            ) : null}
             {info?.kind === 'ok' ? <p className="text-sm font-medium text-brand-olive">{info.text}</p> : null}
             {info?.kind === 'cancel' ? <p className="text-sm text-slate-500">{info.text}</p> : null}
           </article>

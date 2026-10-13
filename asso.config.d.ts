@@ -32,6 +32,8 @@ export interface AssoModules {
   rapport: boolean;
   /** Attestations PDF. Absent = désactivé. */
   attestations: boolean;
+  /** Espace adhérent sans mot de passe. Absent = désactivé. */
+  espace: boolean;
 }
 
 export interface AssoListeAttente {

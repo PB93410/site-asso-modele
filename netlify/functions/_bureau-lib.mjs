@@ -204,6 +204,7 @@ const MODULE_NOMS = {
   quiz: 'Le quiz « Quel cours pour moi ? »',
   alertes: 'Les alertes de dernière minute',
   attestations: 'Les attestations PDF',
+  espace: 'L’espace adhérent',
 };
 
 /** Réponse 404 si la fonction est désactivée dans asso.config.js → modules, sinon null. */

@@ -244,13 +244,14 @@ export function verifierEnv(env, modules) {
       } else r.push(ok(`Boîte mail du bureau : IMAP ${ri.host}:${ri.port}, compte ${ri.auth.user}.`));
     }
   }
-  if ((modules.presences || modules.alertes || modules.listeAttente || modules.wallet || modules.attestations) && !modules.bureau && !a('BUREAU_SECRET')) {
-    r.push(erreur('BUREAU_SECRET manquante.', 'Les QR, les liens de désabonnement, les cartes Wallet et les attestations sont signés avec le même secret que le bureau (32 caractères ou plus).'));
+  if ((modules.presences || modules.alertes || modules.listeAttente || modules.wallet || modules.attestations || modules.espace) && !modules.bureau && !a('BUREAU_SECRET')) {
+    r.push(erreur('BUREAU_SECRET manquante.', 'Les QR, les liens de désabonnement, les cartes Wallet, les attestations et l’espace adhérent sont signés avec le même secret que le bureau (32 caractères ou plus).'));
     if (modules.presences) incomplets.add('presences');
     if (modules.alertes) incomplets.add('alertes');
     if (modules.listeAttente) incomplets.add('listeAttente');
     if (modules.wallet) incomplets.add('wallet');
     if (modules.attestations) incomplets.add('attestations');
+    if (modules.espace) incomplets.add('espace');
   }
   if (modules.wallet && !process.env.DEMO && !a('APPLE_PASS_CERT') && !a('GOOGLE_WALLET_SA_JSON')) {
     r.push(attention(
@@ -308,7 +309,7 @@ export function verifierEnv(env, modules) {
  * @param {{essais: boolean, adhesion: boolean, bureau: boolean}} modules
  */
 export function verifierEnvoi(env, modules) {
-  if (!modules.essais && !modules.adhesion && !modules.bureau && !modules.presences && !modules.alertes) return [];
+  if (!modules.essais && !modules.adhesion && !modules.bureau && !modules.presences && !modules.alertes && !modules.espace) return [];
   const a = (k) => String(env[k] || '').trim();
   const r = [];
   const choix = a('MAIL_ENVOI').toLowerCase();
@@ -320,7 +321,9 @@ export function verifierEnvoi(env, modules) {
   if (!mode) {
     r.push(
       attention(
-        'Aucun envoi de mail : les alertes d’essai et d’adhésion et les cartes par mail ne partiront pas.',
+        modules.espace
+          ? 'Aucun envoi de mail : ni alertes d’essai et d’adhésion, ni cartes par mail, ni codes de l’espace adhérent (seul le lien donné par le bureau marchera).'
+          : 'Aucun envoi de mail : les alertes d’essai et d’adhésion et les cartes par mail ne partiront pas.',
         'Le plus simple : la boîte mail de l’asso en SMTP (SMTP_HOST, SMTP_USER, SMTP_PASS), ou Brevo. Voir docs/DOC-MAIL.md.',
       ),
     );

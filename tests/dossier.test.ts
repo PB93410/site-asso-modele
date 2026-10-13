@@ -91,6 +91,7 @@ describe('dossier', () => {
       financement: false,
       rapport: false,
       attestations: false,
+      espace: false,
     });
   });
 

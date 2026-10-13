@@ -22,6 +22,7 @@ const BureauRapportPage = lazy(() => import('./pages/BureauRapportPage'));
 const BureauAttestationsPage = lazy(() => import('./pages/BureauAttestationsPage'));
 const ListeAttentePlacePage = lazy(() => import('./pages/ListeAttentePlacePage'));
 const AttestationsPage = lazy(() => import('./pages/AttestationsPage'));
+const EspacePage = lazy(() => import('./pages/EspacePage'));
 const QuizPage = lazy(() => import('./pages/QuizPage'));
 const PresencePage = lazy(() => import('./pages/PresencePage'));
 const AlertesPage = lazy(() => import('./pages/AlertesPage'));
@@ -165,6 +166,7 @@ export default function App() {
             <Route path="/alertes" element={<AlertesPage />} />
             <Route path="/liste-attente/place" element={<ListeAttentePlacePage />} />
             <Route path="/attestations" element={<AttestationsPage />} />
+            <Route path="/espace" element={<EspacePage />} />
             <Route path="/inscription" element={<InscriptionPage />} />
             <Route path="/tarifs" element={<TarifsPage />} />
             <Route path="/essai" element={<EssaiPage />} />

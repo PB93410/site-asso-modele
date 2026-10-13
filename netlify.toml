@@ -332,6 +332,23 @@
   to = "/index.html"
   status = 200
 
+[[redirects]]
+  from = "/api/espace"
+  to = "/.netlify/functions/espace"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/espace"
+  to = "/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/espace/"
+  to = "/index.html"
+  status = 200
+
 # ──────────────────────────────────────────────
 # Headers sécurité + performance
 # ──────────────────────────────────────────────
@@ -553,6 +570,19 @@
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
     Cache-Control = "no-store"
+
+[[headers]]
+  for = "/api/espace"
+  [headers.values]
+    Cache-Control = "no-store, private"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/espace"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store"
+    Referrer-Policy = "no-referrer"
 
 [[headers]]
   for = "/presence"

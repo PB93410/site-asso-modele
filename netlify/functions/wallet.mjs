@@ -65,7 +65,8 @@ async function fiche(numero) {
   return rows.find((r) => String(pickRow(r, 'NUMERO', 'Numero') || '').trim().toUpperCase() === n) || null;
 }
 
-async function payloadPour(numero) {
+/** Contenu du pass : celui de l'adhérent `numero`, ou une carte d'exemple. */
+export async function payloadPour(numero) {
   const planning = await lirePlanning();
   const f = numero ? await fiche(numero) : null;
   return champsPass({
@@ -88,7 +89,8 @@ async function handler(event) {
   const action = String(q.action || 'apercu').trim();
   const numero = String(q.numero || q.n || '').trim();
 
-  if (action === 'pkpass' && numero) {
+  // Une vraie carte (nom, prénom) : réservée au bureau. L'adhérent passe par son espace (/api/espace).
+  if ((action === 'pkpass' || action === 'apercu') && numero) {
     const auth = requireAuth(event, { roles: ['admin', 'seance'] });
     if (!auth.ok) return auth.response;
   }

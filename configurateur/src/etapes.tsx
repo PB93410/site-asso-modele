@@ -829,6 +829,12 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
         />
       ) : null}
       <Case
+        label="Espace adhérent"
+        aide="Sans mot de passe : l’adhérent tape son e-mail et reçoit un code. Il retrouve sa carte, ce qu’il reste à payer, ses attestations et ses présences, et peut signaler un changement au bureau. Demande l’envoi des mails."
+        checked={m.espace}
+        onChange={(v) => maj('modules.espace', v)}
+      />
+      <Case
         label="Attestations PDF"
         aide="L’adhérent télécharge son attestation d’adhésion, un reçu fiscal (si l’asso est éligible) et une attestation pour le comité d’entreprise. Numéro + e-mail, ou un lien reçu par mail. Le bureau peut aussi les fabriquer."
         checked={m.attestations}

@@ -1,0 +1,436 @@
+import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react';
+import { Link } from 'react-router-dom';
+import { ASSO, MODULES } from '../data/asso';
+import { usePageMeta } from '../hooks/usePageMeta';
+import Footer from '../sections/Footer';
+import NotFoundPage from './NotFoundPage';
+
+/** Espace adhérent sans mot de passe : e-mail → code → session de 90 jours (cookie). */
+
+type Doc = { id: string; label: string };
+type Fiche = {
+  cle: string;
+  prenom: string;
+  nom: string;
+  numero: string;
+  statut: string;
+  aJour: boolean;
+  mode: string;
+  montant: string;
+  datePaiement: string;
+  paiement: { montant: string; reference: string; url: string; nom: string; iban: string; autres: string[] } | null;
+  carte: boolean;
+  wallet: boolean;
+  attestations: Doc[];
+  presences: { total: number; dernieres: { date: string; cours: string; horaire: string }[] } | null;
+};
+type Moi = { connecte: boolean; mail?: string; fiches?: Fiche[]; signaler?: boolean; contact?: string };
+type Etape = 'chargement' | 'mail' | 'code' | 'lien' | 'espace';
+
+const API = '/api/espace';
+const champ = 'mt-1 w-full min-h-[48px] rounded-xl border border-black/10 bg-[#FDF8F1] px-3 text-[16px]';
+const bouton = 'w-full min-h-[48px] rounded-full bg-orange-primary text-white font-semibold disabled:opacity-60';
+const boutonSecondaire =
+  'inline-flex items-center justify-center min-h-[48px] px-5 rounded-full border-2 border-orange-primary text-orange-primary font-semibold';
+const url = (action: string, f: Fiche, extra: Record<string, string> = {}) =>
+  `${API}?${new URLSearchParams({ action, cle: f.cle, ...extra })}`;
+
+async function poster(action: string, corps: Record<string, string> = {}) {
+  const res = await fetch(API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action, ...corps }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Une erreur est survenue. Réessayez.');
+  return data;
+}
+
+/** « 2026-10-13 » → « 13/10/2026 ». */
+const dateFr = (s: string) => (/^\d{4}-\d{2}-\d{2}/.test(s) ? s.slice(0, 10).split('-').reverse().join('/') : s);
+
+function Carte({ titre, children }: { titre: string; children: ReactNode }) {
+  return (
+    <section className="rounded-2xl bg-white ring-1 ring-black/10 p-5 sm:p-6 space-y-3">
+      <h2 className="font-display font-bold text-[20px] text-brand-black">{titre}</h2>
+      {children}
+    </section>
+  );
+}
+
+function Signaler({ fiche, contact }: { fiche: Fiche; contact: string }) {
+  const [message, setMessage] = useState('');
+  const [etat, setEtat] = useState<'' | 'envoi' | 'ok'>('');
+  const [err, setErr] = useState('');
+  async function envoyer(e: FormEvent) {
+    e.preventDefault();
+    setErr('');
+    setEtat('envoi');
+    try {
+      await poster('signaler', { cle: fiche.cle, message });
+      setEtat('ok');
+      setMessage('');
+    } catch (x) {
+      setErr(x instanceof Error ? x.message : 'Envoi impossible.');
+      setEtat('');
+    }
+  }
+  if (etat === 'ok') {
+    return <p className="font-body text-[16px] text-brand-olive">Merci, le bureau a reçu votre message et mettra votre fiche à jour.</p>;
+  }
+  return (
+    <form onSubmit={(e) => void envoyer(e)} className="space-y-3">
+      <label className="block">
+        <span className="font-body text-[16px] text-brand-gray">
+          Nouvelle adresse, nouveau téléphone, autre e-mail… Le bureau corrige votre fiche.
+        </span>
+        <textarea
+          className={`${champ} min-h-[96px] py-2`}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          maxLength={1500}
+          required
+        />
+      </label>
+      <button type="submit" disabled={etat === 'envoi' || message.trim().length < 3} className={bouton}>
+        {etat === 'envoi' ? 'Envoi…' : 'Envoyer au bureau'}
+      </button>
+      {err ? (
+        <p className="font-body text-[15px] text-red-800">
+          {err} {contact ? `(${contact})` : ''}
+        </p>
+      ) : null}
+    </form>
+  );
+}
+
+function VueFiche({ f, moi }: { f: Fiche; moi: Moi }) {
+  const statut = f.aJour ? 'À jour' : f.statut === 'En attente' ? 'En attente de paiement' : f.statut || '—';
+  return (
+    <div className="space-y-4">
+      <Carte titre={`${f.prenom} ${f.nom}`.trim() || 'Ma fiche'}>
+        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 font-body text-[16px]">
+          <dt className="text-brand-gray">Saison</dt>
+          <dd className="text-brand-black">{ASSO.saison.label.replace('-', '/')}</dd>
+          <dt className="text-brand-gray">Adhésion</dt>
+          <dd className={f.aJour ? 'text-brand-olive font-semibold' : 'text-brand-black font-semibold'}>{statut}</dd>
+          {f.numero ? (
+            <>
+              <dt className="text-brand-gray">Numéro</dt>
+              <dd className="text-brand-black font-mono">{f.numero}</dd>
+            </>
+          ) : null}
+          {f.aJour && f.mode ? (
+            <>
+              <dt className="text-brand-gray">Réglé</dt>
+              <dd className="text-brand-black">
+                {f.montant ? `${f.montant} € · ` : ''}
+                {f.mode}
+                {f.datePaiement ? ` · ${dateFr(f.datePaiement)}` : ''}
+              </dd>
+            </>
+          ) : null}
+        </dl>
+      </Carte>
+
+      {f.paiement ? (
+        <Carte titre="Reste à payer">
+          <p className="font-body text-[16px] text-brand-black">
+            <strong>{f.paiement.montant} €</strong> pour la saison {ASSO.saison.label.replace('-', '/')}.
+          </p>
+          {f.paiement.url ? (
+            <a href={f.paiement.url} className={`${bouton} inline-flex items-center justify-center`}>
+              Payer en ligne{f.paiement.nom ? ` (${f.paiement.nom})` : ''}
+            </a>
+          ) : null}
+          {f.paiement.iban ? (
+            <p className="font-body text-[15px] text-brand-gray">
+              Par virement : IBAN <span className="font-mono text-brand-black">{f.paiement.iban}</span>
+              {f.paiement.reference ? (
+                <>
+                  , en indiquant <span className="font-mono text-brand-black">{f.paiement.reference}</span>
+                </>
+              ) : null}
+              .
+            </p>
+          ) : null}
+          {f.paiement.autres.length ? (
+            <p className="font-body text-[15px] text-brand-gray">Ou au bureau : {f.paiement.autres.join(', ')}.</p>
+          ) : null}
+          <p className="font-body text-[14px] text-brand-gray">Déjà payé ? Le bureau le confirme dès que le paiement arrive.</p>
+        </Carte>
+      ) : null}
+
+      {f.carte ? (
+        <Carte titre="Ma carte d’adhérent">
+          <img
+            src={url('carte', f)}
+            alt={`Carte d’adhérent de ${f.prenom} ${f.nom}`}
+            className="w-full max-w-[420px] rounded-xl ring-1 ring-black/10"
+          />
+          <div className="flex flex-wrap gap-3">
+            <a href={url('carte', f)} download className={boutonSecondaire}>
+              Télécharger
+            </a>
+            {f.wallet ? (
+              <a href={url('wallet', f)} className={boutonSecondaire}>
+                Ajouter à Apple Wallet
+              </a>
+            ) : null}
+          </div>
+        </Carte>
+      ) : null}
+
+      {f.attestations.length ? (
+        <Carte titre="Mes attestations">
+          <div className="flex flex-wrap gap-3">
+            {f.attestations.map((d) => (
+              <a key={d.id} href={url('attestation', f, { type: d.id })} download className={boutonSecondaire}>
+                {d.label}
+              </a>
+            ))}
+          </div>
+        </Carte>
+      ) : null}
+
+      {f.presences ? (
+        <Carte titre="Mes présences">
+          <p className="font-body text-[16px] text-brand-black">
+            {f.presences.total
+              ? `${f.presences.total} séance${f.presences.total > 1 ? 's' : ''} pointée${f.presences.total > 1 ? 's' : ''} cette saison.`
+              : 'Aucune séance pointée pour l’instant.'}
+          </p>
+          {f.presences.dernieres.length ? (
+            <ul className="font-body text-[15px] text-brand-gray space-y-1">
+              {f.presences.dernieres.map((p, i) => (
+                <li key={i}>
+                  {dateFr(p.date)} · {p.cours}
+                  {p.horaire ? ` · ${p.horaire}` : ''}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </Carte>
+      ) : null}
+
+      <Carte titre="Signaler un changement">
+        {moi.signaler ? (
+          <Signaler fiche={f} contact={moi.contact || ''} />
+        ) : (
+          <p className="font-body text-[16px] text-brand-gray">
+            Écrivez au bureau : <a href={`mailto:${moi.contact}`} className="text-brand-olive font-semibold">{moi.contact}</a>.
+          </p>
+        )}
+      </Carte>
+    </div>
+  );
+}
+
+export default function EspacePage() {
+  const [etape, setEtape] = useState<Etape>('chargement');
+  const [mail, setMail] = useState('');
+  const [code, setCode] = useState('');
+  const [moi, setMoi] = useState<Moi | null>(null);
+  const [choix, setChoix] = useState(0);
+  const [info, setInfo] = useState('');
+  const [err, setErr] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  usePageMeta({ title: `${MODULES.espace ? 'Mon espace adhérent' : 'Page introuvable'} — ${ASSO.nom}`, path: '/espace' });
+
+  const charger = useCallback(async () => {
+    try {
+      const res = await fetch(`${API}?action=moi`);
+      const data: Moi = await res.json();
+      if (data.connecte) {
+        setMoi(data);
+        setEtape('espace');
+      } else setEtape('mail');
+    } catch {
+      setErr('Réseau coupé. Rechargez la page dans un instant.');
+      setEtape('mail');
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!MODULES.espace) return;
+    // Lien du mail : e-mail et code après le #. On les retire tout de suite de l'adresse.
+    const h = new URLSearchParams(window.location.hash.slice(1));
+    const t = window.setTimeout(() => {
+      if (h.get('m') && h.get('c')) {
+        setMail(h.get('m') || '');
+        setCode(h.get('c') || '');
+        setEtape('lien');
+        window.history.replaceState(null, '', window.location.pathname);
+      } else void charger();
+    }, 0);
+    return () => window.clearTimeout(t);
+  }, [charger]);
+
+  if (!MODULES.espace) return <NotFoundPage />;
+
+  async function demander(e?: FormEvent) {
+    e?.preventDefault();
+    setErr('');
+    setInfo('');
+    setBusy(true);
+    try {
+      const d = await poster('demander', { mail });
+      setInfo(d.demo?.code ? `${d.message} En démo, le code est ${d.demo.code}.` : d.message);
+      setCode('');
+      setEtape('code');
+    } catch (x) {
+      setErr(x instanceof Error ? x.message : 'Envoi impossible.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function verifier(e?: FormEvent) {
+    e?.preventDefault();
+    setErr('');
+    setBusy(true);
+    try {
+      await poster('verifier', { mail, code });
+      setInfo('');
+      await charger();
+    } catch (x) {
+      setErr(x instanceof Error ? x.message : 'Vérification impossible.');
+      if (etape === 'lien') setEtape('mail');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function deconnecter() {
+    await poster('deconnecter').catch(() => {});
+    setMoi(null);
+    setCode('');
+    setEtape('mail');
+  }
+
+  const fiches = moi?.fiches || [];
+  const fiche = fiches[Math.min(choix, Math.max(0, fiches.length - 1))];
+
+  return (
+    <div className="relative bg-[#F8F7F4] min-h-screen">
+      <main id="main-content" className="page-chrome-top content-max-width py-10 sm:py-14 max-w-xl">
+        <p className="font-mono text-[11px] tracking-[3px] uppercase text-orange-primary mb-3">Espace adhérent</p>
+        <h1 className="font-display font-black text-brand-black text-[clamp(1.8rem,5vw,2.6rem)] leading-tight mb-4">
+          {etape === 'espace' && fiche ? `Bonjour ${fiche.prenom}` : 'Mon espace'}
+        </h1>
+
+        {etape === 'chargement' ? <p className="font-body text-[16px] text-brand-gray">Chargement…</p> : null}
+
+        {etape === 'mail' ? (
+          <>
+            <p className="font-body text-[16px] text-brand-gray mb-6">
+              Votre carte, ce qu’il reste à payer, vos attestations et vos présences. Pas de mot de passe : indiquez l’e-mail
+              donné à l’inscription, vous recevez un code.
+            </p>
+            <form onSubmit={(e) => void demander(e)} className="rounded-2xl bg-white ring-1 ring-black/10 p-6 space-y-4">
+              <label className="block">
+                <span className="font-semibold text-brand-black">Votre e-mail</span>
+                <input
+                  className={champ}
+                  type="email"
+                  value={mail}
+                  onChange={(e) => setMail(e.target.value)}
+                  autoComplete="email"
+                  required
+                />
+              </label>
+              <button type="submit" disabled={busy || !mail} className={bouton}>
+                {busy ? 'Envoi…' : 'Recevoir mon code'}
+              </button>
+            </form>
+          </>
+        ) : null}
+
+        {etape === 'code' ? (
+          <form onSubmit={(e) => void verifier(e)} className="rounded-2xl bg-white ring-1 ring-black/10 p-6 space-y-4">
+            {info ? <p className="font-body text-[16px] text-brand-gray">{info}</p> : null}
+            <label className="block">
+              <span className="font-semibold text-brand-black">Code reçu par mail (6 chiffres)</span>
+              <input
+                className={`${champ} font-mono tracking-[0.3em] text-[20px]`}
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                value={code}
+                onChange={(e) => setCode(e.target.value.replace(/[^\d ]/g, '').slice(0, 7))}
+                required
+              />
+            </label>
+            <button type="submit" disabled={busy || code.replace(/\D/g, '').length !== 6} className={bouton}>
+              {busy ? 'Vérification…' : 'Ouvrir mon espace'}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setErr('');
+                setEtape('mail');
+              }}
+              className="w-full min-h-[44px] font-semibold text-brand-olive"
+            >
+              Pas reçu ? Changer d’e-mail ou renvoyer un code
+            </button>
+          </form>
+        ) : null}
+
+        {etape === 'lien' ? (
+          <div className="rounded-2xl bg-white ring-1 ring-black/10 p-6 space-y-4">
+            <p className="font-body text-[16px] text-brand-gray">
+              Ouvrir l’espace de <strong className="text-brand-black">{mail}</strong> sur cet appareil ? Il restera ouvert
+              90 jours, sauf si vous vous déconnectez.
+            </p>
+            <button type="button" disabled={busy} onClick={() => void verifier()} className={bouton}>
+              {busy ? 'Ouverture…' : 'Ouvrir mon espace'}
+            </button>
+          </div>
+        ) : null}
+
+        {etape === 'espace' && moi ? (
+          <div className="space-y-4">
+            {fiches.length > 1 ? (
+              <div className="flex flex-wrap gap-2" role="tablist" aria-label="Fiches de cette adresse">
+                {fiches.map((f, i) => (
+                  <button
+                    key={f.cle}
+                    type="button"
+                    role="tab"
+                    aria-selected={i === choix}
+                    onClick={() => setChoix(i)}
+                    className={`min-h-[44px] px-4 rounded-full font-semibold ${i === choix ? 'bg-brand-black text-white' : 'bg-white ring-1 ring-black/10 text-brand-black'}`}
+                  >
+                    {f.prenom || f.nom}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+            {fiche ? (
+              <VueFiche key={fiche.cle} f={fiche} moi={moi} />
+            ) : (
+              <p className="font-body text-[16px] text-brand-gray">
+                Aucune fiche avec cette adresse pour la saison. Écrivez au bureau : {moi.contact}.
+              </p>
+            )}
+            <div className="flex flex-wrap gap-x-6 gap-y-2 pt-2">
+              <a href={`${API}?action=donnees`} download className="inline-flex min-h-[44px] items-center font-semibold text-brand-olive">
+                Télécharger mes données
+              </a>
+              <button type="button" onClick={() => void deconnecter()} className="min-h-[44px] font-semibold text-brand-olive">
+                Me déconnecter
+              </button>
+            </div>
+          </div>
+        ) : null}
+
+        {err ? <p className="mt-4 font-body text-[16px] text-red-800">{err}</p> : null}
+        <Link to="/" className="inline-flex min-h-[44px] items-center font-semibold text-brand-olive mt-6">
+          Retour à l’accueil
+        </Link>
+      </main>
+      <Footer />
+    </div>
+  );
+}

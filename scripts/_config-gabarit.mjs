@@ -69,6 +69,8 @@ const ASSO = {
     rapport: ${m.rapport === true ? 'true' : 'false'},
     /** Attestations PDF (adhésion, reçu fiscal si éligible, comité d’entreprise). */
     attestations: ${m.attestations === true ? 'true' : 'false'},
+    /** Espace adhérent sans mot de passe (/espace) : code par e-mail, carte, paiement, attestations, présences. */
+    espace: ${m.espace === true ? 'true' : 'false'},
   },
 
   // ---- Identité ----

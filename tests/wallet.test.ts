@@ -79,4 +79,11 @@ describe('wallet — fonction démo', () => {
     expect(google.demo).toBe(true);
     expect(google.message).toMatch(/démo/i);
   });
+
+  it('la carte d’un adhérent (nom, prénom) est réservée au bureau', async () => {
+    const sans = (q: Record<string, string>) => traiter({ headers: {}, httpMethod: 'GET', queryStringParameters: q });
+    expect((await sans({ action: 'apercu', numero: 'ASE-2627-001' })).statusCode).toBe(401);
+    expect((await sans({ action: 'pkpass', numero: 'ASE-2627-001' })).statusCode).toBe(401);
+    expect((await sans({ action: 'apercu' })).statusCode).toBe(200);
+  });
 });

@@ -65,6 +65,7 @@ Dans `asso.config.js → modules`, chaque fonction s’active séparément :
 | `wallet` | Carte adhérent dans Apple Wallet (.pkpass) et Google Wallet | Bureau. En prod : certificats (voir ci-dessous). En démo : aperçu non signé, boutons visibles. **Désactivé par défaut.** |
 | `financement` | Aides Pass'Sport, chèques ANCV, comité d’entreprise sur le formulaire d’adhésion ; reste à payer noté sur la fiche | Module `adhesion`. Montants dans `asso.config.js → financement`. **Désactivé par défaut.** |
 | `rapport` | Rapport annuel (AG, subvention) : effectifs, conversion essais, présences si activées, âges, communes ; PDF et CSV | Bureau. **Désactivé par défaut.** |
+| `espace` | Espace adhérent sans mot de passe (`/espace`) : code par e-mail, carte, reste à payer, attestations, présences, export des données, changement signalé au bureau | Envoi des mails, `BUREAU_SECRET`. **Activé dans l’exemple.** |
 | `attestations` | PDF d’adhésion, reçu fiscal (si éligible), attestation CE ; accès n° + e-mail ou lien mail ; aussi depuis le bureau | Bureau pour la vue bénévoles. Reçu fiscal : `attestations.recuFiscal`. **Désactivé par défaut.** |
 
 Les données sont rangées sur Netlify, avec le site : aucun compte Google n’est nécessaire. Google Sheets reste possible ([docs/DOC-DONNEES.md](docs/DOC-DONNEES.md)).
@@ -166,6 +167,9 @@ Totaux sans noms (adhérents à jour, conversion essai → adhésion, pointages 
 
 **Attestations (`modules.attestations`)**  
 L’adhérent à jour saisit son **numéro + e-mail** sur `/attestations`, ou reçoit un **lien personnel** (7 jours) par mail. Documents : attestation d’adhésion, attestation comité d’entreprise (montant et saison), **reçu fiscal** seulement si `attestations.recuFiscal` est à `true` (éligibilité intérêt général — à cocher dans le questionnaire). Le PDF est fabriqué à la demande, **aucune copie n’est gardée**. Le bureau peut aussi les télécharger ou envoyer le lien. Mentions type Cerfa 11580 sur le reçu (organisme, objet, bénéficiaire, montant, articles 200 / 238 bis).
+
+**Espace adhérent (`modules.espace`)**  
+Sans mot de passe : sur `/espace`, l’adhérent tape l’e-mail de sa fiche et reçoit un **code à 6 chiffres** (15 minutes, 5 essais) et un lien qui porte ce code. L’appareil reste ensuite connecté **90 jours** (cookie signé avec `BUREAU_SECRET`, HttpOnly, limité à `/api/espace`). Il y retrouve sa fiche, sa **carte** (et Wallet si `wallet`), le **reste à payer** (bouton HelloAsso si branché, IBAN et référence sinon), ses **attestations** (si `attestations`), ses **présences** (si `presences`), **télécharge ses données** et **signale un changement** (mail au bureau : la fiche n’est jamais modifiée par l’adhérent). Une famille qui partage un e-mail voit toutes ses fiches. Sans e-mail sur la fiche ou sans envoi de mails : bouton **« Lien d’accès à son espace »** dans Bureau → Cartes (72 h, une fois), à envoyer par SMS ou WhatsApp. Demande l’envoi des mails (docs/DOC-MAIL.md). Changer `BUREAU_SECRET` déconnecte tout le monde.
 
 Mode d’emploi bénévoles : [docs/MODE-EMPLOI-BUREAU.md](docs/MODE-EMPLOI-BUREAU.md).
 

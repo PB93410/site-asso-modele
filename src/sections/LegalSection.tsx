@@ -227,6 +227,18 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                     personnel peut être envoyé par mail (valable 7 jours). Le PDF est fabriqué à la
                     demande, rien n&apos;est stocké. Base : exécution de l&apos;adhésion (art. 6.1.b).
                   </li>
+                  <li id="espace-adherent">
+                    <strong className="text-brand-black">Espace adhérent (/espace)</strong> — si la fonction
+                    est activée : vous indiquez l&apos;e-mail de votre fiche et recevez un code à usage
+                    unique (valable 15 minutes ; un lien donné par le bureau, 72 heures). Le site ne garde
+                    que l&apos;empreinte du code, jamais le code ni l&apos;adresse en clair. Une fois connecté,
+                    un cookie de session strictement nécessaire (signé, non lisible par la page, limité à
+                    l&apos;espace) garde l&apos;appareil connecté 90 jours au plus ; « Me déconnecter »
+                    l&apos;efface. Vous y consultez votre fiche, votre carte, ce qu&apos;il reste à payer, vos
+                    attestations et vos présences, téléchargez toutes vos données (droit d&apos;accès) et
+                    signalez un changement, transmis par mail au bureau qui corrige la fiche. Base :
+                    exécution de l&apos;adhésion (art. 6.1.b).
+                  </li>
                   <li id="paiement-en-ligne">
                     <strong className="text-brand-black">Paiement en ligne ({PAIEMENT_NOM})</strong> — si le
                     paiement intégré est activé : après la demande d&apos;inscription, le site crée le
