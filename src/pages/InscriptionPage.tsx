@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent, type ReactNode } from 'react';
+import { useState, useEffect, useRef, type FormEvent, type ReactNode } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   CheckCircle2,
@@ -24,11 +24,12 @@ import ContactDirect from '../components/ContactDirect';
 import { SEASON_LABEL } from '../data/CONFIG';
 import { usePageMeta } from '../hooks/usePageMeta';
 import {
-  emailError,
-  nameError,
-  phoneError,
-  postalCodeError,
-} from '../lib/formValidation';
+  ETAPES_ADHESION,
+  NB_ETAPES,
+  erreurEtape,
+  premiereEtapeIncomplete,
+  progressionEtape,
+} from '../lib/adhesionEtapes';
 import { buildHowToJoinSchema } from '../lib/schema';
 import { aidesProposees, calculerReste, libelleAides } from '../lib/financement';
 
@@ -42,12 +43,6 @@ const COURSES = [
 ] as const;
 
 const BUREAU_MODES = PAYMENT_MODES.filter((m) => m !== MODE_CARTE);
-
-const STEPS = [
-  { n: 1, label: 'Vous' },
-  { n: 2, label: 'Le club' },
-  { n: 3, label: 'Cotisation' },
-] as const;
 
 type FormState = {
   prenom: string;
@@ -99,40 +94,6 @@ function formatDateNaissance(raw: string): string {
   return `${jj}/${mm}/${aaaa}`;
 }
 
-function birthDateError(value: string): string | null {
-  const raw = value.trim();
-  if (!raw) {
-    return 'Indiquez votre date de naissance (jj/mm/aaaa).';
-  }
-  const m = raw.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-  if (!m) {
-    return 'La date de naissance doit être au format jj/mm/aaaa (ex. 14/03/1958).';
-  }
-  const day = Number(m[1]);
-  const month = Number(m[2]);
-  const year = Number(m[3]);
-  const dt = new Date(year, month - 1, day);
-  if (dt.getFullYear() !== year || dt.getMonth() !== month - 1 || dt.getDate() !== day) {
-    return 'Cette date n’existe pas. Utilisez jj/mm/aaaa.';
-  }
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  if (dt > today) {
-    return 'La date de naissance ne peut pas être dans le futur.';
-  }
-  let age = today.getFullYear() - year;
-  const hadBirthday =
-    today.getMonth() > month - 1 || (today.getMonth() === month - 1 && today.getDate() >= day);
-  if (!hadBirthday) age -= 1;
-  if (age < 16) {
-    return 'L’association accueille à partir de 16 ans.';
-  }
-  if (age > 120) {
-    return 'Vérifiez l’année (quatre chiffres), au format jj/mm/aaaa.';
-  }
-  return null;
-}
-
 function Chip({
   active,
   onClick,
@@ -145,6 +106,7 @@ function Chip({
   return (
     <button
       type="button"
+      aria-pressed={active}
       onClick={onClick}
       className={`min-h-[44px] px-4 rounded-full font-body text-[14px] font-medium border transition-colors ${
         active
@@ -244,7 +206,15 @@ export default function InscriptionPage() {
   const retourPaiement = alreadyOk ? searchParams.get('paiement') || '' : '';
   const [step, setStep] = useState(1);
   const [paiementReady, setPaiementReady] = useState(false);
-  const TOTAL_STEPS = 3;
+  const [errorField, setErrorField] = useState<string | null>(null);
+  const titreRef = useRef<HTMLHeadingElement>(null);
+  const erreurRef = useRef<HTMLParagraphElement>(null);
+  const premierRendu = useRef(true);
+  // Arrivée sur le récapitulatif : un double clic sur « Continuer » n'envoie pas la demande.
+  const recapPret = useRef(false);
+  const TOTAL_STEPS = NB_ETAPES;
+  const etapeCourante = ETAPES_ADHESION[step - 1];
+  const calc = calculerReste(ASSO.adhesion.tarif, { passSport, ancv, ce }, ASSO.financement);
   const isCarte = Boolean(MODE_CARTE) && form.mode_paiement === MODE_CARTE;
   const isBureau = Boolean(form.mode_paiement) && !isCarte;
   const isCheque = form.mode_paiement.startsWith('Chèque');
@@ -290,68 +260,105 @@ export default function InscriptionPage() {
     }));
   }
 
-  function validateStep(s: number): string | null {
-    if (s === 1) {
-      return (
-        nameError('Prénom', form.prenom) ||
-        nameError('Nom', form.nom) ||
-        phoneError(form.telephone) ||
-        emailError(form.email) ||
-        postalCodeError(form.code_postal)
-      );
+  // Changement d'étape : le titre prend le focus (lecteur d'écran et clavier).
+  useEffect(() => {
+    if (premierRendu.current) {
+      premierRendu.current = false;
+      return;
     }
-    if (s === 2) {
-      const dateErr = birthDateError(form.date_naissance);
-      if (dateErr) return dateErr;
-      if (!form.droit_image || !form.qs_sport) {
-        return 'Deux petites questions encore : photos de cours, et questionnaire santé.';
-      }
-    }
-    return null;
+    titreRef.current?.focus({ preventScroll: true });
+  }, [step]);
+
+  useEffect(() => {
+    recapPret.current = false;
+    if (step !== TOTAL_STEPS) return;
+    const t = window.setTimeout(() => {
+      recapPret.current = true;
+    }, 800);
+    return () => window.clearTimeout(t);
+  }, [step, TOTAL_STEPS]);
+
+  function montrerErreur(champ: string | null, message: string) {
+    setError(message);
+    setErrorField(champ);
+    window.setTimeout(() => {
+      const el = champ ? document.getElementById(champ) : null;
+      (el || erreurRef.current)?.focus();
+    }, 0);
+  }
+
+  function allerA(n: number) {
+    setError(null);
+    setErrorField(null);
+    const cible = Math.min(Math.max(n, 1), TOTAL_STEPS);
+    setStep(cible);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function goNext() {
-    setError(null);
-    const err = validateStep(step);
+    const err = erreurEtape(step, form, { tarifLabel: TARIF_LABEL });
     if (err) {
-      setError(err);
+      montrerErreur(err.champ, err.message);
       return;
     }
-    setStep((s) => Math.min(s + 1, TOTAL_STEPS));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    allerA(step + 1);
   }
 
   function goBack() {
-    setError(null);
-    setStep((s) => Math.max(s - 1, 1));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    allerA(step - 1);
   }
+
+  const recapitulatif: { label: string; valeur: string; etape: number }[] = [
+    { label: 'Nom', valeur: `${form.prenom.trim()} ${form.nom.trim()}`.trim(), etape: 1 },
+    { label: 'Date de naissance', valeur: form.date_naissance, etape: 1 },
+    {
+      label: 'Contact',
+      valeur: [form.telephone.trim(), form.email.trim()].filter(Boolean).join(' · '),
+      etape: 2,
+    },
+    {
+      label: 'Adresse',
+      valeur:
+        [form.adresse.trim(), `${form.code_postal.trim()} ${form.ville.trim()}`.trim()].filter(Boolean).join(', ') ||
+        'Non précisée',
+      etape: 2,
+    },
+    { label: 'Cours', valeur: form.cours.join(', ') || 'Pas encore choisi', etape: 3 },
+    {
+      label: 'Photos / santé',
+      valeur: `Photos : ${form.droit_image || '?'} · Questionnaire santé : ${form.qs_sport === 'Oui' ? 'fait' : 'pas encore'}`,
+      etape: 3,
+    },
+    {
+      label: 'Paiement',
+      valeur: `${form.mode_paiement || 'À choisir'}${form.numero_cheque ? ` (n° ${form.numero_cheque})` : ''}`,
+      etape: 4,
+    },
+    ...(MODULES.financement
+      ? [
+          {
+            label: 'Reste à payer',
+            valeur: `${calc.reste} €${libelleAides(calc) ? ` (${libelleAides(calc)})` : ''}`,
+            etape: 4,
+          },
+        ]
+      : [{ label: 'Cotisation', valeur: TARIF_LABEL, etape: 4 }]),
+  ];
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
+    setErrorField(null);
 
-    const contactErr =
-      nameError('Prénom', form.prenom) ||
-      nameError('Nom', form.nom) ||
-      phoneError(form.telephone) ||
-      emailError(form.email) ||
-      postalCodeError(form.code_postal);
-    if (contactErr) {
-      setError(contactErr);
+    if (step < TOTAL_STEPS) {
+      goNext();
       return;
     }
-    if (!form.mode_paiement) {
-      setError(`Choisissez comment vous souhaitez régler les ${TARIF_LABEL}.`);
-      return;
-    }
-    if (!form.droit_image || !form.qs_sport) {
-      setError('Merci de répondre aux deux questions (photos et santé).');
-      return;
-    }
-    const dateErr = birthDateError(form.date_naissance);
-    if (dateErr) {
-      setError(dateErr);
+    if (!recapPret.current) return;
+    const incomplet = premiereEtapeIncomplete(form, { tarifLabel: TARIF_LABEL });
+    if (incomplet) {
+      setStep(incomplet.etape);
+      montrerErreur(incomplet.champ, incomplet.message);
       return;
     }
 
@@ -561,6 +568,8 @@ export default function InscriptionPage() {
           <ContactDirect motif="adhesion" />
         ) : (
           <form
+            noValidate
+            aria-label="Formulaire d’adhésion"
             onSubmit={handleSubmit}
             className="rounded-2xl border border-black/10 bg-white p-5 sm:p-8 space-y-5"
           >
@@ -577,47 +586,81 @@ export default function InscriptionPage() {
               </label>
             </p>
 
+
             <div className="mb-1">
-              <div className="flex items-center justify-between mb-2">
-                {STEPS.map((s) => (
-                  <div key={s.n} className="flex flex-col items-center flex-1">
-                    <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center font-body font-bold text-sm ${
-                        step > s.n
-                          ? 'bg-brand-olive text-white'
-                          : step === s.n
-                            ? 'bg-orange-primary text-white'
-                            : 'bg-[#F5EFE6] text-brand-gray'
-                      }`}
-                    >
-                      {step > s.n ? '✓' : s.n}
-                    </div>
+              <p className="font-body text-[14px] text-brand-gray mb-2" aria-live="polite">
+                Étape {step} sur {TOTAL_STEPS} : <strong className="text-brand-black">{etapeCourante.label}</strong>
+              </p>
+              <ol className="flex items-start justify-between mb-2" aria-label="Étapes de l’adhésion">
+                {ETAPES_ADHESION.map((s) => (
+                  <li
+                    key={s.n}
+                    aria-current={step === s.n ? 'step' : undefined}
+                    className="flex flex-col items-center flex-1 min-w-0"
+                  >
+                    {s.n < step ? (
+                      <button
+                        type="button"
+                        onClick={() => allerA(s.n)}
+                        className="w-11 h-11 rounded-full flex items-center justify-center font-body font-bold text-sm bg-brand-olive text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-olive"
+                        aria-label={`Revenir à l’étape ${s.n} : ${s.label} (faite)`}
+                      >
+                        <span aria-hidden="true">✓</span>
+                      </button>
+                    ) : (
+                      <span
+                        className={`w-11 h-11 rounded-full flex items-center justify-center font-body font-bold text-sm ${
+                          step === s.n ? 'bg-orange-primary text-white' : 'bg-[#F5EFE6] text-brand-gray'
+                        }`}
+                        aria-hidden="true"
+                      >
+                        {s.n}
+                      </span>
+                    )}
                     <span
-                      className={`mt-1.5 font-body text-[11px] sm:text-[12px] ${
-                        step >= s.n ? 'text-orange-primary font-semibold' : 'text-brand-gray'
-                      }`}
+                      className={`mt-1.5 font-body text-[11px] sm:text-[12px] text-center leading-tight ${
+                        step === s.n ? 'text-orange-primary font-semibold' : step > s.n ? 'text-brand-olive' : 'text-brand-gray'
+                      } ${step === s.n ? '' : 'hidden sm:block'}`}
                     >
+                      <span className="sr-only">{step > s.n ? 'Faite : ' : step === s.n ? 'En cours : ' : 'À venir : '}</span>
                       {s.label}
                     </span>
-                  </div>
+                  </li>
                 ))}
-              </div>
-              <div className="h-1.5 rounded-full bg-[#F5EFE6] overflow-hidden">
+              </ol>
+              <div
+                role="progressbar"
+                aria-label="Progression de l’adhésion"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={progressionEtape(step)}
+                aria-valuetext={`Étape ${step} sur ${TOTAL_STEPS}`}
+                className="h-2 rounded-full bg-[#F5EFE6] overflow-hidden"
+              >
                 <div
-                  className="h-full rounded-full bg-orange-primary transition-all duration-300"
-                  style={{ width: `${((step - 1) / (TOTAL_STEPS - 1)) * 100}%` }}
+                  className="h-full rounded-full bg-orange-primary transition-all duration-300 motion-reduce:transition-none"
+                  style={{ width: `${progressionEtape(step)}%` }}
                 />
               </div>
+              {MODULES.financement && step >= 4 ? (
+                <p className="mt-3 font-body text-[15px] text-brand-black" aria-live="polite">
+                  Reste à payer : <strong>{calc.reste} €</strong>
+                </p>
+              ) : null}
             </div>
 
             {step === 1 && (
-              <div className="space-y-4">
+              <div className="space-y-5">
                 <div>
-                  <h2 className="font-display font-bold text-[22px] text-brand-black mb-1">
-                    Faisons connaissance
+                  <h2
+                    ref={titreRef}
+                    tabIndex={-1}
+                    className="font-display font-bold text-[22px] text-brand-black mb-1 focus:outline-none"
+                  >
+                    {ETAPES_ADHESION[0].titre}
                   </h2>
                   <p className="font-body text-[14px] text-brand-gray">
-                    Juste de quoi vous rappeler — comme un mot laissé au stand.
+                    Votre nom et votre date de naissance, pour la licence.
                   </p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -627,6 +670,8 @@ export default function InscriptionPage() {
                     </label>
                     <input
                       id="prenom"
+                    aria-invalid={errorField === 'prenom' || undefined}
+                    aria-describedby={errorField === 'prenom' ? 'adhesion-erreur' : undefined}
                       name="prenom"
                       required
                       className={inputClass}
@@ -642,6 +687,8 @@ export default function InscriptionPage() {
                     </label>
                     <input
                       id="nom"
+                    aria-invalid={errorField === 'nom' || undefined}
+                    aria-describedby={errorField === 'nom' ? 'adhesion-erreur' : undefined}
                       name="nom"
                       required
                       className={inputClass}
@@ -652,6 +699,51 @@ export default function InscriptionPage() {
                     />
                   </div>
                 </div>
+                <div>
+                  <label className={labelClass} htmlFor="date_naissance">
+                    Date de naissance <span className="text-orange-primary">*</span>
+                  </label>
+                  <input
+                    id="date_naissance"
+                    aria-invalid={errorField === 'date_naissance' || undefined}
+                    name="date_naissance"
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="bday"
+                    placeholder="jj/mm/aaaa"
+                    maxLength={10}
+                    minLength={10}
+                    required
+                    pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}"
+                    title="Format obligatoire : jj/mm/aaaa"
+                    aria-required="true"
+                    aria-describedby={errorField === 'date_naissance' ? 'adhesion-erreur date-naissance-aide' : 'date-naissance-aide'}
+                    className={inputClass}
+                    value={form.date_naissance}
+                    onChange={(e) => setField('date_naissance', formatDateNaissance(e.target.value))}
+                  />
+                  <p id="date-naissance-aide" className="font-body text-[13px] text-brand-gray mt-1.5">
+                    Format obligatoire jj/mm/aaaa (ex. 14/03/1958). Dès 16 ans ; à 16-17 ans, un
+                    parent valide l&apos;adhésion.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {step === 2 && (
+              <div className="space-y-5">
+                <div>
+                  <h2
+                    ref={titreRef}
+                    tabIndex={-1}
+                    className="font-display font-bold text-[22px] text-brand-black mb-1 focus:outline-none"
+                  >
+                    {firstName ? `${ETAPES_ADHESION[1].titre}, ${firstName}` : ETAPES_ADHESION[1].titre}
+                  </h2>
+                  <p className="font-body text-[14px] text-brand-gray">
+                    Le téléphone suffit. Le reste est facultatif.
+                  </p>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className={labelClass} htmlFor="telephone">
@@ -659,6 +751,8 @@ export default function InscriptionPage() {
                     </label>
                     <input
                       id="telephone"
+                    aria-invalid={errorField === 'telephone' || undefined}
+                    aria-describedby={errorField === 'telephone' ? 'adhesion-erreur' : undefined}
                       name="telephone"
                       type="tel"
                       required
@@ -678,6 +772,8 @@ export default function InscriptionPage() {
                     </label>
                     <input
                       id="email"
+                    aria-invalid={errorField === 'email' || undefined}
+                    aria-describedby={errorField === 'email' ? 'adhesion-erreur' : undefined}
                       name="email"
                       type="email"
                       className={inputClass}
@@ -687,47 +783,6 @@ export default function InscriptionPage() {
                       placeholder="facultatif"
                     />
                   </div>
-                </div>
-              </div>
-            )}
-
-            {step === 2 && (
-              <div className="space-y-5">
-                <div>
-                  <h2 className="font-display font-bold text-[22px] text-brand-black mb-1">
-                    Un peu de pratique
-                  </h2>
-                  <p className="font-body text-[14px] text-brand-gray">
-                    Adresse si vous voulez, puis deux questions simples — pas un dossier
-                    administratif.
-                  </p>
-                </div>
-                <div>
-                  <label className={labelClass} htmlFor="date_naissance">
-                    Date de naissance <span className="text-orange-primary">*</span>
-                  </label>
-                  <input
-                    id="date_naissance"
-                    name="date_naissance"
-                    type="text"
-                    inputMode="numeric"
-                    autoComplete="bday"
-                    placeholder="jj/mm/aaaa"
-                    maxLength={10}
-                    minLength={10}
-                    required
-                    pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}"
-                    title="Format obligatoire : jj/mm/aaaa"
-                    aria-required="true"
-                    aria-describedby="date-naissance-aide"
-                    className={inputClass}
-                    value={form.date_naissance}
-                    onChange={(e) => setField('date_naissance', formatDateNaissance(e.target.value))}
-                  />
-                  <p id="date-naissance-aide" className="font-body text-[13px] text-brand-gray mt-1.5">
-                    Format obligatoire jj/mm/aaaa (ex. 14/03/1958). Dès 16 ans ; à 16-17 ans, un
-                    parent valide l&apos;adhésion.
-                  </p>
                 </div>
                 <div>
                   <label className={labelClass} htmlFor="adresse">
@@ -750,6 +805,8 @@ export default function InscriptionPage() {
                     </label>
                     <input
                       id="code_postal"
+                    aria-invalid={errorField === 'code_postal' || undefined}
+                    aria-describedby={errorField === 'code_postal' ? 'adhesion-erreur' : undefined}
                       name="code_postal"
                       className={inputClass}
                       value={form.code_postal}
@@ -773,8 +830,34 @@ export default function InscriptionPage() {
                     />
                   </div>
                 </div>
+              </div>
+            )}
 
-                <fieldset className="rounded-2xl bg-gradient-to-br from-orange-primary/10 to-[#FDF8F1] p-4 border border-orange-primary/20">
+            {step === 3 && (
+              <div className="space-y-5">
+                <div>
+                  <h2
+                    ref={titreRef}
+                    tabIndex={-1}
+                    className="font-display font-bold text-[22px] text-brand-black mb-1 focus:outline-none"
+                  >
+                    {ETAPES_ADHESION[2].titre}
+                  </h2>
+                  <p className="font-body text-[14px] text-brand-gray">
+                    Les cours qui vous tentent, puis deux petites questions.
+                  </p>
+                </div>
+                <fieldset>
+                  <legend className={labelClass}>Quels cours vous tentent ? <span className="font-normal text-brand-gray">(facultatif, plusieurs possibles)</span></legend>
+                  <div className="flex flex-wrap gap-2">
+                    {COURSES.map((c) => (
+                      <Chip key={c} active={form.cours.includes(c)} onClick={() => toggleCours(c)}>
+                        {form.cours.includes(c) ? `✓ ${c}` : c}
+                      </Chip>
+                    ))}
+                  </div>
+                </fieldset>
+                <fieldset id="droit_image" tabIndex={-1} aria-describedby={errorField === 'droit_image' ? 'adhesion-erreur' : undefined} className="focus:outline-none focus:ring-2 focus:ring-orange-primary/40 rounded-2xl bg-gradient-to-br from-orange-primary/10 to-[#FDF8F1] p-4 border border-orange-primary/20">
                   <legend className="font-body text-sm font-semibold text-brand-black px-1">
                     Photos pendant les cours <span className="text-orange-primary">*</span>
                   </legend>
@@ -792,8 +875,7 @@ export default function InscriptionPage() {
                     </Chip>
                   </div>
                 </fieldset>
-
-                <fieldset className="rounded-2xl bg-gradient-to-br from-orange-primary/10 to-[#FDF8F1] p-4 border border-orange-primary/20">
+                <fieldset id="qs_sport" tabIndex={-1} aria-describedby={errorField === 'qs_sport' ? 'adhesion-erreur' : undefined} className="focus:outline-none focus:ring-2 focus:ring-orange-primary/40 rounded-2xl bg-gradient-to-br from-orange-primary/10 to-[#FDF8F1] p-4 border border-orange-primary/20">
                   <legend className="font-body text-sm font-semibold text-brand-black px-1">
                     Questionnaire santé QS-SPORT <span className="text-orange-primary">*</span>
                   </legend>
@@ -810,7 +892,6 @@ export default function InscriptionPage() {
                     </Chip>
                   </div>
                 </fieldset>
-
                 <fieldset>
                   <legend className={labelClass}>Vous étiez déjà au club l'an dernier ?</legend>
                   <div className="flex flex-wrap gap-2">
@@ -828,7 +909,6 @@ export default function InscriptionPage() {
                     </Chip>
                   </div>
                 </fieldset>
-
                 <fieldset>
                   <legend className={labelClass}>
                     Comment nous avez-vous connus ?{' '}
@@ -856,23 +936,32 @@ export default function InscriptionPage() {
               </div>
             )}
 
-            {step === 3 && (
+            {step === 4 && (
               <div className="space-y-5">
                 <div>
-                  <h2 className="font-display font-bold text-[22px] text-brand-black mb-1">
-                    La cotisation, à votre façon
+                  <h2
+                    ref={titreRef}
+                    tabIndex={-1}
+                    className="font-display font-bold text-[22px] text-brand-black mb-1 focus:outline-none"
+                  >
+                    {ETAPES_ADHESION[3].titre}
                   </h2>
                   <p className="font-body text-[14px] text-brand-gray">
                     {TARIF_LABEL} l'année. Ce formulaire ne prélève rien.
                   </p>
                 </div>
-
                 {MODULES.financement ? <BlocAides passSport={passSport} setPassSport={setPassSport} ancv={ancv} setAncv={setAncv} ce={ce} setCe={setCe} inputClass={inputClass} /> : null}
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div
+                  id="mode_paiement"
+                  role="group"
+                  aria-label="Moyen de paiement"
+                  tabIndex={-1}
+                  className="grid grid-cols-1 sm:grid-cols-2 gap-3 focus:outline-none focus:ring-2 focus:ring-orange-primary/40 rounded-2xl"
+                >
                   {MODE_CARTE ? (
                   <button
                     type="button"
+                    aria-pressed={isCarte}
                     onClick={() => setField('mode_paiement', MODE_CARTE)}
                     className={`text-left rounded-2xl border-2 p-4 min-h-[108px] transition-colors ${
                       isCarte
@@ -889,6 +978,7 @@ export default function InscriptionPage() {
                   ) : null}
                   <button
                     type="button"
+                    aria-pressed={isBureau}
                     onClick={() => {
                       if (!isBureau) setField('mode_paiement', BUREAU_MODES[0] ?? 'Autre');
                     }}
@@ -926,10 +1016,12 @@ export default function InscriptionPage() {
                 {isCheque ? (
                   <div>
                     <label className={labelClass} htmlFor="numero_cheque">
-                      N° de chèque
+                      N° de chèque <span className="text-orange-primary">*</span>
                     </label>
                     <input
                       id="numero_cheque"
+                      aria-invalid={errorField === 'numero_cheque' || undefined}
+                      aria-describedby={errorField === 'numero_cheque' ? 'adhesion-erreur numero-cheque-aide' : 'numero-cheque-aide'}
                       name="numero_cheque"
                       type="text"
                       inputMode="numeric"
@@ -940,24 +1032,44 @@ export default function InscriptionPage() {
                       onChange={(e) => setField('numero_cheque', e.target.value.slice(0, 20))}
                       placeholder="Ex. 1234567"
                     />
-                    <p className="font-body text-[13px] text-brand-gray mt-1.5 leading-snug">
-                      Celui écrit en haut à droite du chèque. Facultatif si vous réglez plus tard au
-                      bureau.
+                    <p id="numero-cheque-aide" className="font-body text-[13px] text-brand-gray mt-1.5 leading-snug">
+                      Celui écrit en haut à droite du chèque. Pas encore de chéquier sous la main ?
+                      Choisissez espèces ou « Autre », le bureau ajustera.
                     </p>
                   </div>
                 ) : null}
+              </div>
+            )}
 
-                <fieldset>
-                  <legend className={labelClass}>Quels cours vous tentent ? (facultatif)</legend>
-                  <div className="flex flex-wrap gap-2">
-                    {COURSES.map((c) => (
-                      <Chip key={c} active={form.cours.includes(c)} onClick={() => toggleCours(c)}>
-                        {form.cours.includes(c) ? `✓ ${c}` : c}
-                      </Chip>
-                    ))}
-                  </div>
-                </fieldset>
-
+            {step === 5 && (
+              <div className="space-y-5">
+                <div>
+                  <h2
+                    ref={titreRef}
+                    tabIndex={-1}
+                    className="font-display font-bold text-[22px] text-brand-black mb-1 focus:outline-none"
+                  >
+                    {ETAPES_ADHESION[4].titre}
+                  </h2>
+                  <p className="font-body text-[14px] text-brand-gray">
+                    Relisez, corrigez si besoin, puis envoyez.
+                  </p>
+                </div>
+                <dl className="rounded-2xl bg-[#FDF8F1] border border-black/10 divide-y divide-black/[0.06]">
+                  {recapitulatif.map((r) => (
+                    <div key={r.label} className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 px-4 py-3">
+                      <dt className="font-body text-[14px] text-brand-gray sm:w-40 shrink-0">{r.label}</dt>
+                      <dd className="font-body text-[15px] text-brand-black flex-1 min-w-0 break-words">{r.valeur}</dd>
+                      <button
+                        type="button"
+                        onClick={() => allerA(r.etape)}
+                        className="self-start min-h-[44px] px-3 -my-2 font-body text-[14px] font-semibold text-orange-primary underline underline-offset-2"
+                      >
+                        Modifier<span className="sr-only"> : {r.label}</span>
+                      </button>
+                    </div>
+                  ))}
+                </dl>
                 <div>
                   <label className={labelClass} htmlFor="message">
                     Un mot pour le bureau ?
@@ -972,7 +1084,6 @@ export default function InscriptionPage() {
                     placeholder="Créneau, question, besoin d’un essai d’abord…"
                   />
                 </div>
-
                 <p className="font-body text-sm text-brand-gray leading-relaxed rounded-2xl bg-[#FDF8F1] p-4">
                   Ces infos servent à traiter l’inscription et à vous recontacter. Pas de
                   paiement ici.{' '}
@@ -984,11 +1095,19 @@ export default function InscriptionPage() {
               </div>
             )}
 
-            {error && (
-              <p className="font-body text-sm text-red-700 bg-red-50 border border-red-100 rounded-xl px-3 py-2">
-                {error}
-              </p>
-            )}
+            <div aria-live="assertive">
+              {error && (
+                <p
+                  id="adhesion-erreur"
+                  ref={erreurRef}
+                  tabIndex={-1}
+                  role="alert"
+                  className="font-body text-[15px] text-red-800 bg-red-50 border border-red-200 rounded-xl px-3 py-2 focus:outline-none"
+                >
+                  {error}
+                </p>
+              )}
+            </div>
 
             <div className="flex flex-col sm:flex-row gap-3 pt-1">
               {step > 1 && (
@@ -1006,7 +1125,7 @@ export default function InscriptionPage() {
                   onClick={goNext}
                   className="flex-1 min-h-[52px] rounded-full bg-orange-primary hover:bg-orange-hover text-white font-semibold text-[16px] order-1 sm:order-2"
                 >
-                  {step === 1 && firstName ? `Continuer, ${firstName}` : 'Continuer'}
+                  {`Continuer : ${ETAPES_ADHESION[step].label.toLowerCase()}`}
                 </button>
               ) : (
                 <button
@@ -1088,7 +1207,7 @@ function BlocAides({
           />
         </label>
       ) : null}
-      <p className="font-body text-[16px] text-brand-black">
+      <p className="font-body text-[16px] text-brand-black" aria-live="polite">
         Reste à payer : <strong>{calc.reste} €</strong>
         {l ? <span className="block text-[14px] text-brand-gray mt-1">{l}</span> : null}
       </p>
