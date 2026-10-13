@@ -31,7 +31,14 @@ function phoneWaDigits(raw) {
   return '';
 }
 
-function paymentAction(mode) {
+function paymentAction(mode, { enLigne = false, reference = '' } = {}) {
+  if (mode.startsWith('Carte') && enLigne) {
+    const lien = reference ? ` Pas payé sous 48 h : renvoyer le lien ${SITE_URL}/api/paiement?ref=${reference}` : '';
+    return `Carte : rien à faire, l’adhésion passe « À jour » toute seule quand ${ASSO.adhesion.paiementNom || 'HelloAsso'} confirme le paiement.${lien}`;
+  }
+  if (/virement/i.test(mode)) {
+    return `Virement : chercher la référence ${reference || 'de la demande'} sur le relevé, puis /bureau → À payer → J’ai reçu l’argent.`;
+  }
   if (mode.startsWith('Carte')) {
     return `Carte : attendre le mail ${ASSO.adhesion.paiementNom || 'de paiement'}, puis /bureau → À payer → J’ai reçu l’argent.`;
   }
@@ -70,7 +77,7 @@ export function formatAdhesionFiche(f) {
   const connu = dash(f.connu);
   const detail = dash(f.detail);
   const nCheque =
-    dash(f.numero_cheque) || dash(String(f.detail || '').replace(/^Chèque n°\s*/i, ''));
+    dash(f.numero_cheque) || dash(String(f.detail || '').match(/^Chèque n°\s*([^·]+)/i)?.[1]);
 
   const lines = [
     'Adhésion — nouvelle inscription',
@@ -110,7 +117,7 @@ export function formatAdhesionFiche(f) {
   lines.push('');
   lines.push('À faire');
   lines.push('• Déjà dans Adhérents — ne pas recréer une ligne.');
-  lines.push(`• ${paymentAction(mode)}`);
+  lines.push(`• ${paymentAction(mode, { enLigne: Boolean(f.enLigne), reference: dash(f.reference) || '' })}`);
   lines.push(`• Bureau : ${SITE_URL}/bureau`);
   lines.push('');
   lines.push('Sheet = registre. Ce mail = alerte uniquement.');

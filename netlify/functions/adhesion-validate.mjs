@@ -13,38 +13,23 @@
 import {
   ADHERENTS_MODES,
   ADHERENTS_STATUTS,
-  SEASON_PREFIX,
   getAdherentsSheetId,
   getAdherentsTab,
   handleOptions,
-  headerName,
   isPendingAdhesion,
   json,
-  nextAdherentNumero,
   pickRow,
   readSheetAsObjects,
   requireAuth,
   telPersonKey,
   updateRowByHeaders,
 } from './_bureau-lib.mjs';
+import { numeroPourLigne } from './_adhesion-numero.mjs';
+import { lireReference } from './_paiement.mjs';
 import { brancherStockage } from './_stockage.mjs';
 import { versV2 } from './_v2.mjs';
 import { MODULES } from '../../asso.derive.js';
 import { notifierSuivant } from './_liste-attente.mjs';
-
-/** NUMERO seulement s’il est vraiment en colonne S (index 18). */
-function numeroHeaderIfColumnS(headers, colIndices) {
-  const name = headerName(headers, 'NUMERO');
-  const filteredIdx = (headers || []).indexOf(name);
-  if (filteredIdx < 0) return '';
-  const sheetIdx = Array.isArray(colIndices) ? colIndices[filteredIdx] : filteredIdx;
-  if (sheetIdx !== 18) return '';
-  return headers[filteredIdx];
-}
-
-function numerosOf(rows) {
-  return (rows || []).map((r) => pickRow(r, 'NUMERO'));
-}
 
 async function handler(event) {
   brancherStockage(event);
@@ -125,7 +110,11 @@ async function handler(event) {
     } else if (datePaiement) {
       updates.DATE_PAIEMENT = datePaiement;
     }
-    if (detail) updates.DETAIL = detail;
+    if (detail) {
+      // La référence de paiement reste dans DETAIL : elle relie un paiement en ligne ou un virement à la fiche.
+      const ref = lireReference(pickRow(target, 'DETAIL'));
+      updates.DETAIL = ref && !lireReference(detail) ? `${detail} · Réf. ${ref}` : detail;
+    }
     if (mode) updates.MODE = mode;
     if (notes) {
       // Append note rather than overwrite if existing
@@ -149,29 +138,9 @@ async function handler(event) {
 
     let numero = '';
     if (statut === 'À jour' && !reverting) {
-      const numeroHeader = numeroHeaderIfColumnS(headers, colIndices);
-      if (numeroHeader) {
-        const current = pickRow(target, 'NUMERO');
-        if (current) {
-          numero = current;
-        } else {
-          numero = nextAdherentNumero(numerosOf(rows), SEASON_PREFIX);
-          const fresh = await readSheetAsObjects(sheetId, `'${tab}'!A:Z`);
-          if (!numeroHeaderIfColumnS(fresh.headers, fresh.colIndices)) {
-            numero = '';
-          } else {
-            const freshRow = fresh.rows.find((r) => r._row === row);
-            const freshCurrent = freshRow ? pickRow(freshRow, 'NUMERO') : '';
-            if (freshCurrent) {
-              numero = freshCurrent;
-            } else {
-              const list = numerosOf(fresh.rows);
-              if (list.some((n) => n === numero)) numero = nextAdherentNumero(list, SEASON_PREFIX);
-            }
-          }
-        }
-        if (numero) updates[numeroHeader] = numero;
-      }
+      const n = await numeroPourLigne({ sheetId, tab, headers, colIndices, rows, row, target });
+      numero = n.numero;
+      if (numero) updates[n.header] = numero;
     }
 
     await updateRowByHeaders(sheetId, tab, row, updates, headers, colIndices);

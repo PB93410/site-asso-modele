@@ -16,6 +16,7 @@ import { valeursTexte } from '../src/lib/gabarit.js';
 import { adresseAsso, messageBrevo, messageSmtp, modeEnvoi } from '../netlify/functions/_envoi.mjs';
 import { modeStockage } from '../netlify/functions/_stockage.mjs';
 import { avecBoite, modeBoite } from '../netlify/functions/_boite.mjs';
+import { modePaiement, verifierHelloAsso } from '../netlify/functions/_paiement.mjs';
 import { compteDeService, ecartsColonnes, verifierConfig, verifierContenu, verifierEnv } from './_verifier.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -124,6 +125,14 @@ async function verifierConnexions(env) {
     }
   }
   r.push(...(await verifierEnvoiEnLigne(env)));
+  if (MODULES.adhesion && modePaiement(env, false) === 'helloasso') {
+    try {
+      const nom = await verifierHelloAsso(env);
+      r.push({ niveau: 'ok', texte: `HelloAsso : identifiants acceptés, association « ${nom} ».` });
+    } catch (err) {
+      r.push({ niveau: 'erreur', texte: `HelloAsso : ${err?.lisible ? err.message : 'injoignable depuis ce poste.'}`, aFaire: 'Voir docs/DOC-PAIEMENT.md.' });
+    }
+  }
   if (MODULES.mail && MODULES.bureau && modeBoite(env, false) === 'imap') {
     try {
       const n = await avecBoite(async (client) => client.mailbox.exists, env);

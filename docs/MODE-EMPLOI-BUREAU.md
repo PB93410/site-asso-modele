@@ -71,8 +71,9 @@ Pour classer : **A adhéré**, **Ne veut plus**, **Plus tard**. La fiche sort de
 1. Onglet **Adhésion**. Pour retrouver : barre **Rechercher**.
 2. **J’ai reçu l’argent** → date → **n° de chèque** si chèque → **Oui, c’est payé**.
 3. Coche trop tôt : cherchez la personne → **Annuler le paiement**.
-4. la plateforme de paiement en ligne (carte) ou autre moyen : même geste, **une fois** le paiement vu. la plateforme de paiement en ligne **ne coche pas** le Sheet tout seul. Ne cochez pas avant d’avoir l’argent.
-5. Relance douce : **Rappeler pour payer**.
+4. Paiement par carte en ligne : si HelloAsso est branché, **rien à faire** — la fiche passe « À jour » toute seule et le bureau reçoit un mail « Paiement reçu ». Sinon (simple lien vers une plateforme), même geste que pour un chèque, **une fois** le paiement vu sur la plateforme. Ne cochez pas avant d’avoir l’argent.
+5. Virement : cherchez sur le relevé la **référence** de la demande (ex. ASE-K7M4QP, dans la colonne DETAIL et dans le mail d’alerte), puis même geste.
+6. Relance douce : **Rappeler pour payer**.
 
 ---
 

@@ -59,7 +59,7 @@ Dans **Site configuration → Environment variables** :
 | MODE | `mode_paiement` |
 | STATUT | fixe `En attente` |
 | MONTANT | fixe `140` |
-| DETAIL | vide |
+| DETAIL | référence de paiement `Réf. ASE-K7M4QP` (précédée du n° de chèque s’il y en a un) |
 | DATE_PAIEMENT | vide |
 | DROIT_IMAGE | `droit_image` |
 | QS_SPORT | `qs_sport` |
@@ -97,4 +97,4 @@ Après déploiement, vérifier dans **Netlify → Functions** que `adhesion` app
 
 1. Demande arrive → ligne `STATUT=En attente` `SOURCE=Formulaire`
 2. Paiement reçu → passer à `À jour` + date + détail
-3. la plateforme de paiement en ligne (1×/semaine rentrée) → ligne `MODE=la plateforme de paiement en ligne` `STATUT=À jour`
+3. Carte en ligne avec HelloAsso branché → la ligne passe `STATUT=À jour` toute seule au paiement (docs/DOC-PAIEMENT.md) ; avec un simple lien, le bureau pointe comme au point 2

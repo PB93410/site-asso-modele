@@ -186,6 +186,25 @@
   status = 200
   force = true
 
+# Paiement en ligne de l’adhésion (HelloAsso) : docs/DOC-PAIEMENT.md
+[[redirects]]
+  from = "/api/paiement"
+  to = "/.netlify/functions/paiement"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/paiement-retour"
+  to = "/.netlify/functions/paiement-retour"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/paiement-notification"
+  to = "/.netlify/functions/paiement-notification"
+  status = 200
+  force = true
+
 [[redirects]]
   from = "/api/essai"
   to = "/.netlify/functions/essai"
@@ -410,6 +429,25 @@
 
 [[headers]]
   for = "/api/essai"
+  [headers.values]
+    Cache-Control = "no-store"
+    X-Content-Type-Options = "nosniff"
+
+# Paiement en ligne : redirections propres à chaque payeur, jamais en cache
+[[headers]]
+  for = "/api/paiement"
+  [headers.values]
+    Cache-Control = "no-store"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/api/paiement-retour"
+  [headers.values]
+    Cache-Control = "no-store"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/api/paiement-notification"
   [headers.values]
     Cache-Control = "no-store"
     X-Content-Type-Options = "nosniff"

@@ -85,6 +85,8 @@ export interface AssoConfig {
     paiementNom: string;
     paiementUrl: string;
     autresPaiements: string[];
+    /** IBAN affiché pour le virement (facultatif). */
+    iban?: string;
   };
   listeAttente: AssoListeAttente;
   financement: AssoFinancement;

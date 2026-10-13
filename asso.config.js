@@ -121,11 +121,15 @@ const ASSO = {
     inclus: 'licence et assurance comprises',
     /** Nombre de séances d'essai gratuites. 0 = pas d'essai. */
     essais: 3,
-    /** Paiement en ligne (HelloAsso, Yapla…). Vide = pas de paiement en ligne. */
+    /** Paiement en ligne. Vide = pas de paiement en ligne.
+     *  Avec HelloAsso branché (docs/DOC-PAIEMENT.md), le site crée le paiement et valide
+     *  l'adhésion tout seul ; sinon ce lien est seulement affiché et le bureau pointe à la main. */
     paiementNom: 'HelloAsso',
     paiementUrl: 'https://www.helloasso.com/',
     /** Autres moyens acceptés au bureau. */
     autresPaiements: ['chèque', 'espèces', 'chèques ANCV'],
+    /** IBAN de l'asso, affiché pour payer par virement avec la référence de la demande. Vide = pas affiché. */
+    iban: '',
   },
 
   // ---- Liste d'attente (modules.listeAttente) ----

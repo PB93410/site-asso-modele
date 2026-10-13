@@ -12,6 +12,7 @@ import { SITE_CONFIG } from '../data/siteData';
 import {
   ASSO,
   ESSAIS_LABEL,
+  IBAN,
   MODE_CARTE,
   MODULES,
   PAIEMENTS_BUREAU,
@@ -156,6 +157,60 @@ function Chip({
   );
 }
 
+/** Référence de la demande : à rappeler au bureau, et en libellé du virement. */
+function ReferenceDemande({ reference, virement, montant }: { reference: string; virement: boolean; montant: string }) {
+  return (
+    <div className="max-w-sm mx-auto text-left rounded-2xl bg-[#FDF8F1] p-4 my-4 space-y-1.5">
+      <p className="font-body text-[13px] text-brand-gray">Votre référence</p>
+      <p className="font-mono text-[20px] font-bold tracking-wider text-brand-black select-all">{reference}</p>
+      {virement ? (
+        <p className="font-body text-[14px] text-brand-gray leading-relaxed">
+          Virement de {montant} à l’ordre de {ASSO.nom}, avec cette référence dans le libellé : le
+          bureau reconnaît ainsi votre paiement.
+          {IBAN ? (
+            <>
+              {' '}IBAN : <strong className="font-mono text-brand-black whitespace-nowrap">{IBAN}</strong>
+            </>
+          ) : (
+            ' Le bureau vous donne l’IBAN.'
+          )}
+        </p>
+      ) : (
+        <p className="font-body text-[13px] text-brand-gray leading-snug">À rappeler si vous contactez le bureau.</p>
+      )}
+    </div>
+  );
+}
+
+/** Message au retour de la page de paiement en ligne (/api/paiement-retour). */
+function RetourPaiement({ etat, lienPaiement }: { etat: string; lienPaiement: string }) {
+  const reessayer = lienPaiement ? (
+    <a
+      href={lienPaiement}
+      className="inline-flex items-center justify-center gap-2 w-full min-h-[52px] rounded-full bg-orange-primary hover:bg-orange-hover text-white font-semibold text-[16px]"
+    >
+      <CreditCard size={18} /> Réessayer le paiement
+    </a>
+  ) : null;
+  const textes: Record<string, string> = {
+    ok: 'Le bureau prépare votre carte d’adhérent. À très vite au cours !',
+    attente: `${PAIEMENT_NOM} confirme votre paiement. Inutile de recommencer : votre adhésion sera validée toute seule dans quelques minutes.`,
+    deja: 'Cette adhésion est déjà réglée : rien de plus à faire.',
+    refuse: 'Le paiement n’a pas abouti, rien n’a été prélevé. Vous pouvez réessayer, ou régler au bureau.',
+    annule: 'Paiement interrompu, rien n’a été prélevé. Vous pouvez reprendre quand vous voulez.',
+    erreur: `La page de paiement n’a pas pu s’ouvrir. Réessayez dans un instant, ou réglez au bureau : ${PAIEMENTS_BUREAU}.`,
+    patienter: 'Trop d’essais d’affilée : patientez quelques minutes avant de réessayer.',
+    introuvable: 'Nous ne retrouvons pas cette demande. Contactez le bureau, il vous aidera.',
+  };
+  const avecBouton = ['refuse', 'annule', 'erreur', 'patienter'].includes(etat);
+  return (
+    <div className="max-w-sm mx-auto text-left space-y-3 mb-2">
+      <p className="font-body text-[15px] text-brand-gray leading-relaxed">{textes[etat] || textes.attente}</p>
+      {avecBouton ? reessayer : null}
+    </div>
+  );
+}
+
 export default function InscriptionPage() {
   const [searchParams] = useSearchParams();
   const alreadyOk = searchParams.get('ok') === '1';
@@ -174,6 +229,19 @@ export default function InscriptionPage() {
   const [ancv, setAncv] = useState('');
   const [ce, setCe] = useState('');
   const [paidByCarte, setPaidByCarte] = useState(alreadyOk && wantsCarte);
+  // Paiement en ligne branché (HelloAsso) : référence de la demande, lien de paiement, retour de HelloAsso.
+  const refParam = (searchParams.get('ref') || '').toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 24);
+  const [reference, setReference] = useState(alreadyOk ? refParam : '');
+  const [lienPaiement, setLienPaiement] = useState(
+    alreadyOk && refParam && (searchParams.get('hp') === '1' || searchParams.has('paiement'))
+      ? `/api/paiement?ref=${encodeURIComponent(refParam)}`
+      : ''
+  );
+  const [parVirement, setParVirement] = useState(alreadyOk && modeParam === 'virement');
+  // Montant à régler (reste à payer après les aides), sinon le tarif.
+  const montantParam = (searchParams.get('m') || '').replace(/[^\d.,]/g, '').slice(0, 8);
+  const [aPayer, setAPayer] = useState(alreadyOk && montantParam ? `${montantParam} €` : TARIF_LABEL);
+  const retourPaiement = alreadyOk ? searchParams.get('paiement') || '' : '';
   const [step, setStep] = useState(1);
   const [paiementReady, setPaiementReady] = useState(false);
   const TOTAL_STEPS = 3;
@@ -325,14 +393,24 @@ export default function InscriptionPage() {
       }
 
       const carte = form.mode_paiement.startsWith('Carte');
+      const virement = form.mode_paiement === 'Virement';
+      const ref = typeof data.reference === 'string' ? data.reference : '';
+      const lien = typeof data.paiementUrl === 'string' ? data.paiementUrl : '';
+      const montant = /^\d+([.,]\d+)?$/.test(String(data.montant ?? '')) ? String(data.montant) : '';
       setPaidByCarte(carte);
       setListeAttente(Boolean(data.listeAttente));
+      setParVirement(virement);
+      setReference(ref);
+      setLienPaiement(lien);
+      setAPayer(montant ? `${montant} €` : TARIF_LABEL);
       setSuccess(true);
-      window.history.replaceState(
-        null,
-        '',
-        carte ? '/inscription?ok=1&mode=carte' : '/inscription?ok=1'
-      );
+      const q = new URLSearchParams({ ok: '1' });
+      if (carte) q.set('mode', 'carte');
+      if (virement) q.set('mode', 'virement');
+      if (ref) q.set('ref', ref);
+      if (lien) q.set('hp', '1');
+      if (montant && `${montant} €` !== TARIF_LABEL) q.set('m', montant);
+      window.history.replaceState(null, '', `/inscription?${q.toString()}`);
     } catch (err) {
       const detail = err instanceof Error ? err.message : '';
       setError(
@@ -386,23 +464,55 @@ export default function InscriptionPage() {
           >
             <CheckCircle2 className="mx-auto text-brand-olive mb-3" size={40} />
             <h2 className="font-display font-black text-[26px] md:text-[30px] text-brand-black mb-2 leading-tight">
-              {firstName ? `Merci ${firstName} !` : 'Merci !'}
+              {retourPaiement === 'ok'
+                ? 'Bienvenue au club !'
+                : firstName
+                  ? `Merci ${firstName} !`
+                  : 'Merci !'}
             </h2>
             <p className="font-body font-semibold text-[17px] text-brand-olive mb-3">
               {listeAttente
                 ? 'Ce cours est complet. Vous êtes sur la liste d’attente : le bureau vous prévient si une place se libère.'
+                : retourPaiement === 'ok'
+                ? 'Paiement reçu : votre adhésion est validée.'
                 : 'Votre demande est bien arrivée au bureau.'}
             </p>
+            {retourPaiement ? (
+              <RetourPaiement etat={retourPaiement} lienPaiement={lienPaiement} />
+            ) : lienPaiement ? (
+              <div className="max-w-sm mx-auto text-left space-y-3 mb-2">
+                <p className="font-body text-[15px] text-brand-gray leading-relaxed">
+                  Dernière étape : réglez {aPayer} en ligne, par carte, sur la page sécurisée de{' '}
+                  {PAIEMENT_NOM}. Votre adhésion est validée dès le paiement, sans attendre le bureau.
+                </p>
+                <a
+                  href={lienPaiement}
+                  className="inline-flex items-center justify-center gap-2 w-full min-h-[52px] rounded-full bg-orange-primary hover:bg-orange-hover text-white font-semibold text-[16px]"
+                >
+                  <CreditCard size={18} /> Payer {aPayer} maintenant
+                </a>
+                <p className="font-body text-[13px] text-brand-gray leading-snug">
+                  Pas maintenant ? Gardez cette page : le bouton marche aussi plus tard. {PAIEMENT_NOM} peut
+                  proposer un pourboire facultatif : vous pouvez le mettre à 0.
+                </p>
+              </div>
+            ) : (
             <ol className="font-body text-[14px] text-brand-gray space-y-2 mb-5 text-left max-w-md mx-auto list-decimal list-inside">
               <li>Le bureau relit votre demande (souvent le jour même).</li>
               <li>
                 {paidByCarte
                   ? `Quand vous serez prêt, vous pourrez ouvrir ${PAIEMENT_NOM} pour les ${TARIF_LABEL} (ce n’est pas automatique).`
-                  : `Vous réglez ${TARIF_LABEL} au bureau : ${PAIEMENTS_BUREAU}.`}
+                  : parVirement
+                    ? `Vous faites le virement de ${aPayer}, avec la référence ci-dessous en libellé.`
+                    : `Vous réglez ${TARIF_LABEL} au bureau : ${PAIEMENTS_BUREAU}.`}
               </li>
               <li>Vous recevez la confirmation d&apos;adhésion et le créneau.</li>
             </ol>
-            {paidByCarte ? (
+            )}
+            {reference && retourPaiement !== 'ok' ? (
+              <ReferenceDemande reference={reference} virement={parVirement} montant={aPayer} />
+            ) : null}
+            {lienPaiement || retourPaiement ? null : paidByCarte ? (
               <div className="max-w-sm mx-auto text-left space-y-3">
                 <p className="font-body text-[14px] text-brand-gray leading-relaxed">
                   {PAIEMENT_NOM} ne s’ouvre pas tout seul. Quand vous serez prêt, ce bouton ouvre la page

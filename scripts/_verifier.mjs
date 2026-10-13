@@ -3,11 +3,13 @@
  * Chaque contrôle renvoie { niveau: 'ok' | 'attention' | 'erreur', texte, aFaire? }.
  */
 
+import { ASSO } from '../asso.derive.js';
 import { contraste } from '../src/lib/dossier.js';
 import { remplir } from '../src/lib/gabarit.js';
 import { adresseAsso, MODES_ENVOI, modeEnvoi } from '../netlify/functions/_envoi.mjs';
 import { MODES_STOCKAGE, modeStockage } from '../netlify/functions/_stockage.mjs';
 import { modeBoite, reglagesImap } from '../netlify/functions/_boite.mjs';
+import { MODES_PAIEMENT, modePaiement, reglagesHelloAsso } from '../netlify/functions/_paiement.mjs';
 
 export { contraste };
 
@@ -262,6 +264,7 @@ export function verifierEnv(env, modules) {
     r.push(attention('GOOGLE_SITE_SHEET_ID absente : le planning et les événements se modifieront dans le classeur Essais.', 'Facultatif : un classeur « contenu site » séparé.'));
   }
   r.push(...verifierEnvoi(env, modules));
+  r.push(...verifierPaiement(env, modules));
   if (/^(1|true|oui)$/i.test(a('DEMO'))) {
     r.push(erreur('DEMO est activé : le site tourne sur des données fictives.', 'Retirez DEMO des variables de production.'));
   }
@@ -301,6 +304,44 @@ export function verifierEnvoi(env, modules) {
     const manque = ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GOOGLE_REFRESH_TOKEN'].filter((k) => !a(k));
     if (manque.length) r.push(erreur(`Envoi par Gmail : ${manque.join(', ')} manquante(s).`, 'Voir docs/DOC-BUREAU-GOOGLE.md, ou passez en SMTP (docs/DOC-MAIL.md).'));
     else r.push(ok(`Envoi des mails : Gmail, depuis ${adresse}.`));
+  }
+  return r;
+}
+
+/**
+ * Paiement de l'adhésion en ligne : HelloAsso branché, simple lien, ou rien.
+ * @param {Record<string, string | undefined>} env
+ * @param {{adhesion: boolean}} modules
+ * @param {{ paiementUrl?: string, paiementNom?: string }} [adhesion] asso.config.js → adhesion
+ */
+export function verifierPaiement(env, modules, adhesion = ASSO.adhesion) {
+  if (!modules.adhesion) return [];
+  const r = [];
+  const choix = String(env.PAIEMENT || '').trim().toLowerCase();
+  if (choix && !MODES_PAIEMENT.includes(choix)) {
+    r.push(attention(`PAIEMENT « ${env.PAIEMENT} » inconnu : ignoré.`, 'Valeurs possibles : helloasso, lien, aucun.'));
+  }
+  const mode = modePaiement(env, false);
+  if (mode === 'helloasso') {
+    const h = reglagesHelloAsso(env);
+    const manque = [['HELLOASSO_CLIENT_ID', h.clientId], ['HELLOASSO_CLIENT_SECRET', h.clientSecret], ['HELLOASSO_ORGANISATION', h.organisation]]
+      .filter(([, v]) => !v)
+      .map(([k]) => k);
+    if (manque.length) {
+      r.push(erreur(`Paiement HelloAsso : ${manque.join(', ')} manquante(s).`, 'Espace HelloAsso de l’asso → Mon compte → Intégrations et API : voir docs/DOC-PAIEMENT.md.'));
+    } else if (h.sandbox) {
+      r.push(attention(`Paiement HelloAsso en mode test (HELLOASSO_SANDBOX) pour « ${h.organisation} » : aucun vrai paiement.`, 'Pour encaisser pour de vrai : retirez HELLOASSO_SANDBOX et mettez les identifiants du compte réel.'));
+    } else {
+      r.push(ok(`Paiement en ligne : HelloAsso (« ${h.organisation} »), adhésion validée toute seule au paiement.`));
+    }
+  } else if (mode === 'lien') {
+    const nom = adhesion.paiementNom || 'la plateforme';
+    r.push(
+      attention(
+        `Paiement en ligne par simple lien (${nom}) : le site ne sait pas qui a payé, le bureau pointe chaque paiement à la main.`,
+        'Avec HelloAsso (gratuit), l’adhésion est validée toute seule au paiement : docs/DOC-PAIEMENT.md.',
+      ),
+    );
   }
   return r;
 }

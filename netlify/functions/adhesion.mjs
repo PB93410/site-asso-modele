@@ -1,6 +1,7 @@
 /**
  * POST /api/adhesion — Adhérents → Google Sheet (registre unique)
  * puis e-mail bureau (fiche texte via Netlify Forms, à archiver).
+ * Chaque demande reçoit une référence de paiement (DETAIL) : paiement en ligne et virement.
  */
 
 import {
@@ -16,7 +17,8 @@ import {
   moduleOff,
 } from './_bureau-lib.mjs';
 import { sendAdhesionNotification } from './_adhesion-mail.mjs';
-import { ASSO, MODULES, PAYMENT_MODES, SITE_URL } from '../../asso.derive.js';
+import { ASSO, MODE_CARTE, MODULES, PAYMENT_MODES, SITE_URL } from '../../asso.derive.js';
+import { nouvelleReference, paiementIntegre } from './_paiement.mjs';
 import { brancherStockage, modeStockage } from './_stockage.mjs';
 import { versV2 } from './_v2.mjs';
 import { calculerReste, notesFinancement } from '../../src/lib/financement.js';
@@ -207,6 +209,13 @@ async function handler(event) {
       }
     }
 
+    // Référence de paiement (paiement en ligne, virement). Pas de paiement en ligne tant que la
+    // personne est sur liste d'attente, ni quand les aides couvrent tout.
+    const reference = nouvelleReference();
+    const enLigne =
+      Boolean(MODE_CARTE) && f.mode_paiement === MODE_CARTE && paiementIntegre() && !listeAttente && Number(montant) > 0;
+    detail = [detail, `Réf. ${reference}`].filter(Boolean).join(' · ');
+
     const row = [
       f.nom,
       f.prenom,
@@ -242,7 +251,9 @@ async function handler(event) {
         ville: f.ville,
         mode_paiement: f.mode_paiement,
         numero_cheque: f.numero_cheque,
-        detail: f.detail,
+        detail,
+        reference,
+        enLigne,
         droit_image: f.droit_image,
         qs_sport: f.qs_sport,
         deja_adherent: f.deja_adherent,
@@ -259,6 +270,9 @@ async function handler(event) {
       message: listeAttente ? 'Ce cours est complet. Vous êtes sur la liste d’attente.' : 'Ligne ajoutée',
       listeAttente,
       rang,
+      reference,
+      montant,
+      ...(enLigne ? { paiementUrl: `/api/paiement?ref=${encodeURIComponent(reference)}` } : {}),
     });
   } catch (err) {
     console.error('adhesion error:', err?.message || err);

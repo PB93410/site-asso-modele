@@ -155,7 +155,7 @@ export function dossierVide(date = new Date()) {
     lieux: [],
     contacts: { email: '', telephone: '', whatsapp: true, siteSouhaite: '', instagram: '', facebook: '', avisGoogle: '' },
     federation: { nom: '', sigle: '', url: '' },
-    adhesion: { tarif: 0, inclus: '', essais: 2, paiementNom: '', paiementUrl: '', autresPaiements: ['chèque', 'espèces'] },
+    adhesion: { tarif: 0, inclus: '', essais: 2, paiementNom: '', paiementUrl: '', autresPaiements: ['chèque', 'espèces'], iban: '' },
     saison: { label: saison, reprise: `${an}-09-07` },
     cours: [],
     planning: [],
@@ -230,6 +230,8 @@ export function erreursDossier(dossier) {
   if (!(Number(d.adhesion.tarif) > 0)) add('adhesion', 'adhesion.tarif', 'Indiquez le tarif annuel.');
   if (!(Number(d.adhesion.essais) >= 0 && Number(d.adhesion.essais) <= 10)) add('adhesion', 'adhesion.essais', 'Nombre d’essais gratuits : de 0 à 10.');
   if (d.adhesion.paiementUrl && !/^https:\/\//.test(d.adhesion.paiementUrl)) add('adhesion', 'adhesion.paiementUrl', 'Le lien de paiement doit commencer par https://');
+  const iban = String(d.adhesion.iban || '').replace(/\s+/g, '');
+  if (iban && !/^[A-Za-z]{2}\d{2}[A-Za-z0-9]{10,30}$/.test(iban)) add('adhesion', 'adhesion.iban', 'IBAN incomplet : 2 lettres, 2 chiffres, puis le reste (ex. FR76 …).');
 
   if (!/^(\d{4})-(\d{4})$/.test(d.saison.label) || Number(d.saison.label.slice(5)) !== Number(d.saison.label.slice(0, 4)) + 1) {
     add('cours', 'saison.label', 'Saison : format 2026-2027.');
@@ -361,6 +363,7 @@ export function configDepuisDossier(dossier, base) {
       paiementNom: d.adhesion.paiementUrl ? d.adhesion.paiementNom.trim() || 'paiement en ligne' : '',
       paiementUrl: d.adhesion.paiementUrl.trim(),
       autresPaiements: d.adhesion.autresPaiements.map((p) => String(p).trim()).filter(Boolean),
+      iban: String(d.adhesion.iban || '').replace(/\s+/g, '').toUpperCase(),
     },
     listeAttente: {
       capaciteDefaut: Number(d.listeAttente?.capaciteDefaut) || base.listeAttente?.capaciteDefaut || 20,

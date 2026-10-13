@@ -410,7 +410,7 @@ export function EtapeAdhesion({ d, maj, erreur }: PropsEtape) {
 
       <Case
         label="Paiement en ligne possible"
-        aide="HelloAsso, Yapla, AssoConnect… Le site mettra un lien vers votre page de paiement."
+        aide="Avec HelloAsso (gratuit), le site peut valider l’adhésion tout seul dès le paiement. Avec une autre plateforme, le site met un lien et le bureau pointe chaque paiement à la main."
         checked={enLigne}
         onChange={(v) => {
           setEnLigne(v);
@@ -434,6 +434,15 @@ export function EtapeAdhesion({ d, maj, erreur }: PropsEtape) {
           </datalist>
         </div>
       ) : null}
+
+      <Texte
+        label="IBAN pour le virement"
+        facultatif
+        value={ad.iban || ''}
+        onChange={(v) => maj('adhesion.iban', v.toUpperCase())}
+        erreur={erreur('adhesion.iban')}
+        placeholder="FR76 …"
+      />
 
       <Champ label="Autres moyens de paiement acceptés par le bureau">
         <div className="flex flex-wrap gap-2">

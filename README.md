@@ -11,7 +11,7 @@ Issu du site d’une association sportive en production, puis rendu générique.
 - Accueil : hero, planning de la semaine (avec « aujourd’hui »), cours, comment ça se passe, coachs, l’association, blog, contact
 - Une page par cours (`/cours-<activite>-<ville>`) avec planning et FAQ
 - `/essai` : réservation d’un cours d’essai, le créneau s’affiche tout de suite
-- `/inscription` : demande d’adhésion en 3 étapes (rien n’est prélevé ; paiement en ligne facultatif ou au bureau)
+- `/inscription` : demande d’adhésion en 3 étapes, puis paiement en ligne (HelloAsso : adhésion validée toute seule) ou au bureau
 - `/tarifs`, `/faq`, `/blog`, `/autour-de-<ville>`, mentions légales, confidentialité
 - SEO : métas par page, JSON-LD (organisation, lieux, cours, FAQ, articles), sitemap, HTML pré-rendu pour les robots
 - Thème clair / sombre, accessible (contrastes renforcés, cibles 44 px), sans police ni traceur tiers
@@ -121,6 +121,7 @@ Si le site est relié à GitHub, Netlify lance lui-même `npm run build` à chaq
 - [docs/DOC-DONNEES.md](docs/DOC-DONNEES.md) — où sont les données, export Excel, sauvegarde, restauration, Google Sheets
 - [docs/DOC-AGENDA.md](docs/DOC-AGENDA.md) — agenda du bureau, abonnement sur les téléphones
 - [docs/DOC-MAIL.md](docs/DOC-MAIL.md) — envoi des mails (alertes, cartes) : boîte de l’asso en SMTP, Brevo ou Gmail
+- [docs/DOC-PAIEMENT.md](docs/DOC-PAIEMENT.md) — paiement de l’adhésion en ligne : HelloAsso validé tout seul, référence de virement
 - [docs/DOC-BUREAU-GOOGLE.md](docs/DOC-BUREAU-GOOGLE.md) — brancher Gmail / Agenda / Contacts
 - [docs/DOC-GOOGLE-SHEETS.md](docs/DOC-GOOGLE-SHEETS.md) — planning et événements dans un Google Sheet
 - [docs/DOC-FONCTION-ADHESION.md](docs/DOC-FONCTION-ADHESION.md) — formulaire d’inscription → Sheet Adhérents

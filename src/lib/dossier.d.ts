@@ -76,6 +76,8 @@ export interface Dossier {
     paiementNom: string;
     paiementUrl: string;
     autresPaiements: string[];
+    /** IBAN pour le virement (facultatif). */
+    iban?: string;
   };
   saison: { label: string; reprise: string };
   cours: DossierCours[];

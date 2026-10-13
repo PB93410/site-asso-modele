@@ -41,7 +41,8 @@ Ouvrez [`asso.config.js`](../asso.config.js) à la racine et remplissez chaque c
 | `whatsapp` | Format international sans `+` (`336…`). Vide = pas de liens WhatsApp. |
 | `federation.nom` | Vide si vous n’êtes pas affiliés : badge et mentions disparaissent. |
 | `adhesion.essais` | `0` = pas d’essai gratuit : le bouton principal devient « Adhérer ». |
-| `adhesion.paiementUrl` | Vide = pas de paiement en ligne ; seuls les moyens « au bureau » sont proposés. |
+| `adhesion.paiementUrl` | Vide = pas de paiement en ligne ; seuls les moyens « au bureau » sont proposés. Avec HelloAsso branché, l’adhésion est validée toute seule au paiement : [DOC-PAIEMENT.md](DOC-PAIEMENT.md). |
+| `adhesion.iban` | Facultatif : IBAN affiché pour payer par virement, avec la référence de la demande. |
 | `saison.finCampagneEssai` | Après cette date, le bouton principal passe d’« Essai » à « Adhérer ». |
 | `couleurs.primaire` | Contraste ≥ 4,5:1 avec le blanc (texte des boutons). Vérifiez sur webaim.org/resources/contrastchecker. |
 
@@ -134,6 +135,8 @@ Une commande crée les trois classeurs, les partage et les met en forme : `npm r
 ## Étape 6 — Envoi des mails, puis Gmail, Agenda, Contacts (facultatif)
 
 Alertes « nouvel essai » et « nouvelle adhésion », cartes d’adhérent par mail : le site envoie avec la boîte mail de l’asso (SMTP) ou Brevo, sans Google. Voir **[DOC-MAIL.md](DOC-MAIL.md)**.
+
+Paiement de l’adhésion par carte : avec HelloAsso branché (gratuit), l’adhésion passe « À jour » toute seule au paiement, sans pointage. Voir **[DOC-PAIEMENT.md](DOC-PAIEMENT.md)**.
 
 
 Pour que le bureau lise la boîte mail et l’agenda de l’asso sans ouvrir Gmail : suivez **[DOC-BUREAU-GOOGLE.md](DOC-BUREAU-GOOGLE.md)**.

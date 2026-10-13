@@ -31,6 +31,11 @@ export const FEDERATION_LABEL = HAS_FEDERATION ? `affiliée ${ASSO.federation.si
 /** « chèque, espèces, chèques ANCV » */
 export const PAIEMENTS_BUREAU = ASSO.adhesion.autresPaiements.join(', ');
 export const PAIEMENT_NOM = ASSO.adhesion.paiementNom || 'paiement en ligne';
+/** IBAN pour le virement, groupé par 4 (vide si non renseigné). */
+export const IBAN = String(ASSO.adhesion.iban || '')
+  .replace(/s+/g, '')
+  .toUpperCase()
+  .replace(/(.{4})(?=.)/g, '$1 ');
 
 export function lieuAdresse(lieu: AssoLieu) {
   return `${lieu.rue}, ${lieu.codePostal || ASSO.codePostal} ${lieu.ville || ASSO.ville}`;

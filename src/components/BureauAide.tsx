@@ -187,9 +187,10 @@ export default function BureauAide({
             Coche trop tôt : cherchez la personne, puis **Annuler le paiement**.
           </li>
           <li>
-            Paiement en ligne ({PAIEMENT_NOM}) : même geste, une fois le paiement vu sur
-            la plateforme ou sur le compte. Elle ne coche pas le tableau toute seule. Ne cochez pas
-            avant d’avoir l’argent.
+            Paiement en ligne ({PAIEMENT_NOM}) : si le paiement en ligne est branché sur le site, rien
+            à faire, la fiche passe à jour toute seule (mail « Paiement reçu »). Sinon, même geste, une
+            fois le paiement vu sur la plateforme ou sur le compte. Virement : retrouvez la référence de
+            la demande (ex. {ASSO.sigle}-K7M4QP) sur le relevé. Ne cochez pas avant d’avoir l’argent.
           </li>
           <li>
             Relance douce : bouton « Rappeler pour payer » (WhatsApp), ou page Relances.
