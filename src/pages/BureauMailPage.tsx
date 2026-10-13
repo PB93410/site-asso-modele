@@ -797,9 +797,14 @@ export default function BureauMailPage() {
         );
       }
       if (filter === 'enligne') return f.paiementValidated || f.kind === 'enligne' || PAY_WORD_RE.test(f.channel + f.payment);
-      if (filter === 'autre') return f.kind === 'autre';
+      // Autre : les mails écrits par quelqu’un (question, mairie…) et les publicités.
+      if (filter === 'autre') return f.kind === 'autre' || f.kind === 'personne';
       return true;
     });
+    // Autre : d’abord les personnes, les publicités et newsletters en bas.
+    if (filter === 'autre') {
+      return [...list].sort((a, b) => Number(a.kind === 'autre') - Number(b.kind === 'autre') || b.primary.ts - a.primary.ts);
+    }
     if (filter !== 'a-traiter') return list;
     const rank = (f: MailFolder) => {
       const named = !isGenericFolderTitle(f.title);
