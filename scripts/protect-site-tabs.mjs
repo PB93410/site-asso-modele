@@ -1,7 +1,9 @@
 /**
- * Protège les onglets PLANNING et EVENEMENTS :
- * seuls le compte asso et le compte de service peuvent les modifier.
- * Les autres éditeurs du classeur (bénévoles) voient mais ne touchent pas.
+ * Protège les onglets PLANNING et EVENEMENTS, et l’onglet des adhérents de la saison :
+ * seuls le compte asso et le compte de service peuvent les modifier (donc les trier).
+ * Les autres éditeurs du classeur (bénévoles) voient mais ne touchent pas : ils passent par /bureau,
+ * et trient avec Données → Créer une vue filtrée. Un tri qui oublie la colonne NUMERO (S) donne
+ * les numéros d’adhérent à d’autres personnes (le contrôle du matin le signale : controle-numeros.mjs).
  *
  * Usage : node scripts/protect-site-tabs.mjs
  */
@@ -17,7 +19,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 
 const OWNER_EMAIL = process.env.ASSO_GMAIL || ASSO.email;
-const TAB_TITLES = ['PLANNING', 'EVENEMENTS'];
+const SITE_TABS = ['PLANNING', 'EVENEMENTS'];
 
 function parseDotEnv(filePath) {
   if (!fs.existsSync(filePath)) return;
@@ -65,6 +67,8 @@ function loadEnv() {
     'GOOGLE_SHEET_ESSAIS_ID',
     'GOOGLE_SUIVI_SHEET_ID',
     'GOOGLE_SITE_SHEET_ID',
+    'GOOGLE_SHEET_ID',
+    'GOOGLE_SHEET_NAME',
   ]) {
     if (process.env[key] && !/no value set/i.test(process.env[key])) continue;
     const val = netlifyEnv(key);
@@ -74,17 +78,30 @@ function loadEnv() {
 
 async function main() {
   loadEnv();
-  const { getSheets, getSiteSheetId } = await import('../netlify/functions/_bureau-lib.mjs');
+  const { getSheets, getSiteSheetId, getAdherentsSheetId, getAdherentsTab } = await import(
+    '../netlify/functions/_bureau-lib.mjs'
+  );
   const sheets = await getSheets();
-  const spreadsheetId = getSiteSheetId();
 
   const creds = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
   const saEmail = String(creds.client_email || '').trim();
   if (!saEmail) throw new Error('client_email manquant dans GOOGLE_SERVICE_ACCOUNT_JSON');
 
   const editors = [...new Set([OWNER_EMAIL, saEmail])];
-  console.log('Éditeurs autorisés sur PLANNING / EVENEMENTS :');
+  console.log('Éditeurs autorisés :');
   for (const e of editors) console.log(' ·', e);
+
+  const cibles = [{ spreadsheetId: getSiteSheetId(), titres: SITE_TABS }];
+  try {
+    cibles.push({ spreadsheetId: getAdherentsSheetId(), titres: [getAdherentsTab()] });
+  } catch {
+    console.log('Skip : pas de classeur des adhérents (GOOGLE_SHEET_ID).');
+  }
+  for (const { spreadsheetId, titres } of cibles) await proteger(sheets, spreadsheetId, titres, editors);
+  console.log('\nOK. Les bénévoles peuvent encore éditer Essais / Forum / Compteurs.');
+}
+
+async function proteger(sheets, spreadsheetId, TAB_TITLES, editors) {
 
   const meta = await sheets.spreadsheets.get({
     spreadsheetId,
@@ -167,7 +184,6 @@ async function main() {
       );
     }
   }
-  console.log('\nOK. Les bénévoles peuvent encore éditer Essais / Forum / Compteurs.');
 }
 
 main().catch((err) => {

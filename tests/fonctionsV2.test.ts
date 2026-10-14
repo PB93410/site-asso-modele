@@ -16,7 +16,7 @@ describe('fonctions Netlify v2 (lecture forte de Netlify Blobs)', () => {
   it('aucun store en lecture forte hors du stockage du bureau (v2 obligatoire)', () => {
     for (const f of fs.readdirSync('netlify/functions').filter((n) => n.startsWith('_'))) {
       const src = fs.readFileSync(`netlify/functions/${f}`, 'utf8');
-      if (/consistency:\s*'strong'/.test(src)) expect(['_stockage.mjs', '_login-guard.mjs', '_cartes-journal.mjs', '_paiement.mjs']).toContain(f);
+      if (/consistency:\s*'strong'/.test(src)) expect(['_stockage.mjs', '_login-guard.mjs', '_cartes-journal.mjs', '_paiement.mjs', '_registre-numeros.mjs']).toContain(f);
     }
   });
 

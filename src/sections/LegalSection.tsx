@@ -370,6 +370,14 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                         <td className="p-2">Saison en cours + 3 ans après la dernière adhésion</td>
                       </tr>
                       <tr className="border-b border-black/[0.06]">
+                        <td className="p-2">
+                          Registre des numéros d&apos;adhérent (si le registre est tenu dans un tableur Google) :
+                          numéro et empreinte chiffrée du téléphone et du prénom, rien de lisible
+                        </td>
+                        <td className="p-2">Vérifier chaque matin que chaque numéro reste sur la fiche de la bonne personne</td>
+                        <td className="p-2">Saison en cours ; effacé avec la fiche sur demande</td>
+                      </tr>
+                      <tr className="border-b border-black/[0.06]">
                         <td className="p-2">Demandes /essai (prénom, nom, tél., email facultatif, créneau)</td>
                         <td className="p-2">Organisation de l&apos;essai et relances dans la saison</td>
                         <td className="p-2">Jusqu&apos;à la fin de la saison 2026-2027, puis suppression (sauf adhésion)</td>

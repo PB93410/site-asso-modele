@@ -143,6 +143,12 @@ Sur le formulaire d’inscription, la personne indique ses aides. Le **reste à 
 
 Rien n’est enregistré : le PDF est fabriqué au moment du clic.
 
+## Mail « Numéros d’adhérent décalés » (adhérents dans Google Sheets)
+
+Chaque matin, le site vérifie que chaque numéro d’adhérent est toujours sur la fiche de la personne qui l’a reçu. Ce mail veut presque toujours dire qu’un **tri du tableau** a laissé la colonne NUMERO derrière. **Ne renumérotez rien à la main** : dans Google Sheets, Fichier → Historique des versions, revenez à la version d’avant le tri, ou prévenez le référent.
+
+Pour trier sans risque : **Données → Créer une vue filtrée** (le tri ne change que votre affichage).
+
 ---
 
 ## Si ça coince

@@ -36,6 +36,11 @@ Les onglets sont reconnus par leur nom : « Saison … » (adhérents), « Essai
 
 Pour une association qui veut travailler dans ses tableaux Google (filtres, couleurs, plusieurs personnes dedans chaque jour) : compte de service, puis `npm run sheets:creer` ([ADAPTER-LE-MODELE.md](ADAPTER-LE-MODELE.md), étape 5, « Variante »). Dès que `GOOGLE_SERVICE_ACCOUNT_JSON` est présente, le site utilise Google Sheets. Pour choisir explicitement : `STOCKAGE=google` ou `STOCKAGE=netlify`.
 
+**Protéger les numéros d'adhérent.** Dans un tableau Google, un tri qui n'emporte pas la colonne NUMERO (S) donne les numéros à d'autres personnes, alors que leurs cartes sont déjà parties. Deux garde-fous :
+
+- **Protection des onglets** (une fois, par le référent) : `node scripts/protect-site-tabs.mjs`. PLANNING, EVENEMENTS et l'onglet des adhérents de la saison ne sont plus modifiables (donc plus triables) que par le compte de l'asso et le site. Les bénévoles lisent, travaillent dans `/bureau`, et trient avec **Données → Créer une vue filtrée**. À relancer au changement de saison (nouvel onglet).
+- **Contrôle du matin** (`controle-numeros.mjs`, chaque jour à 5 h UTC, automatique) : chaque numéro doit rester sur la fiche de la personne qui l'a reçu. Le site garde pour cela un registre (store Netlify « numeros ») avec seulement une **empreinte** de chaque personne (téléphone et prénom brouillés par `BUREAU_SECRET`, rien de lisible). Le premier soir, il apprend les numéros existants ; ensuite, au moindre décalage, un mail part à la boîte de l'asso (numéros et lignes, aucun nom). Changer `BUREAU_SECRET` le fait réapprendre, sans fausse alerte. Rien ne tourne avec le stockage Netlify : personne ne peut trier.
+
 ### Passer de Google Sheets à Netlify
 
 1. `.env` : la clé du compte de service et les ID des classeurs (comme aujourd'hui), plus `NETLIFY_SITE_ID` et `NETLIFY_AUTH_TOKEN`.
