@@ -313,6 +313,12 @@ export default function BureauAide({
         >
           Télécharger le QR
         </a>
+        <a
+          href="/bureau/affiche"
+          className="inline-flex items-center justify-center gap-1.5 h-11 min-h-[44px] px-4 rounded-xl bg-white ring-1 ring-black/10 hover:bg-black/[0.03] text-brand-black font-semibold text-sm"
+        >
+          Affiche planning A4 à imprimer
+        </a>
         {ntfyUrl ? (
           <p className="text-sm text-slate-700">
             Abonnement ntfy :{' '}

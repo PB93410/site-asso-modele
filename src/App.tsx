@@ -13,6 +13,7 @@ import AlerteBandeau from './components/AlerteBandeau';
 const BureauPage = lazy(() => import('./pages/BureauPage'));
 const BureauMailPage = lazy(() => import('./pages/BureauMailPage'));
 const BureauAgendaPage = lazy(() => import('./pages/BureauAgendaPage'));
+const BureauAffichePage = lazy(() => import('./pages/BureauAffichePage'));
 const BureauGoogleConnectPage = lazy(() => import('./pages/BureauGoogleConnectPage'));
 const BureauRelancesPage = lazy(() => import('./pages/BureauRelancesPage'));
 const BureauPresencesPage = lazy(() => import('./pages/BureauPresencesPage'));
@@ -147,6 +148,7 @@ export default function App() {
             {MODULES.bureau ? (
               <>
                 <Route path="/bureau/agenda" element={<BureauAgendaPage />} />
+                <Route path="/bureau/affiche" element={<BureauAffichePage />} />
                 <Route path="/bureau/relances" element={<BureauRelancesPage />} />
                 {MODULES.presences ? <Route path="/bureau/presences" element={<BureauPresencesPage />} /> : null}
                 {MODULES.alertes ? <Route path="/bureau/alertes" element={<BureauAlertesPage />} /> : null}
