@@ -8,7 +8,7 @@
 import { ASSO, MODULES } from '../../asso.derive.js';
 import { getAdherentsSheetId, getAdherentsTab, pickRow, readSheetAsObjects } from './_bureau-lib.mjs';
 import { adresseAsso, envoyerMail, modeEnvoi } from './_envoi.mjs';
-import { controlerRegistre, ecrireRegistre, lireRegistre, texteAlerte } from './_registre-numeros.mjs';
+import { controlerRegistre, ecrireRegistre, lireRegistre, sujetAlerte, texteAlerte } from './_registre-numeros.mjs';
 import { brancherStockage, modeStockage } from './_stockage.mjs';
 import { versV2 } from './_v2.mjs';
 
@@ -32,11 +32,11 @@ const handler = async (event) => {
     }));
     const res = controlerRegistre(fiches, await lireRegistre(), process.env.BUREAU_SECRET);
     await ecrireRegistre(res.registre);
-    console.log('controle-numeros', res.amorcage ? 'amorçage' : '', `nouveaux ${res.nouveaux.length}`, `décalés ${res.decales.length}`, `doublons ${res.doublons.length}`);
-    if (!res.decales.length && !res.doublons.length) return { statusCode: 200, body: 'ok' };
+    console.log('controle-numeros', res.amorcage ? 'amorçage' : '', `nouveaux ${res.nouveaux.length}`, `décalés ${res.decales.length}`, `corrigés ${res.corriges.length}`, `doublons ${res.doublons.length}`);
+    if (!res.decales.length && !res.corriges.length && !res.doublons.length) return { statusCode: 200, body: 'ok' };
     await envoyerMail({
       to: adresseAsso(),
-      subject: `[${ASSO.sigle}] Numéros d’adhérent décalés dans le classeur (${res.decales.length + res.doublons.length})`,
+      subject: sujetAlerte(res, ASSO.sigle),
       text: texteAlerte(res, onglet),
     });
     return { statusCode: 200, body: 'alerte envoyée' };
