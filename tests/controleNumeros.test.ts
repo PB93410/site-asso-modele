@@ -57,6 +57,44 @@ describe('registre des numéros — contrôle', () => {
     expect(r.doublons).toEqual([{ numero: 'ASE-2627-003', lignes: [4, 5] }]);
   });
 
+  it('fiche corrigée (prénom ou téléphone) : signalée à part, une seule fois, sans nom', async () => {
+    const { controlerRegistre, sujetAlerte, texteAlerte } = await import('../netlify/functions/_registre-numeros.mjs');
+    const avant = controlerRegistre(fiches(ada, eve), null, SECRET).registre;
+    // Prénom corrigé sur la fiche 1, téléphone corrigé sur la fiche 2.
+    const apres = fiches({ tel: ada.tel, prenom: 'Adèle' }, { tel: '0600000099', prenom: eve.prenom });
+    const r = controlerRegistre(apres, avant, SECRET);
+    expect(r.decales).toEqual([]);
+    expect(r.corriges).toEqual([
+      { numero: 'ASE-2627-001', ligne: 2, champ: 'prenom' },
+      { numero: 'ASE-2627-002', ligne: 3, champ: 'tel' },
+    ]);
+    expect(sujetAlerte(r, 'ASE')).toMatch(/Fiche\(s\) corrigée\(s\)/);
+    expect(texteAlerte(r, 'Adhérents 2026-2027')).not.toMatch(/Ada|Adèle|Ève|0600/);
+    // Le registre suit la fiche : le lendemain, plus rien.
+    const lendemain = controlerRegistre(apres, r.registre, SECRET);
+    expect(lendemain.corriges).toEqual([]);
+    expect(lendemain.decales).toEqual([]);
+  });
+
+  it('numéros échangés entre deux personnes qui partagent un téléphone : décalés, pas corrigés', async () => {
+    const { controlerRegistre } = await import('../netlify/functions/_registre-numeros.mjs');
+    const mere = { tel: '0600000010', prenom: 'Marie' };
+    const fille = { tel: '0600000010', prenom: 'Zoé' };
+    const avant = controlerRegistre(fiches(mere, fille), null, SECRET).registre;
+    const r = controlerRegistre(fiches(fille, mere), avant, SECRET);
+    expect(r.corriges).toEqual([]);
+    expect(r.decales).toHaveLength(2);
+  });
+
+  it('registre d’avant cette version (sans les parties) : décalé, jamais deviné', async () => {
+    const { controlerRegistre } = await import('../netlify/functions/_registre-numeros.mjs');
+    const avant = controlerRegistre(fiches(ada, eve), null, SECRET).registre;
+    delete (avant as { parties?: unknown }).parties;
+    const r = controlerRegistre(fiches({ tel: ada.tel, prenom: 'Adèle' }, eve), avant, SECRET);
+    expect(r.corriges).toEqual([]);
+    expect(r.decales).toEqual([{ numero: 'ASE-2627-001', ligne: 2 }]);
+  });
+
   it('secret changé : nouvel amorçage au lieu de fausses alertes', async () => {
     const { controlerRegistre } = await import('../netlify/functions/_registre-numeros.mjs');
     const avant = controlerRegistre(fiches(ada, eve), null, SECRET).registre;
