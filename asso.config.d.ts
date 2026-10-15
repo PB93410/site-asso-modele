@@ -99,6 +99,8 @@ export interface AssoConfig {
     label: string;
     reprise: string;
     finCampagneEssai: string;
+    /** Dernier jour où l'on peut demander un essai (AAAA-MM-JJ). Vide ou absent = toute l'année. */
+    finEssais?: string;
     /** Premier jour sans cours de l'été (AAAA-MM-JJ), ou vide. */
     fin: string;
     /** Vacances sans cours : du = premier jour sans cours, reprise = jour où les cours reprennent. */

@@ -12,6 +12,16 @@ export const SAISON_COURTE = `${anDebut.slice(2)}${anFin.slice(2)}`;
 /** Préfixe des numéros d'adhérent : ASE-2627- */
 export const SEASON_PREFIX = `${ASSO.sigle}-${SAISON_COURTE}-`;
 
+/**
+ * Les essais sont-ils encore ouverts ? Oui toute l'année si `saison.finEssais` est vide ;
+ * sinon jusqu'à la fin de ce jour-là, à l'heure de Paris.
+ */
+export function essaisOuverts(maintenant = Date.now(), fin = ASSO.saison.finEssais) {
+  if (!fin) return true;
+  const jour = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(maintenant);
+  return jour <= fin;
+}
+
 /** Libellé du mode « carte en ligne » (vide si pas de paiement en ligne). */
 export const MODE_CARTE = ASSO.adhesion.paiementUrl
   ? `Carte (${ASSO.adhesion.paiementNom || 'en ligne'})`
