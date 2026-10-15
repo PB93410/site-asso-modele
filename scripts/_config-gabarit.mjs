@@ -184,6 +184,11 @@ ${(c.lieux || []).map(lieu).join('\n')}
     reprise: ${q(c.saison?.reprise)},
     /** Fin de la période où le bouton principal pousse l'essai plutôt que l'adhésion. */
     finCampagneEssai: ${q(c.saison?.finCampagneEssai)},
+    /**
+     * Dernier jour où l'on peut demander un essai (AAAA-MM-JJ). Ensuite /essai l'annonce terminé et le serveur
+     * refuse les demandes. Vide = les essais restent ouverts toute l'année.
+     */
+    finEssais: ${q(c.saison?.finEssais)},
     /** Premier jour sans cours de l'été (AAAA-MM-JJ). Vide = non annoncé. */
     fin: ${q(c.saison?.fin)},
     /**

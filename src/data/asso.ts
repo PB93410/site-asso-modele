@@ -8,6 +8,7 @@ export {
   MODULES,
   SITE_URL,
   SEASON_PREFIX,
+  essaisOuverts,
   SAISON_COURTE,
   MODE_CARTE,
   PAYMENT_MODES,

@@ -169,6 +169,11 @@ const ASSO = {
     reprise: '2026-09-07',
     /** Fin de la période où le bouton principal pousse l'essai plutôt que l'adhésion. */
     finCampagneEssai: '2026-10-31',
+    /**
+     * Dernier jour où l'on peut demander un essai (AAAA-MM-JJ). Ensuite /essai l'annonce terminé et le serveur
+     * refuse les demandes. Vide = les essais restent ouverts toute l'année.
+     */
+    finEssais: '',
     /** Premier jour sans cours de l'été (AAAA-MM-JJ). Vide = non annoncé. */
     fin: '2027-07-04',
     /**

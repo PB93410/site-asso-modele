@@ -26,7 +26,7 @@ import {
 import { buildDateEssaiCell, formatEssaiDateLabel } from './_essai-dates.mjs';
 import { notifyBureauNewLead } from './_notify-bureau.mjs';
 import { sendEssaiNotification } from './_essai-mail.mjs';
-import { MODULES, SITE_URL } from '../../asso.derive.js';
+import { MODULES, SITE_URL, essaisOuverts } from '../../asso.derive.js';
 import { brancherStockage, modeStockage } from './_stockage.mjs';
 import { versV2 } from './_v2.mjs';
 import { etatPlace, inscrireFile } from './_liste-attente.mjs';
@@ -101,6 +101,10 @@ async function handler(event) {
   const originCheck = assertBrowserOrigin(event);
   if (!originCheck.ok) {
     return publicJson(originCheck.status, { ok: false, error: originCheck.error });
+  }
+  // Fin des essais (saison.finEssais dans asso.config.js) : plus de nouvelle demande.
+  if (!essaisOuverts()) {
+    return publicJson(410, { ok: false, error: 'Les essais sont terminés pour cette saison. Vous pouvez adhérer sur le site.' });
   }
   if (!consumeRateLimit(`essai:${clientIp(event)}`, 8, 10 * 60 * 1000).ok) {
     return publicJson(429, { ok: false, error: 'Trop de demandes. Réessayez dans quelques minutes.' });

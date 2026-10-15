@@ -2,7 +2,7 @@ import { useMemo, useState, type FormEvent } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { CheckCircle2, Loader2, MessageCircle } from 'lucide-react';
 import { waUrl as clubWaUrl } from '../data/siteData';
-import { ASSO, COURS_ESSAI_LABEL, MODULES, NB_ESSAIS, TARIF_LABEL } from '../data/asso';
+import { ASSO, COURS_ESSAI_LABEL, MODULES, NB_ESSAIS, TARIF_LABEL, essaisOuverts } from '../data/asso';
 import ContactDirect from '../components/ContactDirect';
 import { useScheduleFromSheet } from '../hooks/useSheetData';
 import { usePageMeta } from '../hooks/usePageMeta';
@@ -30,6 +30,55 @@ function UnCreneauNote({ className = '' }: { className?: string }) {
 }
 
 export default function EssaiPage() {
+  // Heure lue une fois : après `saison.finEssais`, plus de demande d'essai.
+  const [ouverts] = useState(() => essaisOuverts());
+  return ouverts ? <FormulaireEssai /> : <EssaisTermines />;
+}
+
+/** Après la fin des essais : la page reste, pour les anciens liens, et mène à l'adhésion. */
+function EssaisTermines() {
+  usePageMeta({
+    title: `Essais terminés — ${ASSO.nom}`,
+    description: `Les essais sont terminés pour la saison ${ASSO.saison.label}. Adhésion ${TARIF_LABEL} l'année, à tout moment de la saison.`,
+    path: '/essai',
+  });
+  return (
+    <main id="main-content" className="min-h-screen bg-brand-cream text-brand-black pt-[72px] pb-16">
+      <div className="content-max-width max-w-[560px] mx-auto px-4">
+        <header className="mb-8 pt-8">
+          <p className="font-mono text-[11px] tracking-[2px] uppercase text-orange-ink font-semibold mb-3">Essai</p>
+          <h1 className="font-display font-black text-[28px] md:text-[36px] leading-[1.05] text-brand-black mb-3">
+            Les essais sont terminés pour cette saison.
+          </h1>
+          <p className="font-body text-[17px] text-brand-black leading-relaxed">
+            Vous pouvez adhérer à tout moment : {TARIF_LABEL}&nbsp;l&apos;année.
+          </p>
+        </header>
+        <div className="flex flex-col gap-3">
+          <Link
+            to="/inscription/"
+            className="flex items-center justify-center w-full min-h-[52px] rounded-full bg-orange-primary hover:bg-orange-hover text-white font-body font-semibold text-[16px]"
+          >
+            Adhérer au club
+          </Link>
+          <Link
+            to="/#horaires"
+            className="flex items-center justify-center w-full min-h-[48px] rounded-full border border-black/15 bg-white font-body font-semibold text-[15px] text-brand-black"
+          >
+            Voir les horaires
+          </Link>
+        </div>
+        {ASSO.telephone ? (
+          <p className="font-body text-[15px] text-brand-gray leading-relaxed mt-6">
+            Une question ? Appelez le <strong className="text-brand-black">{ASSO.telephone}</strong>.
+          </p>
+        ) : null}
+      </div>
+    </main>
+  );
+}
+
+function FormulaireEssai() {
   const [params] = useSearchParams();
   const preset = params.get('cours') || '';
   const presetDate = params.get('date') || '';
