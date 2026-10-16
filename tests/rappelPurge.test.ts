@@ -78,7 +78,7 @@ describe('rappel de purge RGPD — la fonction planifiée', () => {
       ...(await orig<Record<string, unknown>>()),
       envoyerMail: async (m: { to: string; subject: string; text: string }) => void mails.push(m),
     }));
-    Object.assign(process.env, { STOCKAGE: 'google', GOOGLE_SERVICE_ACCOUNT_JSON: '{}', SMTP_HOST: 'h', MAIL_ASSO: 'asso@exemple.test' });
+    Object.assign(process.env, { STOCKAGE: 'google', GOOGLE_SERVICE_ACCOUNT_JSON: '{}', SMTP_HOST: 'h', MAIL_ASSO: 'asso@exemple.fr' });
     delete process.env.DEMO;
     return (await import('../netlify/functions/rappel-purge.mjs')).traiter as () => Promise<{ statusCode: number; body: string }>;
   }
@@ -87,7 +87,7 @@ describe('rappel de purge RGPD — la fonction planifiée', () => {
     const traiter = await charger(ESSAIS, ADHERENTS);
     expect((await traiter()).body).toBe('rappel envoyé');
     expect(mails).toHaveLength(1);
-    expect(mails[0].to).toBe('asso@exemple.test');
+    expect(mails[0].to).toBe('asso@exemple.fr');
     expect(mails[0].text).not.toMatch(/Ada|0600/);
   }, { timeout: 20_000 });
 

@@ -12,7 +12,7 @@ import {
 
 const SECRET = 'secret-de-test-0123456789abcdef0123456789';
 const fiche = (o: Record<string, string>) => ({ STATUT: 'À jour', ...o });
-const ada = fiche({ PRENOM: 'Ada', NOM: 'Exemple', MAIL: 'ada@exemple.test' });
+const ada = fiche({ PRENOM: 'Ada', NOM: 'Exemple', MAIL: 'ada@exemple.fr' });
 
 describe('relances de réinscription — calendrier et rythme', () => {
   it('seulement juin et début juillet, puis septembre (saison 2026-2027 → 2027)', () => {
@@ -40,39 +40,39 @@ describe('relances de réinscription — qui reçoit quoi', () => {
   const base = { suivante: [], etats: {}, ymd: '2027-06-07', secret: SECRET };
 
   it('adhérents à jour avec une adresse, pas encore réinscrits', () => {
-    const annule = fiche({ PRENOM: 'Bob', NOM: 'X', MAIL: 'bob@exemple.test', STATUT: 'Annulé' });
+    const annule = fiche({ PRENOM: 'Bob', NOM: 'X', MAIL: 'bob@exemple.fr', STATUT: 'Annulé' });
     const sansMail = fiche({ PRENOM: 'Cy', NOM: 'Y', MAIL: '' });
     const malForme = fiche({ PRENOM: 'Di', NOM: 'Z', MAIL: 'pas-une-adresse' });
-    const reinscrit = fiche({ PRENOM: 'Eve', NOM: 'W', MAIL: 'eve@exemple.test' });
+    const reinscrit = fiche({ PRENOM: 'Eve', NOM: 'W', MAIL: 'eve@exemple.fr' });
     const r = choisirDestinataires({
       ...base,
       fiches: [ada, annule, sansMail, malForme, reinscrit],
-      suivante: [{ PRENOM: 'Eve', NOM: 'W', MAIL: 'eve@exemple.test' }],
+      suivante: [{ PRENOM: 'Eve', NOM: 'W', MAIL: 'eve@exemple.fr' }],
     });
-    expect(r.map((d) => d.mail)).toEqual(['ada@exemple.test']);
+    expect(r.map((d) => d.mail)).toEqual(['ada@exemple.fr']);
     expect(r[0].numero).toBe(1);
   });
 
   it('une demande « En attente » (formulaire public, adresse non vérifiée) ne reçoit rien', () => {
-    const publique = fiche({ PRENOM: 'Fay', NOM: 'V', MAIL: 'victime@exemple.test', STATUT: 'En attente' });
+    const publique = fiche({ PRENOM: 'Fay', NOM: 'V', MAIL: 'victime@exemple.fr', STATUT: 'En attente' });
     expect(choisirDestinataires({ ...base, fiches: [publique] })).toEqual([]);
     expect(choisirDestinataires({ ...base, fiches: [{ ...publique, NUMERO: 'ASE-2627-042' }] })).toEqual([]);
     expect(choisirDestinataires({ ...base, fiches: [{ ...publique, STATUT: 'à jour' }] })).toEqual([]);
   });
 
   it('une adresse partagée par une famille ne reçoit qu’un mail, avec tous les prénoms', () => {
-    const fils = fiche({ PRENOM: 'Léo', NOM: 'Exemple', MAIL: 'ADA@exemple.test' });
+    const fils = fiche({ PRENOM: 'Léo', NOM: 'Exemple', MAIL: 'ADA@exemple.fr' });
     const r = choisirDestinataires({ ...base, fiches: [ada, fils] });
     expect(r).toHaveLength(1);
     expect(r[0].prenoms).toEqual(['Ada', 'Léo']);
   });
 
   it('respecte l’état : rythme, désinscription, plafond par passage', () => {
-    const cle = cleDestinataire('ada@exemple.test', SECRET);
+    const cle = cleDestinataire('ada@exemple.fr', SECRET);
     expect(choisirDestinataires({ ...base, fiches: [ada], etats: { [cle]: { n: 1, dernier: '2027-06-03' } } })).toEqual([]);
     expect(choisirDestinataires({ ...base, fiches: [ada], etats: { [cle]: { n: 1, dernier: '2027-05-20' } } })[0].numero).toBe(2);
     expect(choisirDestinataires({ ...base, fiches: [ada], etats: { [cle]: { stop: true } } })).toEqual([]);
-    const beaucoup = Array.from({ length: 60 }, (_, i) => fiche({ PRENOM: `P${i}`, NOM: 'N', MAIL: `p${i}@exemple.test` }));
+    const beaucoup = Array.from({ length: 60 }, (_, i) => fiche({ PRENOM: `P${i}`, NOM: 'N', MAIL: `p${i}@exemple.fr` }));
     expect(choisirDestinataires({ ...base, fiches: beaucoup })).toHaveLength(40);
   });
 });
@@ -89,7 +89,7 @@ describe('relances de réinscription — le mail et la désinscription', () => {
   });
 
   it('le jeton de désinscription ne contient aucune adresse et ne se falsifie pas', () => {
-    const cle = cleDestinataire('ada@exemple.test', SECRET);
+    const cle = cleDestinataire('ada@exemple.fr', SECRET);
     const j = jetonStop(cle, '2026-2027', SECRET);
     expect(j).not.toMatch(/ada|exemple/);
     expect(cleDuJetonStop(j, '2026-2027', SECRET)).toBe(cle);
@@ -165,7 +165,7 @@ describe('relances de réinscription — fonction planifiée', () => {
     const traiter = await charger('oui');
     expect((await traiter({ headers: {} })).body).toBe('envoyés 1');
     expect(mails).toHaveLength(1);
-    expect(mails[0].to).toBe('ada@exemple.test');
+    expect(mails[0].to).toBe('ada@exemple.fr');
     expect(mails[0].text).toContain('/api/reinscription-stop?t=');
     const etat = stock.get('saison-2026-2027') as Record<string, { n: number; dernier: string }>;
     expect(Object.values(etat)).toEqual([{ n: 1, dernier: '2027-06-07' }]);
@@ -189,7 +189,7 @@ describe('relances de réinscription — page de désinscription', () => {
 
   it('un lien valide enregistre la désinscription, sans afficher aucune adresse', async () => {
     const traiter = await charger();
-    const cle = cleDestinataire('ada@exemple.test', SECRET);
+    const cle = cleDestinataire('ada@exemple.fr', SECRET);
     const r = await traiter({ httpMethod: 'GET', headers: {}, queryStringParameters: { t: jetonStop(cle, '2026-2027', SECRET) } });
     expect(r.statusCode).toBe(200);
     expect(r.body).toContain('C’est noté');
@@ -200,7 +200,7 @@ describe('relances de réinscription — page de désinscription', () => {
 
   it('un lien faux, modifié ou absent : 404, rien d’enregistré', async () => {
     const traiter = await charger();
-    const cle = cleDestinataire('ada@exemple.test', SECRET);
+    const cle = cleDestinataire('ada@exemple.fr', SECRET);
     expect((await traiter({ httpMethod: 'GET', headers: {}, queryStringParameters: { t: `${cle}.${'a'.repeat(22)}` } })).statusCode).toBe(404);
     expect((await traiter({ httpMethod: 'GET', headers: {}, queryStringParameters: {} })).statusCode).toBe(404);
     expect((await traiter({ httpMethod: 'POST', headers: {}, queryStringParameters: {} })).statusCode).toBe(405);

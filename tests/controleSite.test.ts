@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { controlerSite, controlesDuSite, sujetProbleme, texteProbleme } from '../netlify/functions/_controle-site.mjs';
 import { controleSiteActif } from '../netlify/functions/controle-site.mjs';
 
-const BASE = 'https://exemple.test';
+const BASE = 'https://exemple.fr';
 const sansPause = async () => {};
 const TOUS = { essais: true, adhesion: true, espace: true };
 const CONTROLES = controlesDuSite(TOUS, 'ASE');
