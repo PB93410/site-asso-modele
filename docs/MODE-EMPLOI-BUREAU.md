@@ -147,6 +147,10 @@ Rien n’est enregistré : le PDF est fabriqué au moment du clic.
 
 Chaque nuit, le site vérifie que ses pages principales s’ouvrent. Ce mail dit lesquelles ne répondaient pas (deux essais à 15 secondes d’écart). Ouvrez la page : si elle marche, c’était passager. Sinon, prévenez le référent ; si une mise en ligne vient d’avoir lieu, il peut republier la version précédente sur Netlify.
 
+## Mail « RGPD : anciens essais à supprimer » (essais dans Google Sheets)
+
+Le 2 de chaque mois, si des demandes d’essai ont plus de 12 mois et n’ont mené à aucune adhésion, ce mail le signale (un nombre, aucun nom). Rien ne se supprime tout seul : transmettez au référent, qui lance la commande indiquée.
+
 ## Mail « Numéros d’adhérent décalés » (adhérents dans Google Sheets)
 
 Chaque matin, le site vérifie que chaque numéro d’adhérent est toujours sur la fiche de la personne qui l’a reçu. Ce mail veut presque toujours dire qu’un **tri du tableau** a laissé la colonne NUMERO derrière. **Ne renumérotez rien à la main** : dans Google Sheets, Fichier → Historique des versions, revenez à la version d’avant le tri, ou prévenez le référent.
