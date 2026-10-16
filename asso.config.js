@@ -57,6 +57,8 @@ const ASSO = {
     tablette: false,
     /** Espace adhérent : « Garder ma carte sur ce téléphone », pour l'ouvrir sans internet (salle sans réseau), sur choix de la personne (demande espace). */
     carteHorsLigne: false,
+    /** Demande d'avis Google par mail, un à deux mois après l'adhésion, une fois par saison (demande reseaux.avisGoogle et l'envoi des mails). */
+    demandeAvis: false,
   },
 
   // ---- Identité ----

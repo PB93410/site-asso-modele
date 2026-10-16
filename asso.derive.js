@@ -53,6 +53,7 @@ export const MODULES = {
   checklists: false,
   tablette: false,
   carteHorsLigne: false,
+  demandeAvis: false,
   ...(ASSO.modules || {}),
 };
 if (!MODULES.bureau) MODULES.mail = false;

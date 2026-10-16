@@ -714,7 +714,7 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
         label="S’inscrire en ligne"
         aide="Formulaire d’adhésion complet ; les fiches arrivent dans un tableau Google. Sinon : inscription sur place."
         checked={m.adhesion}
-        onChange={(v) => maj('modules', { ...m, adhesion: v, financement: v ? m.financement : false, clubEnChiffres: v ? m.clubEnChiffres : false })}
+        onChange={(v) => maj('modules', { ...m, adhesion: v, financement: v ? m.financement : false, clubEnChiffres: v ? m.clubEnChiffres : false, demandeAvis: v ? m.demandeAvis : false })}
       />
       <Case
         label="Espace bénévoles"
@@ -844,6 +844,14 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
           aide="Trois questions anonymes (va-t-elle adhérer, qu’est-ce qui la retient, une idée), lien dans le message « merci » du bureau. Les résultats s’affichent dans l’espace bénévoles. Aucun nom n’est demandé."
           checked={m.sondageEssai}
           onChange={(v) => maj('modules.sondageEssai', v)}
+        />
+      ) : null}
+      {m.adhesion ? (
+        <Case
+          label="Demande d’avis Google"
+          aide="Un mail aux adhérents à jour, un à deux mois après leur adhésion, avec le lien de votre fiche Google (à remplir à l’étape des contacts). Une fois par saison au plus, avec un lien pour ne plus en recevoir. Demande l’envoi des mails."
+          checked={m.demandeAvis}
+          onChange={(v) => maj('modules.demandeAvis', v)}
         />
       ) : null}
       {m.adhesion ? (

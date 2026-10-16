@@ -46,6 +46,8 @@ export interface AssoModules {
   tablette: boolean;
   /** Carte consultable sans internet. Absent = désactivé. */
   carteHorsLigne: boolean;
+  /** Demande d'avis Google après l'adhésion. Absent = désactivé. */
+  demandeAvis: boolean;
 }
 
 export interface AssoListeAttente {

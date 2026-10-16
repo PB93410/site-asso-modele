@@ -407,6 +407,13 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                         <td className="p-2">Au plus trois rappels en juin et en septembre ; lien pour ne plus les recevoir dans chaque mail</td>
                         <td className="p-2">Saison en cours</td>
                       </tr>
+                      {MODULES.demandeAvis ? (
+                        <tr className="border-b border-black/[0.06]">
+                          <td className="p-2">Demande d&apos;avis Google : empreinte chiffrée de l&apos;e-mail, date d&apos;envoi, désinscription</td>
+                          <td className="p-2">Un seul mail, un à deux mois après l&apos;adhésion, pour proposer de laisser un avis ; lien pour ne plus en recevoir</td>
+                          <td className="p-2">Saison en cours</td>
+                        </tr>
+                      ) : null}
                       <tr className="border-b border-black/[0.06]">
                         <td className="p-2">Demandes /essai (prénom, nom, tél., email facultatif, créneau)</td>
                         <td className="p-2">Organisation de l&apos;essai et relances dans la saison</td>

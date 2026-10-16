@@ -72,6 +72,7 @@ Dans `asso.config.js → modules`, chaque fonction s’active séparément :
 | `checklists` | Checklists de saison dans Bureau → Autre (rentrée, forum, cartes, réinscriptions, changement de saison), cochées par tout le bureau avec la date ; listes par défaut ou `asso.config.js → checklists` | Bureau. **Désactivé par défaut.** |
 | `tablette` | Mode tablette du forum `/essai/tablette` : plein écran, trois champs, écran vidé après chaque personne (10 s) ou après 90 s sans toucher ; demandes notées « Forum » | Module `essais`. QR facultatif dans `public/assets/qr-essai.png`. **Désactivé par défaut.** |
 | `carteHorsLigne` | Espace adhérent : « Garder ma carte sur ce téléphone » (service worker `public/sw-carte.js`, portée `/espace`, réseau d’abord) ; seulement la page, la fiche et la carte ; se déconnecter efface tout | Module `espace`. **Désactivé par défaut.** |
+| `demandeAvis` | Mail de demande d’avis Google aux adhérents « À jour », 30 à 60 jours après l’adhésion, une fois par saison, avec lien de désinscription (chaque mercredi) | `reseaux.avisGoogle`, envoi des mails, `BUREAU_SECRET`. `AVIS_GOOGLE=apercu` compte sans envoyer. **Désactivé par défaut.** |
 | `attestations` | PDF d’adhésion, reçu fiscal (si éligible), attestation CE ; accès n° + e-mail ou lien mail ; aussi depuis le bureau | Bureau pour la vue bénévoles. Reçu fiscal : `attestations.recuFiscal`. **Désactivé par défaut.** |
 
 Les données sont rangées sur Netlify, avec le site : aucun compte Google n’est nécessaire. Google Sheets reste possible ([docs/DOC-DONNEES.md](docs/DOC-DONNEES.md)).
