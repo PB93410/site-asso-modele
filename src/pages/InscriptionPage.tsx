@@ -32,6 +32,7 @@ import {
 } from '../lib/adhesionEtapes';
 import { buildHowToJoinSchema } from '../lib/schema';
 import { aidesProposees, calculerReste, libelleAides } from '../lib/financement';
+import { CONNU_PARRAINAGE, connuDepuisLien } from '../lib/parrainage';
 
 const COURSES = [
   'Gym Douce',
@@ -182,6 +183,7 @@ export default function InscriptionPage() {
   const [form, setForm] = useState<FormState>(() => ({
     ...initial,
     mode_paiement: wantsCarte ? MODE_CARTE : '',
+    connu: connuDepuisLien(searchParams.toString()),
   }));
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -949,6 +951,7 @@ export default function InscriptionPage() {
                     {[
                       'Forum des associations',
                       'Google / internet',
+                      ...(MODULES.parrainage ? [CONNU_PARRAINAGE] : []),
                       'Bouche à oreille',
                       'Mairie / flyer',
                       'Je revenais déjà',

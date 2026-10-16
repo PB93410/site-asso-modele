@@ -700,13 +700,29 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
         label="Réserver un essai gratuit en ligne"
         aide="Les visiteurs choisissent un créneau ; la demande arrive dans un tableau Google partagé par le bureau. Sinon : ils appellent ou écrivent."
         checked={m.essais}
-        onChange={(v) => maj('modules.essais', v)}
+        onChange={(v) => maj('modules', { ...m, essais: v, tablette: v ? m.tablette : false, sondageEssai: v ? m.sondageEssai : false, essaiMail: v ? m.essaiMail : false })}
       />
+      {m.essais ? (
+        <Case
+          label="Mode tablette pour le forum"
+          aide="Une page plein écran (/essai/tablette) pour la tablette du stand : prénom, nom, téléphone, un cours. Après chaque personne, l’écran se vide tout seul."
+          checked={m.tablette}
+          onChange={(v) => maj('modules.tablette', v)}
+        />
+      ) : null}
+      {m.essais ? (
+        <Case
+          label="E-mail facultatif à l’essai : rappel la veille et merci après"
+          aide="La personne peut laisser son e-mail en demandant un essai. Elle reçoit seulement le rappel la veille et un mot après l’essai (avec le lien pour adhérer), avec un lien pour ne plus rien recevoir. Adresse effacée après 12 mois. Demande l’envoi des mails."
+          checked={m.essaiMail}
+          onChange={(v) => maj('modules.essaiMail', v)}
+        />
+      ) : null}
       <Case
         label="S’inscrire en ligne"
         aide="Formulaire d’adhésion complet ; les fiches arrivent dans un tableau Google. Sinon : inscription sur place."
         checked={m.adhesion}
-        onChange={(v) => maj('modules', { ...m, adhesion: v, financement: v ? m.financement : false })}
+        onChange={(v) => maj('modules', { ...m, adhesion: v, financement: v ? m.financement : false, clubEnChiffres: v ? m.clubEnChiffres : false, demandeAvis: v ? m.demandeAvis : false })}
       />
       <Case
         label="Espace bénévoles"
@@ -723,6 +739,9 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
             wallet: v ? m.wallet : false,
             rapport: v ? m.rapport : false,
             attestations: v ? m.attestations : false,
+            sondageEssai: v ? m.sondageEssai : false,
+            checklists: v ? m.checklists : false,
+            inscriptionsEvenements: v ? m.inscriptionsEvenements : false,
           })
         }
       />
@@ -822,6 +841,46 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
       ) : null}
       {m.bureau ? (
         <Case
+          label="Inscriptions aux événements"
+          aide="Une page « Événements » : le bureau ouvre les inscriptions d’un événement (nombre de places, covoiturage), le public s’inscrit en une minute, le bureau voit les inscrits et efface la liste après."
+          checked={m.inscriptionsEvenements}
+          onChange={(v) => maj('modules.inscriptionsEvenements', v)}
+        />
+      ) : null}
+      {m.bureau ? (
+        <Case
+          label="Checklists de la saison"
+          aide="Dans l’espace bénévoles : rentrée, forum, cartes, réinscriptions, changement de saison. Chaque case cochée est vue par tout le bureau, avec sa date. Listes modifiables dans asso.config.js."
+          checked={m.checklists}
+          onChange={(v) => maj('modules.checklists', v)}
+        />
+      ) : null}
+      {m.bureau && m.essais ? (
+        <Case
+          label="Petit sondage après l’essai"
+          aide="Trois questions anonymes (va-t-elle adhérer, qu’est-ce qui la retient, une idée), lien dans le message « merci » du bureau. Les résultats s’affichent dans l’espace bénévoles. Aucun nom n’est demandé."
+          checked={m.sondageEssai}
+          onChange={(v) => maj('modules.sondageEssai', v)}
+        />
+      ) : null}
+      {m.adhesion ? (
+        <Case
+          label="Demande d’avis Google"
+          aide="Un mail aux adhérents à jour, un à deux mois après leur adhésion, avec le lien de votre fiche Google (à remplir à l’étape des contacts). Une fois par saison au plus, avec un lien pour ne plus en recevoir. Demande l’envoi des mails."
+          checked={m.demandeAvis}
+          onChange={(v) => maj('modules.demandeAvis', v)}
+        />
+      ) : null}
+      {m.adhesion ? (
+        <Case
+          label="Page publique « Le club en chiffres »"
+          aide="Ancienneté, cours, séances par semaine, nombre d’adhérents arrondi, âges et communes. Une tranche ou une commune de moins de 10 personnes n’est jamais affichée. Lien en bas de page."
+          checked={m.clubEnChiffres}
+          onChange={(v) => maj('modules.clubEnChiffres', v)}
+        />
+      ) : null}
+      {m.bureau ? (
+        <Case
           label="Rapport annuel (AG, subvention)"
           aide="Effectifs, essais devenus adhésions, présences si le module est allumé, âges et communes. PDF et CSV depuis le bureau."
           checked={m.rapport}
@@ -832,8 +891,24 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
         label="Espace adhérent"
         aide="Sans mot de passe : l’adhérent tape son e-mail et reçoit un code. Il retrouve sa carte, ce qu’il reste à payer, ses attestations et ses présences, et peut signaler un changement au bureau. Demande l’envoi des mails."
         checked={m.espace}
-        onChange={(v) => maj('modules.espace', v)}
+        onChange={(v) => maj('modules', { ...m, espace: v, parrainage: v ? m.parrainage : false, carteHorsLigne: v ? m.carteHorsLigne : false })}
       />
+      {m.espace ? (
+        <Case
+          label="Carte d’adhérent sans internet"
+          aide="Dans l’espace adhérent : « Garder ma carte sur ce téléphone », pour la montrer dans une salle sans réseau. Seulement si la personne le choisit ; se déconnecter efface tout."
+          checked={m.carteHorsLigne}
+          onChange={(v) => maj('modules.carteHorsLigne', v)}
+        />
+      ) : null}
+      {m.espace ? (
+        <Case
+          label="Inviter une personne (parrainage)"
+          aide="Dans l’espace adhérent : un message prêt à envoyer par WhatsApp, avec un lien vers l’essai (ou l’inscription après la fin des essais). Le lien est le même pour tous : le bureau voit « Parrainage » comme provenance, jamais qui a invité."
+          checked={m.parrainage}
+          onChange={(v) => maj('modules.parrainage', v)}
+        />
+      ) : null}
       <Case
         label="Attestations PDF"
         aide="L’adhérent télécharge son attestation d’adhésion, un reçu fiscal (si l’asso est éligible) et une attestation pour le comité d’entreprise. Numéro + e-mail, ou un lien reçu par mail. Le bureau peut aussi les fabriquer."

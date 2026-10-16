@@ -71,6 +71,24 @@ const ASSO = {
     attestations: ${m.attestations === true ? 'true' : 'false'},
     /** Espace adhérent sans mot de passe (/espace) : code par e-mail, carte, paiement, attestations, présences. */
     espace: ${m.espace === true ? 'true' : 'false'},
+    /** Parrainage léger dans l'espace adhérent : un lien commun à envoyer (WhatsApp ou copier), provenance « Parrainage » sans nom (demande espace). */
+    parrainage: ${m.parrainage === true ? 'true' : 'false'},
+    /** Mini-sondage anonyme après l'essai (/sondage-essai) : trois questions, aucun nom ; lien dans le message « merci », résultats au bureau. */
+    sondageEssai: ${m.sondageEssai === true ? 'true' : 'false'},
+    /** Page publique « Le club en chiffres » (/le-club-en-chiffres) : ancienneté, cours, séances, adhérents arrondis, âges et communes de 10 personnes au moins. Aucun nom. */
+    clubEnChiffres: ${m.clubEnChiffres === true ? 'true' : 'false'},
+    /** Checklists de saison du bureau (rentrée, forum, cartes, réinscriptions, changement de saison), cochées par tous. Ses propres listes : clé « checklists » (facultative, voir asso.config.d.ts), sinon celles par défaut. */
+    checklists: ${m.checklists === true ? 'true' : 'false'},
+    /** Mode tablette du forum (/essai/tablette) : plein écran, trois champs, écran vidé après chaque personne (demande essais). */
+    tablette: ${m.tablette === true ? 'true' : 'false'},
+    /** Espace adhérent : « Garder ma carte sur ce téléphone », pour l'ouvrir sans internet (salle sans réseau), sur choix de la personne (demande espace). */
+    carteHorsLigne: ${m.carteHorsLigne === true ? 'true' : 'false'},
+    /** Demande d'avis Google par mail, un à deux mois après l'adhésion, une fois par saison (demande reseaux.avisGoogle et l'envoi des mails). */
+    demandeAvis: ${m.demandeAvis === true ? 'true' : 'false'},
+    /** E-mail facultatif sur /essai : rappel la veille de l'essai et mot après l'essai, rien d'autre ; adresse rangée à part, effacée après 12 mois (demande l'envoi des mails). */
+    essaiMail: ${m.essaiMail === true ? 'true' : 'false'},
+    /** Page /evenements : agenda public et inscriptions aux événements ouverts par le bureau (places limitées, covoiturage) ; liste effacée par le bureau après l'événement. */
+    inscriptionsEvenements: ${m.inscriptionsEvenements === true ? 'true' : 'false'},
   },
 
   // ---- Identité ----

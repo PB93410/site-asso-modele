@@ -21,7 +21,8 @@ import { versV2 } from './_v2.mjs';
 import { lireOngletSite } from './_onglet.mjs';
 import { PRESENCES_HEADERS, ONGLET_PRESENCES } from '../../src/lib/presence.js';
 
-async function donnees() {
+/** Totaux du registre (aussi pour la page publique « Le club en chiffres », qui les arrondit). */
+export async function donnees() {
   const adh = await readSheetAsObjects(getAdherentsSheetId(), `'${getAdherentsTab()}'!A:Z`);
   const ess = await readSheetAsObjects(getEssaisSheetId(), `'${getEssaisTab()}'!A:Z`);
   let presences = [];

@@ -34,6 +34,24 @@ export interface AssoModules {
   attestations: boolean;
   /** Espace adhérent sans mot de passe. Absent = désactivé. */
   espace: boolean;
+  /** Parrainage dans l'espace adhérent. Absent = désactivé. */
+  parrainage: boolean;
+  /** Mini-sondage après l'essai. Absent = désactivé. */
+  sondageEssai: boolean;
+  /** Page publique « Le club en chiffres ». Absent = désactivé. */
+  clubEnChiffres: boolean;
+  /** Checklists de saison du bureau. Absent = désactivé. */
+  checklists: boolean;
+  /** Mode tablette du forum. Absent = désactivé. */
+  tablette: boolean;
+  /** Carte consultable sans internet. Absent = désactivé. */
+  carteHorsLigne: boolean;
+  /** Demande d'avis Google après l'adhésion. Absent = désactivé. */
+  demandeAvis: boolean;
+  /** E-mail facultatif à l'essai (rappel, merci). Absent = désactivé. */
+  essaiMail: boolean;
+  /** Inscriptions aux événements. Absent = désactivé. */
+  inscriptionsEvenements: boolean;
 }
 
 export interface AssoListeAttente {
@@ -51,6 +69,16 @@ export interface AssoAttestations {
   /** Reçu fiscal : seulement si l’association est éligible. */
   recuFiscal: boolean;
   objet: string;
+}
+
+export interface AssoChecklist {
+  /** Identifiant stable (minuscules, chiffres, tirets) : sert de clé aux cases cochées. Ne pas le changer en cours de saison. */
+  id: string;
+  titre: string;
+  /** Période, ex. « Fin août, septembre ». */
+  quand: string;
+  /** qui : « bureau », ou « référent » pour une étape technique ; ou : où cliquer dans le bureau (facultatif). */
+  etapes: { id: string; texte: string; qui: 'bureau' | 'référent'; ou?: string }[];
 }
 
 export interface AssoConfig {
@@ -109,6 +137,8 @@ export interface AssoConfig {
     feriesAvecCours: string[];
   };
   couleurs: { primaire: string; primaireHover: string; secondaire: string; secondaireHover: string };
+  /** Checklists de saison du bureau (modules.checklists). Absent ou vide = listes par défaut (src/data/checklistsSaison.ts). */
+  checklists?: AssoChecklist[];
   logo: string;
   heroImage: string;
   heroAlt: string;

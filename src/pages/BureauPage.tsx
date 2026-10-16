@@ -29,6 +29,8 @@ import {
   FileText,
   FileCheck,
   ListOrdered,
+  ListChecks,
+  CalendarCheck,
 } from 'lucide-react';
 import BureauAide from '../components/BureauAide';
 import { clearBureauToken, getBureauRole, getBureauToken, setBureauRole, setBureauToken } from '../lib/bureauSession';
@@ -45,6 +47,9 @@ import { EnTete, MenuGroupe, MenuLigne, Retour } from '../components/bureau/ui';
 import { bouton } from '../components/bureau/styles';
 import BureauSheetLinks from '../components/BureauSheetLinks';
 import BureauSiteEditor from '../components/BureauSiteEditor';
+import BureauSondageEssai from '../components/bureau/BureauSondageEssai';
+import BureauChecklistsTab from '../components/bureau/BureauChecklistsTab';
+import BureauEvenementsTab from '../components/bureau/BureauEvenementsTab';
 import { useScheduleFromSheet } from '../hooks/useSheetData';
 import { adherentEssaiKey, adhesionNeedsMoney, isAdherentAJourForEssai, isTestPrenom, matchesPerson, nationalFrTel, telDedupeKey } from '../lib/bureauSearch';
 import { appendRelanceNote, classifyRelances, type LiveRelanceCard } from '../lib/bureauRelancesQueue';
@@ -97,7 +102,7 @@ type EssaiItem = {
 };
 
 type TabId = 'today' | 'adhesions' | 'relances' | 'essais' | 'more';
-type MoreKind = 'menu' | 'cartes' | 'planning' | 'events' | 'aide';
+type MoreKind = 'menu' | 'cartes' | 'planning' | 'events' | 'aide' | 'sondage' | 'checklists' | 'inscriptions';
 type EssaisVue = 'nouveaux' | 'week' | 'person';
 type PorteId = 'seance' | 'admin';
 
@@ -1338,8 +1343,14 @@ export default function BureauPage() {
             <MenuGroupe titre="Le site">
               <MenuLigne icone={Clock} label="Horaires" aide="Ce que voit le site" onClick={() => setMoreKind('planning')} />
               <MenuLigne icone={CalendarDays} label="Événements" aide="Affichés sur le site" onClick={() => setMoreKind('events')} />
+              {MODULES.inscriptionsEvenements ? (
+                <MenuLigne icone={CalendarCheck} label="Inscriptions événements" aide="Places, inscrits, covoiturage" onClick={() => setMoreKind('inscriptions')} />
+              ) : null}
             </MenuGroupe>
             <MenuGroupe titre="Bureau">
+              {MODULES.checklists ? (
+                <MenuLigne icone={ListChecks} label="Checklists de la saison" aide="Rentrée, forum, cartes, réinscriptions" onClick={() => setMoreKind('checklists')} />
+              ) : null}
               <MenuLigne icone={Calendar} label="Agenda" aide="Agenda unique du bureau, aussi sur les téléphones" to="/bureau/agenda" />
               {MODULES.presences ? (
                 <MenuLigne icone={CalendarDays} label="Présences" aide="QR du jour, stats, personnes sans nouvelles" to="/bureau/presences" />
@@ -1349,6 +1360,9 @@ export default function BureauPage() {
               ) : null}
               {MODULES.listeAttente ? (
                 <MenuLigne icone={ListOrdered} label="Liste d’attente" aide="Cours complets, places à proposer" to="/bureau/liste-attente" />
+              ) : null}
+              {MODULES.sondageEssai ? (
+                <MenuLigne icone={MessageCircle} label="Avis après l’essai" aide="Sondage anonyme : intention d’adhérer, ce qui retient" onClick={() => setMoreKind('sondage')} />
               ) : null}
               {MODULES.rapport ? (
                 <MenuLigne icone={FileText} label="Rapport annuel" aide="AG et subvention : effectifs, essais, communes" to="/bureau/rapport" />
@@ -1424,6 +1438,27 @@ export default function BureauPage() {
           <div className="space-y-3">
             <Retour onClick={() => setMoreKind('menu')} />
             <BureauSiteEditor kind="events" token={token} onToast={showToast} />
+          </div>
+        )}
+
+        {tab === 'more' && moreKind === 'inscriptions' && token && porte === 'admin' && MODULES.inscriptionsEvenements && (
+          <div className="space-y-3">
+            <Retour onClick={() => setMoreKind('menu')} />
+            <BureauEvenementsTab />
+          </div>
+        )}
+
+        {tab === 'more' && moreKind === 'checklists' && token && porte === 'admin' && MODULES.checklists && (
+          <div className="space-y-3">
+            <Retour onClick={() => setMoreKind('menu')} />
+            <BureauChecklistsTab />
+          </div>
+        )}
+
+        {tab === 'more' && moreKind === 'sondage' && token && porte === 'admin' && MODULES.sondageEssai && (
+          <div className="space-y-3">
+            <Retour onClick={() => setMoreKind('menu')} />
+            <BureauSondageEssai />
           </div>
         )}
 

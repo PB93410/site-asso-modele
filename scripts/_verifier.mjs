@@ -265,6 +265,16 @@ export function verifierEnv(env, modules) {
       'Indiquez-les dans asso.config.js : ils figurent sur le modèle Cerfa.',
     ));
   }
+  if (modules.demandeAvis && !String(asso.reseaux?.avisGoogle || '').trim()) {
+    r.push(attention('Demande d’avis Google : lien d’avis vide.', 'Renseignez reseaux.avisGoogle dans asso.config.js, sinon aucun mail ne part.'));
+  }
+  const mailsAuto = [modules.essaiMail && 'mails de l’essai', modules.demandeAvis && 'demande d’avis'].filter(Boolean);
+  if (mailsAuto.length && (!modeEnvoi(env, false) || !a('BUREAU_SECRET'))) {
+    r.push(attention(
+      `Sans envoi de mail ou sans BUREAU_SECRET, rien ne part : ${mailsAuto.join(', ')}.`,
+      'Voir docs/DOC-MAIL.md ; BUREAU_SECRET signe les liens de désinscription.',
+    ));
+  }
   if (modules.financement) {
     const f = asso.financement || {};
     if (!(Number(f.passSport) > 0) && !(Number(f.ancvMax) > 0) && !(Number(f.comiteEntreprise) > 0)) {

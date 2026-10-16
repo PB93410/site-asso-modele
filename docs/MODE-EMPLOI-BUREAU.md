@@ -54,6 +54,14 @@ QR : https://www.exemple-asso.fr/essai?source=forum
 
 ---
 
+## E-mail à l’essai, si la fonction est activée
+
+Sur `/essai`, la personne peut laisser son e-mail. Le site lui envoie alors, tout seul, le rappel la veille de l’essai et un mot le lendemain (avec le lien pour adhérer en 1 minute). C’est noté dans les notes de l’essai (« Mail veille essai… »). L’adresse n’apparaît pas dans le tableau des essais ; elle ne sert à rien d’autre et s’efface après 12 mois.
+
+## Tablette du stand, si la fonction est activée
+
+Sur la tablette, ouvrez **/essai/tablette** (ajoutez-la à l’écran d’accueil). Les visiteurs tapent prénom, nom, téléphone, et choisissent un cours s’ils veulent. Après l’envoi, un « merci » s’affiche 10 secondes, puis l’écran se vide pour la personne suivante (aussi au bout de 90 secondes sans toucher). Les demandes arrivent dans **Essais**, notées « Forum ».
+
 ## Demandes d’essai — les trois listes
 
 Chaque fiche : bouton vert WhatsApp (texte déjà écrit) et, si besoin, **Appeler**.
@@ -80,6 +88,12 @@ Pour classer : **A adhéré**, **Ne veut plus**, **Plus tard**. La fiche sort de
 ## Horaires et événements du site
 
 Choisissez, puis **Enregistrer**. Une confirmation s’affiche. Le site public se met à jour tout seul (quelques minutes). Pas besoin du référent. En cas de doute, n’enregistrez pas.
+
+---
+
+## Inscriptions aux événements, si la fonction est activée
+
+**Autre → Inscriptions événements** : pour un événement de l’agenda, indiquez le nombre de places (0 = sans limite) et cochez « covoiturage » si besoin, puis ouvrez. Le public s’inscrit sur la page **Événements** du site et ne voit que les places restantes. Vous voyez les inscrits, leur téléphone et le covoiturage (places proposées, personnes qui en cherchent). Après l’événement : **Clore et effacer**, la liste disparaît.
 
 ---
 
@@ -118,10 +132,12 @@ Les adhérents s’inscrivent eux-mêmes (e-mail + case à cocher). Ils se retir
 
 Les adhérents ouvrent leur espace sur le site (lien « Mon espace adhérent » en bas de page) avec l’e-mail de leur fiche : ils reçoivent un code, sans mot de passe. Ils y trouvent leur carte, ce qu’il reste à payer, leurs attestations et leurs présences.
 
+- **Carte sans internet** (si la fonction est activée) : sous la carte, « Garder ma carte sur ce téléphone ». La carte s’ouvre ensuite même sans réseau dans la salle. « Me déconnecter » l’efface du téléphone.
 - **« Je ne reçois pas le code »** : vérifiez l’e-mail de la fiche (une faute suffit), faites regarder dans les indésirables. Sinon, dans **Cartes**, bouton **Lien d’accès à son espace** : le lien est copié, collez-le dans un SMS ou un WhatsApp. Il marche 72 heures, une seule fois.
 - **« J’ai changé d’adresse »** : l’adhérent le signale depuis son espace, vous recevez un mail. C’est vous qui corrigez la fiche.
 - **Photos** : un adhérent peut changer sa réponse depuis son espace. Sa fiche est mise à jour toute seule, et vous recevez un mail. S’il dit « Non », retirez les photos publiées où on le reconnaît.
 - **Réinscriptions (juin à septembre)** : les adhérents à jour se réinscrivent depuis leur espace pour la saison suivante. Ils paient à la rentrée. La liste est dans **Autre → Réinscriptions**. À la rentrée, après le changement de saison, leur paiement se confirme dans **À payer**, comme d’habitude.
+- **Demande d’avis Google** (si la fonction est activée) : un à deux mois après leur adhésion, les adhérents à jour reçoivent un mail avec le lien pour laisser un avis, une seule fois par saison. Ceux qui ne veulent pas en recevoir cliquent sur le lien en bas du mail.
 - **Rappels de réinscription** (si le référent les a allumés) : en juin puis en septembre, les adhérents à jour pas encore réinscrits reçoivent au plus trois mails, à deux semaines d’écart, avec un lien pour ne plus les recevoir. Une famille qui partage une adresse ne reçoit qu’un mail.
 
 ## Carte Wallet, si la fonction est activée
@@ -147,6 +163,14 @@ Rien n’est enregistré : le PDF est fabriqué au moment du clic.
 ## Message « merci » après l’essai : « Adhérer en 1 minute »
 
 Dans **Relances**, le message après un essai contient un lien personnel vers le formulaire d’inscription : prénom, nom et téléphone de l’essai y sont déjà remplis, la personne vérifie et complète. Le lien ne contient aucune donnée lisible et marche 45 jours. S’il manque (réglage du référent absent), le message renvoie vers la page des tarifs, comme avant.
+
+## Checklists de la saison, si la fonction est activée
+
+**Autre → Checklists de la saison** : les grandes étapes (rentrée, forum, cartes, réinscriptions, changement de saison). Cochez au fur et à mesure : tout le bureau voit les mêmes cases, avec la date. Les étapes marquées « référent » sont techniques. Les cases repartent de zéro à chaque saison.
+
+## Avis après l’essai, si la fonction est activée
+
+Le message « merci » envoyé après l’essai contient un lien vers trois questions anonymes. **Autre → Avis après l’essai** : combien pensent adhérer, ce qui retient les autres (horaires, prix…), leurs idées. Aucun nom. Les réponses de plus de 12 mois s’effacent.
 
 ## Mail « Le site a un problème »
 

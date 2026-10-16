@@ -1,5 +1,5 @@
 import { Shield, Cookie, Mail, FileText } from 'lucide-react';
-import { ASSO, HAS_FEDERATION, PAIEMENTS_BUREAU, PAIEMENT_NOM, SITE_URL } from '../data/asso';
+import { ASSO, HAS_FEDERATION, MODULES, PAIEMENTS_BUREAU, PAIEMENT_NOM, SITE_URL } from '../data/asso';
 
 const FED = ASSO.federation.sigle || ASSO.federation.nom || 'fédération';
 
@@ -155,7 +155,29 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                     Le téléphone n&apos;est lu que dans le tableur ou /bureau. Le formulaire affiche
                     une phrase d&apos;information (pas une case « consentement ») : base légale art.
                     6.1.b. Pas de tracking publicitaire.
+                    {MODULES.essaiMail ? (
+                      <>
+                        {' '}
+                        L&apos;e-mail, s&apos;il est donné, sert seulement au rappel la veille de l&apos;essai et à un
+                        mot après : il est rangé à part (pas dans le tableau du bureau), lié à cette demande, effacé
+                        après 12 mois ; chaque message contient un lien pour ne plus rien recevoir, qui l&apos;efface.
+                      </>
+                    ) : null}
+                    {MODULES.parrainage ? (
+                      <>
+                        {' '}
+                        Une demande venue du lien d&apos;invitation d&apos;un adhérent est notée « Parrainage » :
+                        le lien est le même pour tous, rien n&apos;indique qui a invité.
+                      </>
+                    ) : null}
                   </li>
+                  {MODULES.sondageEssai ? (
+                    <li>
+                      <strong className="text-brand-black">Sondage après l&apos;essai</strong> (/sondage-essai) :
+                      trois réponses anonymes (intention d&apos;adhérer, ce qui retient, une idée), la date, aucun nom,
+                      téléphone ni adresse. Finalité : améliorer l&apos;accueil. Effacées après 12 mois.
+                    </li>
+                  ) : null}
                   <li>
                     <strong className="text-brand-black">Formulaire /inscription</strong> : identité
                     (prénom, nom), téléphone, email (facultatif), date de naissance, adresse, mode de
@@ -246,6 +268,14 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                     reprise, vous corrigez vos coordonnées et répondez aux questions de la saison ; une
                     nouvelle fiche est créée pour cette saison, conservée comme les autres. Base :
                     exécution de l&apos;adhésion (art. 6.1.b).
+                    {MODULES.carteHorsLigne ? (
+                      <>
+                        {' '}
+                        Si vous choisissez « Garder ma carte sur ce téléphone », la page, votre fiche et votre carte
+                        sont copiées dans le navigateur de ce téléphone pour s&apos;ouvrir sans internet ; rien
+                        n&apos;est copié sans ce choix, et « Me déconnecter » ou « Retirer » efface la copie.
+                      </>
+                    ) : null}
                   </li>
                   <li id="paiement-en-ligne">
                     <strong className="text-brand-black">Paiement en ligne ({PAIEMENT_NOM})</strong> — si le
@@ -385,6 +415,13 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                         <td className="p-2">Au plus trois rappels en juin et en septembre ; lien pour ne plus les recevoir dans chaque mail</td>
                         <td className="p-2">Saison en cours</td>
                       </tr>
+                      {MODULES.demandeAvis ? (
+                        <tr className="border-b border-black/[0.06]">
+                          <td className="p-2">Demande d&apos;avis Google : empreinte chiffrée de l&apos;e-mail, date d&apos;envoi, désinscription</td>
+                          <td className="p-2">Un seul mail, un à deux mois après l&apos;adhésion, pour proposer de laisser un avis ; lien pour ne plus en recevoir</td>
+                          <td className="p-2">Saison en cours</td>
+                        </tr>
+                      ) : null}
                       <tr className="border-b border-black/[0.06]">
                         <td className="p-2">Demandes /essai (prénom, nom, tél., email facultatif, créneau)</td>
                         <td className="p-2">Organisation de l&apos;essai et relances dans la saison</td>
@@ -395,6 +432,16 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                         <td className="p-2">Suivi de la demande hors paiement en ligne</td>
                         <td className="p-2">Saison + 3 ans si adhésion ; 12 mois si la demande n&apos;aboutit pas</td>
                       </tr>
+                      {MODULES.inscriptionsEvenements ? (
+                        <tr className="border-b border-black/[0.06]">
+                          <td className="p-2">
+                            Inscriptions aux événements (/evenements) : prénom, nom, téléphone, nombre de personnes,
+                            covoiturage (places, commune de départ)
+                          </td>
+                          <td className="p-2">Organiser l&apos;événement ; le public ne voit que les places restantes</td>
+                          <td className="p-2">Effacées par le bureau après l&apos;événement</td>
+                        </tr>
+                      ) : null}
                       <tr className="border-b border-black/[0.06]">
                         <td className="p-2">Alerte interne ntfy (prénom, cours, date)</td>
                         <td className="p-2">Prévenir le bureau qu&apos;une ligne essai est arrivée</td>

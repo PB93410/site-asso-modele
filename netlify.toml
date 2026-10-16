@@ -195,6 +195,20 @@
   status = 200
   force = true
 
+# Désinscription des mails de l'essai (modules.essaiMail, lien du mail)
+[[redirects]]
+  from = "/api/essai-mail-stop"
+  to = "/.netlify/functions/essai-mail-stop"
+  status = 200
+  force = true
+
+# Désinscription de la demande d'avis Google (modules.demandeAvis, lien du mail)
+[[redirects]]
+  from = "/api/avis-stop"
+  to = "/.netlify/functions/avis-stop"
+  status = 200
+  force = true
+
 # Désinscription des rappels de réinscription (lien du mail)
 [[redirects]]
   from = "/api/reinscription-stop"
@@ -313,6 +327,85 @@
   from = "/quiz/"
   to = "/index.html"
   status = 200
+
+# Mode tablette du forum (modules.tablette) : page non prérendue, non indexée
+[[redirects]]
+  from = "/essai/tablette"
+  to = "/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/essai/tablette/"
+  to = "/index.html"
+  status = 200
+  force = true
+
+# Inscriptions aux événements (modules.inscriptionsEvenements) : page non prérendue
+[[redirects]]
+  from = "/evenements"
+  to = "/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/evenements/"
+  to = "/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/evenement-inscription"
+  to = "/.netlify/functions/evenement-inscription"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/evenements-bureau"
+  to = "/.netlify/functions/evenements-bureau"
+  status = 200
+  force = true
+
+# Checklists de saison du bureau (modules.checklists)
+[[redirects]]
+  from = "/api/checklists"
+  to = "/.netlify/functions/checklists"
+  status = 200
+  force = true
+
+# Le club en chiffres (modules.clubEnChiffres) : page non prérendue, chiffres lus à l'ouverture
+[[redirects]]
+  from = "/le-club-en-chiffres"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/le-club-en-chiffres/"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/api/club-chiffres"
+  to = "/.netlify/functions/club-chiffres"
+  status = 200
+  force = true
+
+# Mini-sondage après l'essai (modules.sondageEssai) : page non prérendue, non indexée
+[[redirects]]
+  from = "/sondage-essai"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/sondage-essai/"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/api/sondage-essai"
+  to = "/.netlify/functions/sondage-essai"
+  status = 200
+  force = true
 
 [[redirects]]
   from = "/api/liste-attente"
@@ -471,6 +564,36 @@
   for = "/api/essai"
   [headers.values]
     Cache-Control = "no-store"
+    X-Content-Type-Options = "nosniff"
+
+# Service worker de « ma carte sans internet » (modules.carteHorsLigne) : toujours relu, jamais gardé par le navigateur.
+[[headers]]
+  for = "/sw-carte.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/essai/tablette"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store"
+
+[[headers]]
+  for = "/api/evenements-bureau"
+  [headers.values]
+    Cache-Control = "no-store, private"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/sondage-essai"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Referrer-Policy = "no-referrer"
+
+[[headers]]
+  for = "/api/sondage-essai"
+  [headers.values]
+    Cache-Control = "no-store, private"
     X-Content-Type-Options = "nosniff"
 
 [[headers]]

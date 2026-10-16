@@ -45,6 +45,24 @@ const ASSO = {
     attestations: false,
     /** Espace adhérent sans mot de passe (/espace) : code par e-mail, carte, paiement, attestations, présences. */
     espace: true,
+    /** Parrainage léger dans l'espace adhérent : un lien commun à envoyer (WhatsApp ou copier), provenance « Parrainage » sans nom (demande espace). */
+    parrainage: false,
+    /** Mini-sondage anonyme après l'essai (/sondage-essai) : trois questions, aucun nom ; lien dans le message « merci », résultats au bureau. */
+    sondageEssai: false,
+    /** Page publique « Le club en chiffres » (/le-club-en-chiffres) : ancienneté, cours, séances, adhérents arrondis, âges et communes de 10 personnes au moins. Aucun nom. */
+    clubEnChiffres: false,
+    /** Checklists de saison du bureau (rentrée, forum, cartes, réinscriptions, changement de saison), cochées par tous. Ses propres listes : clé « checklists » (facultative, voir asso.config.d.ts), sinon celles par défaut. */
+    checklists: false,
+    /** Mode tablette du forum (/essai/tablette) : plein écran, trois champs, écran vidé après chaque personne (demande essais). */
+    tablette: false,
+    /** Espace adhérent : « Garder ma carte sur ce téléphone », pour l'ouvrir sans internet (salle sans réseau), sur choix de la personne (demande espace). */
+    carteHorsLigne: false,
+    /** Demande d'avis Google par mail, un à deux mois après l'adhésion, une fois par saison (demande reseaux.avisGoogle et l'envoi des mails). */
+    demandeAvis: false,
+    /** E-mail facultatif sur /essai : rappel la veille de l'essai et mot après l'essai, rien d'autre ; adresse rangée à part, effacée après 12 mois (demande l'envoi des mails). */
+    essaiMail: false,
+    /** Page /evenements : agenda public et inscriptions aux événements ouverts par le bureau (places limitées, covoiturage) ; liste effacée par le bureau après l'événement. */
+    inscriptionsEvenements: false,
   },
 
   // ---- Identité ----

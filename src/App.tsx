@@ -26,6 +26,10 @@ const ListeAttentePlacePage = lazy(() => import('./pages/ListeAttentePlacePage')
 const AttestationsPage = lazy(() => import('./pages/AttestationsPage'));
 const EspacePage = lazy(() => import('./pages/EspacePage'));
 const QuizPage = lazy(() => import('./pages/QuizPage'));
+const SondageEssaiPage = lazy(() => import('./pages/SondageEssaiPage'));
+const ClubEnChiffresPage = lazy(() => import('./pages/ClubEnChiffresPage'));
+const EssaiTablettePage = lazy(() => import('./pages/EssaiTablettePage'));
+const EvenementsPage = lazy(() => import('./pages/EvenementsPage'));
 const PresencePage = lazy(() => import('./pages/PresencePage'));
 const AlertesPage = lazy(() => import('./pages/AlertesPage'));
 const AlertesDesaboPage = lazy(() => import('./pages/AlertesDesaboPage'));
@@ -123,7 +127,9 @@ export default function App() {
   const location = useLocation();
   const isBureau = location.pathname.startsWith('/bureau');
   const isBenevoles = location.pathname.startsWith('/benevoles');
-  const hidePublicChrome = isBureau || isBenevoles;
+  // Mode tablette du forum : plein écran, aucun lien vers le reste du site.
+  const isTablette = location.pathname.startsWith('/essai/tablette');
+  const hidePublicChrome = isBureau || isBenevoles || isTablette;
 
   return (
     <div className="relative">
@@ -165,6 +171,9 @@ export default function App() {
               <Route path="/bureau/*" element={<NotFoundPage />} />
             )}
             <Route path="/quiz" element={<QuizPage />} />
+            <Route path="/sondage-essai" element={<SondageEssaiPage />} />
+            <Route path="/le-club-en-chiffres" element={<ClubEnChiffresPage />} />
+            <Route path="/evenements" element={<EvenementsPage />} />
             <Route path="/presence" element={<PresencePage />} />
             <Route path="/alertes/desabo" element={<AlertesDesaboPage />} />
             <Route path="/alertes" element={<AlertesPage />} />
@@ -174,6 +183,7 @@ export default function App() {
             <Route path="/inscription" element={<InscriptionPage />} />
             <Route path="/tarifs" element={<TarifsPage />} />
             <Route path="/essai" element={<EssaiPage />} />
+            <Route path="/essai/tablette" element={<EssaiTablettePage />} />
             <Route path="/mentions-legales" element={<MentionsLegalesPage />} />
             <Route path="/confidentialite" element={<ConfidentialitePage />} />
             <Route path="/faq" element={<FaqPage />} />
