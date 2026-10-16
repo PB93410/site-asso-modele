@@ -81,6 +81,8 @@ const ASSO = {
     checklists: ${m.checklists === true ? 'true' : 'false'},
     /** Mode tablette du forum (/essai/tablette) : plein écran, trois champs, écran vidé après chaque personne (demande essais). */
     tablette: ${m.tablette === true ? 'true' : 'false'},
+    /** Espace adhérent : « Garder ma carte sur ce téléphone », pour l'ouvrir sans internet (salle sans réseau), sur choix de la personne (demande espace). */
+    carteHorsLigne: ${m.carteHorsLigne === true ? 'true' : 'false'},
   },
 
   // ---- Identité ----

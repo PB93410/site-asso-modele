@@ -6,6 +6,7 @@ import { useScheduleFromSheet } from '../hooks/useSheetData';
 import { libelleDate, libelleHeure, parisMaintenant, sansCoursLe } from '../lib/accueil';
 import { seances } from '../lib/mesCours';
 import { lienParrainage, lienWhatsAppParrainage, messageParrainage } from '../lib/parrainage';
+import { activerHorsLigne, horsLigneActif, horsLigneDisponible, oublierHorsLigne } from '../lib/horsLigne';
 import Footer from '../sections/Footer';
 import NotFoundPage from './NotFoundPage';
 
@@ -81,6 +82,65 @@ function Carte({ titre, children }: { titre: string; children: ReactNode }) {
       <h2 className="font-display font-bold text-[20px] text-brand-black">{titre}</h2>
       {children}
     </section>
+  );
+}
+
+/** Garder la carte sur ce téléphone (modules.carteHorsLigne), pour l'ouvrir sans internet. Rien n'est gardé sans ce choix. */
+function CarteHorsLigne({ f }: { f: Fiche }) {
+  const [actif, setActif] = useState(false);
+  const [occupe, setOccupe] = useState(false);
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    let vivant = true;
+    void horsLigneActif().then((a) => {
+      if (vivant) setActif(a);
+    });
+    return () => {
+      vivant = false;
+    };
+  }, []);
+
+  if (!horsLigneDisponible()) return null;
+
+  async function activer() {
+    setOccupe(true);
+    setMessage('');
+    try {
+      await activerHorsLigne([`${API}?action=moi`, url('carte', f)]);
+      setActif(true);
+      setMessage('C’est fait : votre carte s’ouvrira même sans internet.');
+    } catch {
+      setMessage('Ce téléphone ne permet pas de garder la carte. Utilisez « Télécharger ».');
+    } finally {
+      setOccupe(false);
+    }
+  }
+
+  async function retirer() {
+    setOccupe(true);
+    await oublierHorsLigne();
+    setActif(false);
+    setMessage('Votre carte n’est plus gardée sur ce téléphone.');
+    setOccupe(false);
+  }
+
+  return (
+    <div className="space-y-2 pt-1">
+      <p className="font-body text-[15px] text-brand-gray leading-relaxed">
+        {actif
+          ? 'Votre carte est gardée sur ce téléphone : elle s’ouvre même sans internet. « Me déconnecter » la retire.'
+          : 'Pas de réseau dans la salle ? Gardez votre carte sur ce téléphone pour l’ouvrir sans internet. À éviter sur un téléphone partagé.'}
+      </p>
+      <button type="button" onClick={() => void (actif ? retirer() : activer())} disabled={occupe} className={boutonSecondaire}>
+        {actif ? 'Retirer de ce téléphone' : 'Garder ma carte sur ce téléphone'}
+      </button>
+      {message ? (
+        <p role="status" className="font-body text-[15px] text-brand-black">
+          {message}
+        </p>
+      ) : null}
+    </div>
   );
 }
 
@@ -551,6 +611,7 @@ function VueFiche({ f, moi, onMaj }: { f: Fiche; moi: Moi; onMaj: () => void }) 
               </a>
             ) : null}
           </div>
+          {MODULES.carteHorsLigne ? <CarteHorsLigne f={f} /> : null}
         </Carte>
       ) : null}
 
@@ -622,7 +683,11 @@ export default function EspacePage() {
       if (data.connecte) {
         setMoi(data);
         setEtape('espace');
-      } else setEtape('mail');
+      } else {
+        // Session terminée côté serveur : plus rien de personnel ne reste sur ce téléphone.
+        if (MODULES.carteHorsLigne) void oublierHorsLigne();
+        setEtape('mail');
+      }
     } catch {
       setErr('Réseau coupé. Rechargez la page dans un instant.');
       setEtape('mail');
@@ -681,6 +746,7 @@ export default function EspacePage() {
 
   async function deconnecter() {
     await poster('deconnecter').catch(() => {});
+    if (MODULES.carteHorsLigne) await oublierHorsLigne();
     setMoi(null);
     setCode('');
     setEtape('mail');

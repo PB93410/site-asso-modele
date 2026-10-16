@@ -55,6 +55,8 @@ const ASSO = {
     checklists: false,
     /** Mode tablette du forum (/essai/tablette) : plein écran, trois champs, écran vidé après chaque personne (demande essais). */
     tablette: false,
+    /** Espace adhérent : « Garder ma carte sur ce téléphone », pour l'ouvrir sans internet (salle sans réseau), sur choix de la personne (demande espace). */
+    carteHorsLigne: false,
   },
 
   // ---- Identité ----

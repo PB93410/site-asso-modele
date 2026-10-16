@@ -71,6 +71,7 @@ Dans `asso.config.js → modules`, chaque fonction s’active séparément :
 | `clubEnChiffres` | Page publique `/le-club-en-chiffres` : ancienneté, cours, séances, adhérents arrondis à 5, âges et communes (jamais sous 10 personnes) ; lien en bas de page | Module `adhesion` (lit le registre). **Désactivé par défaut.** |
 | `checklists` | Checklists de saison dans Bureau → Autre (rentrée, forum, cartes, réinscriptions, changement de saison), cochées par tout le bureau avec la date ; listes par défaut ou `asso.config.js → checklists` | Bureau. **Désactivé par défaut.** |
 | `tablette` | Mode tablette du forum `/essai/tablette` : plein écran, trois champs, écran vidé après chaque personne (10 s) ou après 90 s sans toucher ; demandes notées « Forum » | Module `essais`. QR facultatif dans `public/assets/qr-essai.png`. **Désactivé par défaut.** |
+| `carteHorsLigne` | Espace adhérent : « Garder ma carte sur ce téléphone » (service worker `public/sw-carte.js`, portée `/espace`, réseau d’abord) ; seulement la page, la fiche et la carte ; se déconnecter efface tout | Module `espace`. **Désactivé par défaut.** |
 | `attestations` | PDF d’adhésion, reçu fiscal (si éligible), attestation CE ; accès n° + e-mail ou lien mail ; aussi depuis le bureau | Bureau pour la vue bénévoles. Reçu fiscal : `attestations.recuFiscal`. **Désactivé par défaut.** |
 
 Les données sont rangées sur Netlify, avec le site : aucun compte Google n’est nécessaire. Google Sheets reste possible ([docs/DOC-DONNEES.md](docs/DOC-DONNEES.md)).

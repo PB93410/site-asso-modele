@@ -260,6 +260,14 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                     reprise, vous corrigez vos coordonnées et répondez aux questions de la saison ; une
                     nouvelle fiche est créée pour cette saison, conservée comme les autres. Base :
                     exécution de l&apos;adhésion (art. 6.1.b).
+                    {MODULES.carteHorsLigne ? (
+                      <>
+                        {' '}
+                        Si vous choisissez « Garder ma carte sur ce téléphone », la page, votre fiche et votre carte
+                        sont copiées dans le navigateur de ce téléphone pour s&apos;ouvrir sans internet ; rien
+                        n&apos;est copié sans ce choix, et « Me déconnecter » ou « Retirer » efface la copie.
+                      </>
+                    ) : null}
                   </li>
                   <li id="paiement-en-ligne">
                     <strong className="text-brand-black">Paiement en ligne ({PAIEMENT_NOM})</strong> — si le

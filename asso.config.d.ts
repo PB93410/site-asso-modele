@@ -44,6 +44,8 @@ export interface AssoModules {
   checklists: boolean;
   /** Mode tablette du forum. Absent = désactivé. */
   tablette: boolean;
+  /** Carte consultable sans internet. Absent = désactivé. */
+  carteHorsLigne: boolean;
 }
 
 export interface AssoListeAttente {

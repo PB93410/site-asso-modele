@@ -527,6 +527,12 @@
     Cache-Control = "no-store"
     X-Content-Type-Options = "nosniff"
 
+# Service worker de « ma carte sans internet » (modules.carteHorsLigne) : toujours relu, jamais gardé par le navigateur.
+[[headers]]
+  for = "/sw-carte.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+
 [[headers]]
   for = "/essai/tablette"
   [headers.values]

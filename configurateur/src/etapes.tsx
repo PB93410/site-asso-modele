@@ -866,8 +866,16 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
         label="Espace adhérent"
         aide="Sans mot de passe : l’adhérent tape son e-mail et reçoit un code. Il retrouve sa carte, ce qu’il reste à payer, ses attestations et ses présences, et peut signaler un changement au bureau. Demande l’envoi des mails."
         checked={m.espace}
-        onChange={(v) => maj('modules', { ...m, espace: v, parrainage: v ? m.parrainage : false })}
+        onChange={(v) => maj('modules', { ...m, espace: v, parrainage: v ? m.parrainage : false, carteHorsLigne: v ? m.carteHorsLigne : false })}
       />
+      {m.espace ? (
+        <Case
+          label="Carte d’adhérent sans internet"
+          aide="Dans l’espace adhérent : « Garder ma carte sur ce téléphone », pour la montrer dans une salle sans réseau. Seulement si la personne le choisit ; se déconnecter efface tout."
+          checked={m.carteHorsLigne}
+          onChange={(v) => maj('modules.carteHorsLigne', v)}
+        />
+      ) : null}
       {m.espace ? (
         <Case
           label="Inviter une personne (parrainage)"

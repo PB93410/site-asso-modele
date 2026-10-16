@@ -163,7 +163,7 @@ export function dossierVide(date = new Date()) {
     coachs: [],
     faq: [],
     apparence: { couleur: '#C45309', secondaire: '#5C6B4A', logo: '', hero: '', heroAlt: '' },
-    modules: { essais: true, adhesion: false, bureau: false, mail: false, presences: false, quiz: false, alertes: false, listeAttente: false, wallet: false, financement: false, rapport: false, attestations: false, espace: false, parrainage: false, sondageEssai: false, clubEnChiffres: false, checklists: false, tablette: false },
+    modules: { essais: true, adhesion: false, bureau: false, mail: false, presences: false, quiz: false, alertes: false, listeAttente: false, wallet: false, financement: false, rapport: false, attestations: false, espace: false, parrainage: false, sondageEssai: false, clubEnChiffres: false, checklists: false, tablette: false, carteHorsLigne: false },
     listeAttente: { capaciteDefaut: 20, delaiReponseHeures: 48 },
     financement: { passSport: 50, ancvMax: 40, comiteEntreprise: 30 },
     attestations: { recuFiscal: false, objet: '' },

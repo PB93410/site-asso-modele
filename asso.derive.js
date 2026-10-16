@@ -52,6 +52,7 @@ export const MODULES = {
   clubEnChiffres: false,
   checklists: false,
   tablette: false,
+  carteHorsLigne: false,
   ...(ASSO.modules || {}),
 };
 if (!MODULES.bureau) MODULES.mail = false;

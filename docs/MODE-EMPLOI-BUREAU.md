@@ -122,6 +122,7 @@ Les adhérents s’inscrivent eux-mêmes (e-mail + case à cocher). Ils se retir
 
 Les adhérents ouvrent leur espace sur le site (lien « Mon espace adhérent » en bas de page) avec l’e-mail de leur fiche : ils reçoivent un code, sans mot de passe. Ils y trouvent leur carte, ce qu’il reste à payer, leurs attestations et leurs présences.
 
+- **Carte sans internet** (si la fonction est activée) : sous la carte, « Garder ma carte sur ce téléphone ». La carte s’ouvre ensuite même sans réseau dans la salle. « Me déconnecter » l’efface du téléphone.
 - **« Je ne reçois pas le code »** : vérifiez l’e-mail de la fiche (une faute suffit), faites regarder dans les indésirables. Sinon, dans **Cartes**, bouton **Lien d’accès à son espace** : le lien est copié, collez-le dans un SMS ou un WhatsApp. Il marche 72 heures, une seule fois.
 - **« J’ai changé d’adresse »** : l’adhérent le signale depuis son espace, vous recevez un mail. C’est vous qui corrigez la fiche.
 - **Photos** : un adhérent peut changer sa réponse depuis son espace. Sa fiche est mise à jour toute seule, et vous recevez un mail. S’il dit « Non », retirez les photos publiées où on le reconnaît.
