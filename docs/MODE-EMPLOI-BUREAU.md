@@ -148,6 +148,10 @@ Rien n’est enregistré : le PDF est fabriqué au moment du clic.
 
 Dans **Relances**, le message après un essai contient un lien personnel vers le formulaire d’inscription : prénom, nom et téléphone de l’essai y sont déjà remplis, la personne vérifie et complète. Le lien ne contient aucune donnée lisible et marche 45 jours. S’il manque (réglage du référent absent), le message renvoie vers la page des tarifs, comme avant.
 
+## Avis après l’essai, si la fonction est activée
+
+Le message « merci » envoyé après l’essai contient un lien vers trois questions anonymes. **Autre → Avis après l’essai** : combien pensent adhérer, ce qui retient les autres (horaires, prix…), leurs idées. Aucun nom. Les réponses de plus de 12 mois s’effacent.
+
 ## Mail « Le site a un problème »
 
 Chaque nuit, le site vérifie que ses pages principales s’ouvrent. Ce mail dit lesquelles ne répondaient pas (deux essais à 15 secondes d’écart). Ouvrez la page : si elle marche, c’était passager. Sinon, prévenez le référent ; si une mise en ligne vient d’avoir lieu, il peut republier la version précédente sur Netlify.

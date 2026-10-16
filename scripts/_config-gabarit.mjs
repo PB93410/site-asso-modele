@@ -71,6 +71,10 @@ const ASSO = {
     attestations: ${m.attestations === true ? 'true' : 'false'},
     /** Espace adhérent sans mot de passe (/espace) : code par e-mail, carte, paiement, attestations, présences. */
     espace: ${m.espace === true ? 'true' : 'false'},
+    /** Parrainage léger dans l'espace adhérent : un lien commun à envoyer (WhatsApp ou copier), provenance « Parrainage » sans nom (demande espace). */
+    parrainage: ${m.parrainage === true ? 'true' : 'false'},
+    /** Mini-sondage anonyme après l'essai (/sondage-essai) : trois questions, aucun nom ; lien dans le message « merci », résultats au bureau. */
+    sondageEssai: ${m.sondageEssai === true ? 'true' : 'false'},
   },
 
   // ---- Identité ----

@@ -83,6 +83,7 @@ function FormulaireEssai() {
   const preset = params.get('cours') || '';
   const presetDate = params.get('date') || '';
   const fromForum = params.get('source') === 'forum';
+  const fromParrainage = params.get('source') === 'parrainage';
 
   const [prenom, setPrenom] = useState('');
   const [nom, setNom] = useState('');
@@ -161,7 +162,7 @@ function FormulaireEssai() {
             const row = schedule.find((r) => r.course === cours && slotValue(r.day, r.time) === dateEssai);
             return row ? slotLabel(row.day, row.time, row.course) : '';
           })(),
-          source: fromForum ? 'forum' : 'site',
+          source: fromForum ? 'forum' : fromParrainage ? 'parrainage' : 'site',
           'bot-field': bot,
         }),
       });

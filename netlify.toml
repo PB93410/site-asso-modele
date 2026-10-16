@@ -314,6 +314,23 @@
   to = "/index.html"
   status = 200
 
+# Mini-sondage après l'essai (modules.sondageEssai) : page non prérendue, non indexée
+[[redirects]]
+  from = "/sondage-essai"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/sondage-essai/"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/api/sondage-essai"
+  to = "/.netlify/functions/sondage-essai"
+  status = 200
+  force = true
+
 [[redirects]]
   from = "/api/liste-attente"
   to = "/.netlify/functions/liste-attente"
@@ -471,6 +488,18 @@
   for = "/api/essai"
   [headers.values]
     Cache-Control = "no-store"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/sondage-essai"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Referrer-Policy = "no-referrer"
+
+[[headers]]
+  for = "/api/sondage-essai"
+  [headers.values]
+    Cache-Control = "no-store, private"
     X-Content-Type-Options = "nosniff"
 
 [[headers]]

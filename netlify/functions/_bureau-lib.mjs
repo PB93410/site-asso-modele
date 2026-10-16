@@ -205,6 +205,7 @@ const MODULE_NOMS = {
   alertes: 'Les alertes de dernière minute',
   attestations: 'Les attestations PDF',
   espace: 'L’espace adhérent',
+  sondageEssai: 'Le sondage après l’essai',
 };
 
 /** Réponse 404 si la fonction est désactivée dans asso.config.js → modules, sinon null. */

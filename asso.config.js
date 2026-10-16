@@ -45,6 +45,10 @@ const ASSO = {
     attestations: false,
     /** Espace adhérent sans mot de passe (/espace) : code par e-mail, carte, paiement, attestations, présences. */
     espace: true,
+    /** Parrainage léger dans l'espace adhérent : un lien commun à envoyer (WhatsApp ou copier), provenance « Parrainage » sans nom (demande espace). */
+    parrainage: false,
+    /** Mini-sondage anonyme après l'essai (/sondage-essai) : trois questions, aucun nom ; lien dans le message « merci », résultats au bureau. */
+    sondageEssai: false,
   },
 
   // ---- Identité ----

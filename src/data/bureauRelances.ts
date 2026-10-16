@@ -5,7 +5,8 @@
 
 import type { RelanceMsg } from '../lib/bureauRelancesQueue';
 import { telDedupeKey } from '../lib/bureauSearch';
-import { ASSO, PAIEMENTS_BUREAU, SITE_URL, TARIF_LABEL } from './asso';
+import { ASSO, MODULES, PAIEMENTS_BUREAU, SITE_URL, TARIF_LABEL } from './asso';
+import { LIEN_SONDAGE } from '../lib/sondageEssai';
 
 export const MSG_A = `Bonjour {prenom},
 On ne t’a pas encore vu(e) au cours d’essai.
@@ -20,7 +21,8 @@ Si le rythme te convient, l’adhésion est ${TARIF_LABEL}/an (${ASSO.adhesion.i
 {adhesion}
 ${PAIEMENTS_BUREAU} au bureau${ASSO.adhesion.paiementUrl ? ', carte ensuite' : ''}.
 Tu continues ?
-${ASSO.nom}`;
+${MODULES.sondageEssai ? `Ton avis en 30 secondes, sans donner ton nom : ${LIEN_SONDAGE}
+` : ''}${ASSO.nom}`;
 
 export const MSG_C = `Bonjour {prenom},
 Tu peux encore réserver un essai ici :

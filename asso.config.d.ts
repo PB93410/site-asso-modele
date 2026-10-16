@@ -34,6 +34,10 @@ export interface AssoModules {
   attestations: boolean;
   /** Espace adhérent sans mot de passe. Absent = désactivé. */
   espace: boolean;
+  /** Parrainage dans l'espace adhérent. Absent = désactivé. */
+  parrainage: boolean;
+  /** Mini-sondage après l'essai. Absent = désactivé. */
+  sondageEssai: boolean;
 }
 
 export interface AssoListeAttente {

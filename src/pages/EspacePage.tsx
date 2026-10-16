@@ -5,6 +5,7 @@ import { usePageMeta } from '../hooks/usePageMeta';
 import { useScheduleFromSheet } from '../hooks/useSheetData';
 import { libelleDate, libelleHeure, parisMaintenant, sansCoursLe } from '../lib/accueil';
 import { seances } from '../lib/mesCours';
+import { lienParrainage, lienWhatsAppParrainage, messageParrainage } from '../lib/parrainage';
 import Footer from '../sections/Footer';
 import NotFoundPage from './NotFoundPage';
 
@@ -80,6 +81,35 @@ function Carte({ titre, children }: { titre: string; children: ReactNode }) {
       <h2 className="font-display font-bold text-[20px] text-brand-black">{titre}</h2>
       {children}
     </section>
+  );
+}
+
+/** Inviter une personne (modules.parrainage) : un lien commun, rien ne relie l'invité à celui qui l'invite. */
+function Parrainage() {
+  const [copie, setCopie] = useState(false);
+  async function copier() {
+    try {
+      await navigator.clipboard.writeText(messageParrainage());
+      setCopie(true);
+    } catch {
+      setCopie(false);
+    }
+  }
+  return (
+    <Carte titre="Inviter une personne">
+      <p className="font-body text-[16px] text-brand-gray">
+        Un ami, un voisin, un collègue ? Envoyez-lui le lien. Nous ne savons pas qui l’a invité.
+      </p>
+      <div className="flex flex-wrap gap-3">
+        <a href={lienWhatsAppParrainage()} target="_blank" rel="noopener noreferrer" className={boutonSecondaire}>
+          Envoyer par WhatsApp
+        </a>
+        <button type="button" onClick={() => void copier()} className={boutonSecondaire}>
+          {copie ? 'Message copié' : 'Copier le message'}
+        </button>
+      </div>
+      <p className="font-body text-[14px] text-brand-gray break-all">{lienParrainage()}</p>
+    </Carte>
   );
 }
 
@@ -523,6 +553,8 @@ function VueFiche({ f, moi, onMaj }: { f: Fiche; moi: Moi; onMaj: () => void }) 
           </div>
         </Carte>
       ) : null}
+
+      {MODULES.parrainage && f.aJour ? <Parrainage /> : null}
 
       {f.attestations.length ? (
         <Carte titre="Mes attestations">

@@ -45,6 +45,7 @@ import { EnTete, MenuGroupe, MenuLigne, Retour } from '../components/bureau/ui';
 import { bouton } from '../components/bureau/styles';
 import BureauSheetLinks from '../components/BureauSheetLinks';
 import BureauSiteEditor from '../components/BureauSiteEditor';
+import BureauSondageEssai from '../components/bureau/BureauSondageEssai';
 import { useScheduleFromSheet } from '../hooks/useSheetData';
 import { adherentEssaiKey, adhesionNeedsMoney, isAdherentAJourForEssai, isTestPrenom, matchesPerson, nationalFrTel, telDedupeKey } from '../lib/bureauSearch';
 import { appendRelanceNote, classifyRelances, type LiveRelanceCard } from '../lib/bureauRelancesQueue';
@@ -97,7 +98,7 @@ type EssaiItem = {
 };
 
 type TabId = 'today' | 'adhesions' | 'relances' | 'essais' | 'more';
-type MoreKind = 'menu' | 'cartes' | 'planning' | 'events' | 'aide';
+type MoreKind = 'menu' | 'cartes' | 'planning' | 'events' | 'aide' | 'sondage';
 type EssaisVue = 'nouveaux' | 'week' | 'person';
 type PorteId = 'seance' | 'admin';
 
@@ -1350,6 +1351,9 @@ export default function BureauPage() {
               {MODULES.listeAttente ? (
                 <MenuLigne icone={ListOrdered} label="Liste d’attente" aide="Cours complets, places à proposer" to="/bureau/liste-attente" />
               ) : null}
+              {MODULES.sondageEssai ? (
+                <MenuLigne icone={MessageCircle} label="Avis après l’essai" aide="Sondage anonyme : intention d’adhérer, ce qui retient" onClick={() => setMoreKind('sondage')} />
+              ) : null}
               {MODULES.rapport ? (
                 <MenuLigne icone={FileText} label="Rapport annuel" aide="AG et subvention : effectifs, essais, communes" to="/bureau/rapport" />
               ) : null}
@@ -1424,6 +1428,13 @@ export default function BureauPage() {
           <div className="space-y-3">
             <Retour onClick={() => setMoreKind('menu')} />
             <BureauSiteEditor kind="events" token={token} onToast={showToast} />
+          </div>
+        )}
+
+        {tab === 'more' && moreKind === 'sondage' && token && porte === 'admin' && MODULES.sondageEssai && (
+          <div className="space-y-3">
+            <Retour onClick={() => setMoreKind('menu')} />
+            <BureauSondageEssai />
           </div>
         )}
 

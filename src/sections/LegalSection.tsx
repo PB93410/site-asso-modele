@@ -1,5 +1,5 @@
 import { Shield, Cookie, Mail, FileText } from 'lucide-react';
-import { ASSO, HAS_FEDERATION, PAIEMENTS_BUREAU, PAIEMENT_NOM, SITE_URL } from '../data/asso';
+import { ASSO, HAS_FEDERATION, MODULES, PAIEMENTS_BUREAU, PAIEMENT_NOM, SITE_URL } from '../data/asso';
 
 const FED = ASSO.federation.sigle || ASSO.federation.nom || 'fédération';
 
@@ -155,7 +155,21 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                     Le téléphone n&apos;est lu que dans le tableur ou /bureau. Le formulaire affiche
                     une phrase d&apos;information (pas une case « consentement ») : base légale art.
                     6.1.b. Pas de tracking publicitaire.
+                    {MODULES.parrainage ? (
+                      <>
+                        {' '}
+                        Une demande venue du lien d&apos;invitation d&apos;un adhérent est notée « Parrainage » :
+                        le lien est le même pour tous, rien n&apos;indique qui a invité.
+                      </>
+                    ) : null}
                   </li>
+                  {MODULES.sondageEssai ? (
+                    <li>
+                      <strong className="text-brand-black">Sondage après l&apos;essai</strong> (/sondage-essai) :
+                      trois réponses anonymes (intention d&apos;adhérer, ce qui retient, une idée), la date, aucun nom,
+                      téléphone ni adresse. Finalité : améliorer l&apos;accueil. Effacées après 12 mois.
+                    </li>
+                  ) : null}
                   <li>
                     <strong className="text-brand-black">Formulaire /inscription</strong> : identité
                     (prénom, nom), téléphone, email (facultatif), date de naissance, adresse, mode de

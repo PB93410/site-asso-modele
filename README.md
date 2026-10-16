@@ -66,6 +66,8 @@ Dans `asso.config.js → modules`, chaque fonction s’active séparément :
 | `financement` | Aides Pass'Sport, chèques ANCV, comité d’entreprise sur le formulaire d’adhésion ; reste à payer noté sur la fiche | Module `adhesion`. Montants dans `asso.config.js → financement`. **Désactivé par défaut.** |
 | `rapport` | Rapport annuel (AG, subvention) : effectifs, conversion essais, présences si activées, âges, communes ; PDF et CSV | Bureau. **Désactivé par défaut.** |
 | `espace` | Espace adhérent sans mot de passe (`/espace`) : code par e-mail, carte, reste à payer, attestations, présences, export des données, changement signalé au bureau | Envoi des mails, `BUREAU_SECRET`. **Activé dans l’exemple.** |
+| `parrainage` | Dans l’espace adhérent : « Inviter une personne », message WhatsApp avec un lien commun vers l’essai (ou l’inscription après la fin des essais) ; provenance « Parrainage » sans nom | Module `espace`. **Désactivé par défaut.** |
+| `sondageEssai` | Mini-sondage anonyme après l’essai (`/sondage-essai`, non indexée) : intention d’adhérer, ce qui retient, une idée ; lien dans le message « merci » ; résultats dans Bureau → Autre ; réponses effacées après 12 mois | Bureau. **Désactivé par défaut.** |
 | `attestations` | PDF d’adhésion, reçu fiscal (si éligible), attestation CE ; accès n° + e-mail ou lien mail ; aussi depuis le bureau | Bureau pour la vue bénévoles. Reçu fiscal : `attestations.recuFiscal`. **Désactivé par défaut.** |
 
 Les données sont rangées sur Netlify, avec le site : aucun compte Google n’est nécessaire. Google Sheets reste possible ([docs/DOC-DONNEES.md](docs/DOC-DONNEES.md)).

@@ -723,6 +723,7 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
             wallet: v ? m.wallet : false,
             rapport: v ? m.rapport : false,
             attestations: v ? m.attestations : false,
+            sondageEssai: v ? m.sondageEssai : false,
           })
         }
       />
@@ -820,6 +821,14 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
           />
         </div>
       ) : null}
+      {m.bureau && m.essais ? (
+        <Case
+          label="Petit sondage après l’essai"
+          aide="Trois questions anonymes (va-t-elle adhérer, qu’est-ce qui la retient, une idée), lien dans le message « merci » du bureau. Les résultats s’affichent dans l’espace bénévoles. Aucun nom n’est demandé."
+          checked={m.sondageEssai}
+          onChange={(v) => maj('modules.sondageEssai', v)}
+        />
+      ) : null}
       {m.bureau ? (
         <Case
           label="Rapport annuel (AG, subvention)"
@@ -832,8 +841,16 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
         label="Espace adhérent"
         aide="Sans mot de passe : l’adhérent tape son e-mail et reçoit un code. Il retrouve sa carte, ce qu’il reste à payer, ses attestations et ses présences, et peut signaler un changement au bureau. Demande l’envoi des mails."
         checked={m.espace}
-        onChange={(v) => maj('modules.espace', v)}
+        onChange={(v) => maj('modules', { ...m, espace: v, parrainage: v ? m.parrainage : false })}
       />
+      {m.espace ? (
+        <Case
+          label="Inviter une personne (parrainage)"
+          aide="Dans l’espace adhérent : un message prêt à envoyer par WhatsApp, avec un lien vers l’essai (ou l’inscription après la fin des essais). Le lien est le même pour tous : le bureau voit « Parrainage » comme provenance, jamais qui a invité."
+          checked={m.parrainage}
+          onChange={(v) => maj('modules.parrainage', v)}
+        />
+      ) : null}
       <Case
         label="Attestations PDF"
         aide="L’adhérent télécharge son attestation d’adhésion, un reçu fiscal (si l’asso est éligible) et une attestation pour le comité d’entreprise. Numéro + e-mail, ou un lien reçu par mail. Le bureau peut aussi les fabriquer."

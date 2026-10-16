@@ -47,6 +47,8 @@ export const MODULES = {
   rapport: false,
   attestations: false,
   espace: false,
+  parrainage: false,
+  sondageEssai: false,
   ...(ASSO.modules || {}),
 };
 if (!MODULES.bureau) MODULES.mail = false;

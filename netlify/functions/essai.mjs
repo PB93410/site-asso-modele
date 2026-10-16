@@ -126,7 +126,9 @@ async function handler(event) {
   const telephone = pickValue(raw, 'telephone', 'tel');
   let cours = pickValue(raw, 'cours', 'Cours');
   const dateEssai = pickValue(raw, 'date_essai', 'date');
-  const leadSource = pickValue(raw, 'source').toLowerCase() === 'forum' ? 'Forum' : 'Formulaire';
+  const sourceBrute = pickValue(raw, 'source').toLowerCase();
+  // Provenance : forum (QR du stand), parrainage (lien commun de l'espace adhérent, sans nom), sinon le formulaire.
+  const leadSource = sourceBrute === 'forum' ? 'Forum' : sourceBrute === 'parrainage' && MODULES.parrainage ? 'Parrainage' : 'Formulaire';
   const creneau = buildEssaiCreneau(cours, dateEssai, pickValue(raw, 'creneau'));
   const email = pickValue(raw, 'email', 'mail');
 
