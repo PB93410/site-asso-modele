@@ -20,6 +20,8 @@ import {
   requireAuth,
   telPersonKey,
 } from './_bureau-lib.mjs';
+import { MODULES } from '../../asso.derive.js';
+import { signerLienAdhesion } from './_lien-adhesion.mjs';
 import { brancherStockage } from './_stockage.mjs';
 import { versV2 } from './_v2.mjs';
 
@@ -110,6 +112,8 @@ async function handler(event) {
       .map(mapEssaiRow)
       .filter(hasIdentity)
       .filter((i) => !isTestPrenom(i.prenom, i.nom));
+    // Lien « Adhérer en 1 minute » du message « merci » (jeton signé, sans donnée personnelle).
+    if (MODULES.adhesion) for (const i of essaiItems) i.lienAdhesion = signerLienAdhesion(i.tel, process.env.BUREAU_SECRET);
 
     const aVenir = essaiItems.filter((i) => isEssaiAVenir(i.statut));
 

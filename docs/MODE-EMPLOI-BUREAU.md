@@ -35,7 +35,7 @@ Tout se fait dans cet espace. Vous n’ouvrez pas Excel. WhatsApp s’ouvre tout
 
 ## Les onglets
 
-- **Accueil** — ce qu’il reste à faire aujourd’hui.
+- **Accueil** — ce qu’il reste à faire aujourd’hui. Touchez **Je suis** (Trésorerie, Présidence, Bénévole) : la liste se range dans l’ordre qui vous concerne (l’argent d’abord pour la trésorerie, la séance d’abord pour les bénévoles). Rien n’est caché, aucun mot de passe en plus ; le choix se retient sur ce téléphone.
 - **Stand** — Forum : onglet du bas. Ensuite : **Autre → Stand gymnase**.
 - **À payer** — inscriptions en ligne en attente des la cotisation. Recherche en haut.
 - **Essais** — à confirmer, rappel la veille, puis après le cours.
@@ -122,6 +122,7 @@ Les adhérents ouvrent leur espace sur le site (lien « Mon espace adhérent » 
 - **« J’ai changé d’adresse »** : l’adhérent le signale depuis son espace, vous recevez un mail. C’est vous qui corrigez la fiche.
 - **Photos** : un adhérent peut changer sa réponse depuis son espace. Sa fiche est mise à jour toute seule, et vous recevez un mail. S’il dit « Non », retirez les photos publiées où on le reconnaît.
 - **Réinscriptions (juin à septembre)** : les adhérents à jour se réinscrivent depuis leur espace pour la saison suivante. Ils paient à la rentrée. La liste est dans **Autre → Réinscriptions**. À la rentrée, après le changement de saison, leur paiement se confirme dans **À payer**, comme d’habitude.
+- **Rappels de réinscription** (si le référent les a allumés) : en juin puis en septembre, les adhérents à jour pas encore réinscrits reçoivent au plus trois mails, à deux semaines d’écart, avec un lien pour ne plus les recevoir. Une famille qui partage une adresse ne reçoit qu’un mail.
 
 ## Carte Wallet, si la fonction est activée
 
@@ -142,6 +143,18 @@ Sur le formulaire d’inscription, la personne indique ses aides. Le **reste à 
 3. Le reçu fiscal n’apparaît **que** si le référent a coché l’éligibilité (intérêt général). Sinon, seulement adhésion + CE.
 
 Rien n’est enregistré : le PDF est fabriqué au moment du clic.
+
+## Message « merci » après l’essai : « Adhérer en 1 minute »
+
+Dans **Relances**, le message après un essai contient un lien personnel vers le formulaire d’inscription : prénom, nom et téléphone de l’essai y sont déjà remplis, la personne vérifie et complète. Le lien ne contient aucune donnée lisible et marche 45 jours. S’il manque (réglage du référent absent), le message renvoie vers la page des tarifs, comme avant.
+
+## Mail « Le site a un problème »
+
+Chaque nuit, le site vérifie que ses pages principales s’ouvrent. Ce mail dit lesquelles ne répondaient pas (deux essais à 15 secondes d’écart). Ouvrez la page : si elle marche, c’était passager. Sinon, prévenez le référent ; si une mise en ligne vient d’avoir lieu, il peut republier la version précédente sur Netlify.
+
+## Mail « RGPD : anciens essais à supprimer » (essais dans Google Sheets)
+
+Le 2 de chaque mois, si des demandes d’essai ont plus de 12 mois et n’ont mené à aucune adhésion, ce mail le signale (un nombre, aucun nom). Rien ne se supprime tout seul : transmettez au référent, qui lance la commande indiquée.
 
 ## Mail « Numéros d’adhérent décalés » (adhérents dans Google Sheets)
 

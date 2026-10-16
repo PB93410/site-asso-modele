@@ -79,6 +79,7 @@ function waActionHref<E extends PersonEssai>(sheet: PersonSheet<E>, schedule: Sc
     tel: sheet.tel,
     cours: String(essai?.cours || ''),
     message: sheet.whatsapp,
+    lienAdhesion: essai?.lienAdhesion,
   });
 }
 

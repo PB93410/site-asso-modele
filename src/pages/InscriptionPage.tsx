@@ -232,6 +232,31 @@ export default function InscriptionPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [success]);
 
+  // Lien « Adhérer en 1 minute » envoyé par le bureau (/inscription?e=JETON) : on reprend prénom, nom et
+  // téléphone de l'essai. Le jeton ne contient aucune donnée ; sans lui, ou s'il est périmé, rien ne change.
+  const lienEssai = searchParams.get('e') || '';
+  const [reprise, setReprise] = useState(false);
+  useEffect(() => {
+    if (!lienEssai || alreadyOk) return;
+    let alive = true;
+    fetch(`/api/adhesion-prefill?e=${encodeURIComponent(lienEssai)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: { prenom?: string; nom?: string; telephone?: string } | null) => {
+        if (!alive || !d?.prenom) return;
+        setForm((prev) => ({
+          ...prev,
+          prenom: prev.prenom || d.prenom || '',
+          nom: prev.nom || d.nom || '',
+          telephone: prev.telephone || d.telephone || '',
+        }));
+        setReprise(true);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [lienEssai, alreadyOk]);
+
   useEffect(() => {
     if (!success || !paidByCarte) return;
     const t = window.setTimeout(() => setPaiementReady(true), 1600);
@@ -648,6 +673,12 @@ export default function InscriptionPage() {
                 </p>
               ) : null}
             </div>
+
+            {reprise && step <= 2 ? (
+              <p role="status" className="font-body text-[14px] text-brand-black rounded-xl bg-orange-light border border-orange-primary/20 px-3 py-2">
+                Nous avons repris vos coordonnées de l’essai : vérifiez-les. Il ne reste que quelques réponses.
+              </p>
+            ) : null}
 
             {step === 1 && (
               <div className="space-y-5">

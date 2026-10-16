@@ -378,6 +378,14 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                         <td className="p-2">Saison en cours ; effacé avec la fiche sur demande</td>
                       </tr>
                       <tr className="border-b border-black/[0.06]">
+                        <td className="p-2">
+                          Rappels de réinscription (si l&apos;association les envoie) : empreinte chiffrée de
+                          l&apos;e-mail, nombre de rappels envoyés, désinscription
+                        </td>
+                        <td className="p-2">Au plus trois rappels en juin et en septembre ; lien pour ne plus les recevoir dans chaque mail</td>
+                        <td className="p-2">Saison en cours</td>
+                      </tr>
+                      <tr className="border-b border-black/[0.06]">
                         <td className="p-2">Demandes /essai (prénom, nom, tél., email facultatif, créneau)</td>
                         <td className="p-2">Organisation de l&apos;essai et relances dans la saison</td>
                         <td className="p-2">Jusqu&apos;à la fin de la saison 2026-2027, puis suppression (sauf adhésion)</td>
