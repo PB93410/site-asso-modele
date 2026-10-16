@@ -206,6 +206,7 @@ const MODULE_NOMS = {
   attestations: 'Les attestations PDF',
   espace: 'L’espace adhérent',
   sondageEssai: 'Le sondage après l’essai',
+  clubEnChiffres: 'La page « Le club en chiffres »',
 };
 
 /** Réponse 404 si la fonction est désactivée dans asso.config.js → modules, sinon null. */

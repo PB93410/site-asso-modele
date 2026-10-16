@@ -706,7 +706,7 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
         label="S’inscrire en ligne"
         aide="Formulaire d’adhésion complet ; les fiches arrivent dans un tableau Google. Sinon : inscription sur place."
         checked={m.adhesion}
-        onChange={(v) => maj('modules', { ...m, adhesion: v, financement: v ? m.financement : false })}
+        onChange={(v) => maj('modules', { ...m, adhesion: v, financement: v ? m.financement : false, clubEnChiffres: v ? m.clubEnChiffres : false })}
       />
       <Case
         label="Espace bénévoles"
@@ -827,6 +827,14 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
           aide="Trois questions anonymes (va-t-elle adhérer, qu’est-ce qui la retient, une idée), lien dans le message « merci » du bureau. Les résultats s’affichent dans l’espace bénévoles. Aucun nom n’est demandé."
           checked={m.sondageEssai}
           onChange={(v) => maj('modules.sondageEssai', v)}
+        />
+      ) : null}
+      {m.adhesion ? (
+        <Case
+          label="Page publique « Le club en chiffres »"
+          aide="Ancienneté, cours, séances par semaine, nombre d’adhérents arrondi, âges et communes. Une tranche ou une commune de moins de 10 personnes n’est jamais affichée. Lien en bas de page."
+          checked={m.clubEnChiffres}
+          onChange={(v) => maj('modules.clubEnChiffres', v)}
         />
       ) : null}
       {m.bureau ? (

@@ -17,6 +17,7 @@ const discoverLinks: { label: string; href: string; isPage?: boolean }[] = [
   { label: 'Événements de la saison', href: '/#evenements' },
   { label: `Autour de ${ASSO.ville}`, href: AUTOUR_PATH, isPage: true },
   ...(MODULES.quiz ? [{ label: 'Quel cours pour moi ?', href: '/quiz', isPage: true }] : []),
+  ...(MODULES.clubEnChiffres ? [{ label: 'Le club en chiffres', href: '/le-club-en-chiffres', isPage: true }] : []),
   ...(MODULES.alertes ? [{ label: 'Alertes cours', href: '/alertes', isPage: true }] : []),
   ...(MODULES.espace ? [{ label: 'Mon espace adhérent', href: '/espace', isPage: true }] : []),
   ...(MODULES.attestations && !MODULES.espace ? [{ label: 'Attestations', href: '/attestations', isPage: true }] : []),

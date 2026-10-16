@@ -49,6 +49,7 @@ export const MODULES = {
   espace: false,
   parrainage: false,
   sondageEssai: false,
+  clubEnChiffres: false,
   ...(ASSO.modules || {}),
 };
 if (!MODULES.bureau) MODULES.mail = false;

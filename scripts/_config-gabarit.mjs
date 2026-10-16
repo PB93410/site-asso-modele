@@ -75,6 +75,8 @@ const ASSO = {
     parrainage: ${m.parrainage === true ? 'true' : 'false'},
     /** Mini-sondage anonyme après l'essai (/sondage-essai) : trois questions, aucun nom ; lien dans le message « merci », résultats au bureau. */
     sondageEssai: ${m.sondageEssai === true ? 'true' : 'false'},
+    /** Page publique « Le club en chiffres » (/le-club-en-chiffres) : ancienneté, cours, séances, adhérents arrondis, âges et communes de 10 personnes au moins. Aucun nom. */
+    clubEnChiffres: ${m.clubEnChiffres === true ? 'true' : 'false'},
   },
 
   // ---- Identité ----

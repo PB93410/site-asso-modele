@@ -38,6 +38,8 @@ export interface AssoModules {
   parrainage: boolean;
   /** Mini-sondage après l'essai. Absent = désactivé. */
   sondageEssai: boolean;
+  /** Page publique « Le club en chiffres ». Absent = désactivé. */
+  clubEnChiffres: boolean;
 }
 
 export interface AssoListeAttente {
