@@ -51,6 +51,8 @@ const ASSO = {
     sondageEssai: false,
     /** Page publique « Le club en chiffres » (/le-club-en-chiffres) : ancienneté, cours, séances, adhérents arrondis, âges et communes de 10 personnes au moins. Aucun nom. */
     clubEnChiffres: false,
+    /** Checklists de saison du bureau (rentrée, forum, cartes, réinscriptions, changement de saison), cochées par tous. Ses propres listes : clé « checklists » (facultative, voir asso.config.d.ts), sinon celles par défaut. */
+    checklists: false,
   },
 
   // ---- Identité ----

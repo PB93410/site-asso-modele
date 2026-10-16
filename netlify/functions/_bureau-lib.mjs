@@ -207,6 +207,7 @@ const MODULE_NOMS = {
   espace: 'L’espace adhérent',
   sondageEssai: 'Le sondage après l’essai',
   clubEnChiffres: 'La page « Le club en chiffres »',
+  checklists: 'Les checklists de saison',
 };
 
 /** Réponse 404 si la fonction est désactivée dans asso.config.js → modules, sinon null. */

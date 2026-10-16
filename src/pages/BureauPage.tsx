@@ -29,6 +29,7 @@ import {
   FileText,
   FileCheck,
   ListOrdered,
+  ListChecks,
 } from 'lucide-react';
 import BureauAide from '../components/BureauAide';
 import { clearBureauToken, getBureauRole, getBureauToken, setBureauRole, setBureauToken } from '../lib/bureauSession';
@@ -46,6 +47,7 @@ import { bouton } from '../components/bureau/styles';
 import BureauSheetLinks from '../components/BureauSheetLinks';
 import BureauSiteEditor from '../components/BureauSiteEditor';
 import BureauSondageEssai from '../components/bureau/BureauSondageEssai';
+import BureauChecklistsTab from '../components/bureau/BureauChecklistsTab';
 import { useScheduleFromSheet } from '../hooks/useSheetData';
 import { adherentEssaiKey, adhesionNeedsMoney, isAdherentAJourForEssai, isTestPrenom, matchesPerson, nationalFrTel, telDedupeKey } from '../lib/bureauSearch';
 import { appendRelanceNote, classifyRelances, type LiveRelanceCard } from '../lib/bureauRelancesQueue';
@@ -98,7 +100,7 @@ type EssaiItem = {
 };
 
 type TabId = 'today' | 'adhesions' | 'relances' | 'essais' | 'more';
-type MoreKind = 'menu' | 'cartes' | 'planning' | 'events' | 'aide' | 'sondage';
+type MoreKind = 'menu' | 'cartes' | 'planning' | 'events' | 'aide' | 'sondage' | 'checklists';
 type EssaisVue = 'nouveaux' | 'week' | 'person';
 type PorteId = 'seance' | 'admin';
 
@@ -1341,6 +1343,9 @@ export default function BureauPage() {
               <MenuLigne icone={CalendarDays} label="Événements" aide="Affichés sur le site" onClick={() => setMoreKind('events')} />
             </MenuGroupe>
             <MenuGroupe titre="Bureau">
+              {MODULES.checklists ? (
+                <MenuLigne icone={ListChecks} label="Checklists de la saison" aide="Rentrée, forum, cartes, réinscriptions" onClick={() => setMoreKind('checklists')} />
+              ) : null}
               <MenuLigne icone={Calendar} label="Agenda" aide="Agenda unique du bureau, aussi sur les téléphones" to="/bureau/agenda" />
               {MODULES.presences ? (
                 <MenuLigne icone={CalendarDays} label="Présences" aide="QR du jour, stats, personnes sans nouvelles" to="/bureau/presences" />
@@ -1428,6 +1433,13 @@ export default function BureauPage() {
           <div className="space-y-3">
             <Retour onClick={() => setMoreKind('menu')} />
             <BureauSiteEditor kind="events" token={token} onToast={showToast} />
+          </div>
+        )}
+
+        {tab === 'more' && moreKind === 'checklists' && token && porte === 'admin' && MODULES.checklists && (
+          <div className="space-y-3">
+            <Retour onClick={() => setMoreKind('menu')} />
+            <BureauChecklistsTab />
           </div>
         )}
 

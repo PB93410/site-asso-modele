@@ -314,6 +314,13 @@
   to = "/index.html"
   status = 200
 
+# Checklists de saison du bureau (modules.checklists)
+[[redirects]]
+  from = "/api/checklists"
+  to = "/.netlify/functions/checklists"
+  status = 200
+  force = true
+
 # Le club en chiffres (modules.clubEnChiffres) : page non prérendue, chiffres lus à l'ouverture
 [[redirects]]
   from = "/le-club-en-chiffres"

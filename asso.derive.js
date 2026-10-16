@@ -50,6 +50,7 @@ export const MODULES = {
   parrainage: false,
   sondageEssai: false,
   clubEnChiffres: false,
+  checklists: false,
   ...(ASSO.modules || {}),
 };
 if (!MODULES.bureau) MODULES.mail = false;

@@ -724,6 +724,7 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
             rapport: v ? m.rapport : false,
             attestations: v ? m.attestations : false,
             sondageEssai: v ? m.sondageEssai : false,
+            checklists: v ? m.checklists : false,
           })
         }
       />
@@ -820,6 +821,14 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
             onChange={(v) => maj('financement.comiteEntreprise', Number(v.replace(/\D/g, '')) || 0)}
           />
         </div>
+      ) : null}
+      {m.bureau ? (
+        <Case
+          label="Checklists de la saison"
+          aide="Dans l’espace bénévoles : rentrée, forum, cartes, réinscriptions, changement de saison. Chaque case cochée est vue par tout le bureau, avec sa date. Listes modifiables dans asso.config.js."
+          checked={m.checklists}
+          onChange={(v) => maj('modules.checklists', v)}
+        />
       ) : null}
       {m.bureau && m.essais ? (
         <Case
