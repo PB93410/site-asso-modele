@@ -122,6 +122,7 @@ Les adhérents ouvrent leur espace sur le site (lien « Mon espace adhérent » 
 - **« J’ai changé d’adresse »** : l’adhérent le signale depuis son espace, vous recevez un mail. C’est vous qui corrigez la fiche.
 - **Photos** : un adhérent peut changer sa réponse depuis son espace. Sa fiche est mise à jour toute seule, et vous recevez un mail. S’il dit « Non », retirez les photos publiées où on le reconnaît.
 - **Réinscriptions (juin à septembre)** : les adhérents à jour se réinscrivent depuis leur espace pour la saison suivante. Ils paient à la rentrée. La liste est dans **Autre → Réinscriptions**. À la rentrée, après le changement de saison, leur paiement se confirme dans **À payer**, comme d’habitude.
+- **Rappels de réinscription** (si le référent les a allumés) : en juin puis en septembre, les adhérents à jour pas encore réinscrits reçoivent au plus trois mails, à deux semaines d’écart, avec un lien pour ne plus les recevoir. Une famille qui partage une adresse ne reçoit qu’un mail.
 
 ## Carte Wallet, si la fonction est activée
 

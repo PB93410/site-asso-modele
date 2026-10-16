@@ -195,6 +195,13 @@
   status = 200
   force = true
 
+# Désinscription des rappels de réinscription (lien du mail)
+[[redirects]]
+  from = "/api/reinscription-stop"
+  to = "/.netlify/functions/reinscription-stop"
+  status = 200
+  force = true
+
 # Lien « Adhérer en 1 minute » : préremplissage de /inscription depuis le message du bureau
 [[redirects]]
   from = "/api/adhesion-prefill"
