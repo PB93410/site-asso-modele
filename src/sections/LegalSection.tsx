@@ -432,6 +432,16 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                         <td className="p-2">Suivi de la demande hors paiement en ligne</td>
                         <td className="p-2">Saison + 3 ans si adhésion ; 12 mois si la demande n&apos;aboutit pas</td>
                       </tr>
+                      {MODULES.inscriptionsEvenements ? (
+                        <tr className="border-b border-black/[0.06]">
+                          <td className="p-2">
+                            Inscriptions aux événements (/evenements) : prénom, nom, téléphone, nombre de personnes,
+                            covoiturage (places, commune de départ)
+                          </td>
+                          <td className="p-2">Organiser l&apos;événement ; le public ne voit que les places restantes</td>
+                          <td className="p-2">Effacées par le bureau après l&apos;événement</td>
+                        </tr>
+                      ) : null}
                       <tr className="border-b border-black/[0.06]">
                         <td className="p-2">Alerte interne ntfy (prénom, cours, date)</td>
                         <td className="p-2">Prévenir le bureau qu&apos;une ligne essai est arrivée</td>

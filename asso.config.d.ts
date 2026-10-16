@@ -50,6 +50,8 @@ export interface AssoModules {
   demandeAvis: boolean;
   /** E-mail facultatif à l'essai (rappel, merci). Absent = désactivé. */
   essaiMail: boolean;
+  /** Inscriptions aux événements. Absent = désactivé. */
+  inscriptionsEvenements: boolean;
 }
 
 export interface AssoListeAttente {

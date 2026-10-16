@@ -29,6 +29,7 @@ const QuizPage = lazy(() => import('./pages/QuizPage'));
 const SondageEssaiPage = lazy(() => import('./pages/SondageEssaiPage'));
 const ClubEnChiffresPage = lazy(() => import('./pages/ClubEnChiffresPage'));
 const EssaiTablettePage = lazy(() => import('./pages/EssaiTablettePage'));
+const EvenementsPage = lazy(() => import('./pages/EvenementsPage'));
 const PresencePage = lazy(() => import('./pages/PresencePage'));
 const AlertesPage = lazy(() => import('./pages/AlertesPage'));
 const AlertesDesaboPage = lazy(() => import('./pages/AlertesDesaboPage'));
@@ -172,6 +173,7 @@ export default function App() {
             <Route path="/quiz" element={<QuizPage />} />
             <Route path="/sondage-essai" element={<SondageEssaiPage />} />
             <Route path="/le-club-en-chiffres" element={<ClubEnChiffresPage />} />
+            <Route path="/evenements" element={<EvenementsPage />} />
             <Route path="/presence" element={<PresencePage />} />
             <Route path="/alertes/desabo" element={<AlertesDesaboPage />} />
             <Route path="/alertes" element={<AlertesPage />} />

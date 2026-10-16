@@ -87,6 +87,8 @@ const ASSO = {
     demandeAvis: ${m.demandeAvis === true ? 'true' : 'false'},
     /** E-mail facultatif sur /essai : rappel la veille de l'essai et mot après l'essai, rien d'autre ; adresse rangée à part, effacée après 12 mois (demande l'envoi des mails). */
     essaiMail: ${m.essaiMail === true ? 'true' : 'false'},
+    /** Page /evenements : agenda public et inscriptions aux événements ouverts par le bureau (places limitées, covoiturage) ; liste effacée par le bureau après l'événement. */
+    inscriptionsEvenements: ${m.inscriptionsEvenements === true ? 'true' : 'false'},
   },
 
   // ---- Identité ----

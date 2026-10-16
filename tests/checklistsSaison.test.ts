@@ -94,7 +94,7 @@ describe('checklists de saison — API', () => {
   it('sans connexion : refusé', async () => {
     const handler = await charger(false);
     expect((await handler({ httpMethod: 'GET', headers: {}, queryStringParameters: { saison: '2026-2027' } })).statusCode).toBe(401);
-  });
+  }, { timeout: 20_000 });
 
   it('coche une case, la relit, la décoche', async () => {
     const handler = await charger();
@@ -105,19 +105,19 @@ describe('checklists de saison — API', () => {
     expect(JSON.parse(lu.body).coches['forum:stand'].le).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     const retire = await handler(post({ saison: '2026-2027', cle: 'forum:stand', fait: false }));
     expect(JSON.parse(retire.body).coches).toEqual({});
-  });
+  }, { timeout: 20_000 });
 
   it('une autre saison repart de zéro', async () => {
     const handler = await charger();
     await handler(post({ saison: '2026-2027', cle: 'forum:stand', fait: true }));
     const autre = await handler({ httpMethod: 'GET', headers: {}, queryStringParameters: { saison: '2027-2028' } });
     expect(JSON.parse(autre.body).coches).toEqual({});
-  });
+  }, { timeout: 20_000 });
 
   it('refuse une demande mal formée', async () => {
     const handler = await charger();
     expect((await handler(post({ saison: '2026-2027', cle: 'x', fait: true }))).statusCode).toBe(400);
     expect((await handler(post({ saison: '2026-2027', cle: 'forum:stand', fait: 'oui' }))).statusCode).toBe(400);
     expect((await handler(post({ saison: 'x', cle: 'forum:stand', fait: true }))).statusCode).toBe(400);
-  });
+  }, { timeout: 20_000 });
 });

@@ -341,6 +341,31 @@
   status = 200
   force = true
 
+# Inscriptions aux événements (modules.inscriptionsEvenements) : page non prérendue
+[[redirects]]
+  from = "/evenements"
+  to = "/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/evenements/"
+  to = "/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/evenement-inscription"
+  to = "/.netlify/functions/evenement-inscription"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/evenements-bureau"
+  to = "/.netlify/functions/evenements-bureau"
+  status = 200
+  force = true
+
 # Checklists de saison du bureau (modules.checklists)
 [[redirects]]
   from = "/api/checklists"
@@ -552,6 +577,12 @@
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
     Cache-Control = "no-store"
+
+[[headers]]
+  for = "/api/evenements-bureau"
+  [headers.values]
+    Cache-Control = "no-store, private"
+    X-Content-Type-Options = "nosniff"
 
 [[headers]]
   for = "/sondage-essai"

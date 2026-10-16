@@ -61,6 +61,8 @@ const ASSO = {
     demandeAvis: false,
     /** E-mail facultatif sur /essai : rappel la veille de l'essai et mot après l'essai, rien d'autre ; adresse rangée à part, effacée après 12 mois (demande l'envoi des mails). */
     essaiMail: false,
+    /** Page /evenements : agenda public et inscriptions aux événements ouverts par le bureau (places limitées, covoiturage) ; liste effacée par le bureau après l'événement. */
+    inscriptionsEvenements: false,
   },
 
   // ---- Identité ----

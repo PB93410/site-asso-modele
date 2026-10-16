@@ -92,6 +92,15 @@ describe('dossier', () => {
       rapport: false,
       attestations: false,
       espace: false,
+      parrainage: false,
+      sondageEssai: false,
+      clubEnChiffres: false,
+      checklists: false,
+      tablette: false,
+      carteHorsLigne: false,
+      demandeAvis: false,
+      essaiMail: false,
+      inscriptionsEvenements: false,
     });
   });
 

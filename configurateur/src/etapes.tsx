@@ -741,6 +741,7 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
             attestations: v ? m.attestations : false,
             sondageEssai: v ? m.sondageEssai : false,
             checklists: v ? m.checklists : false,
+            inscriptionsEvenements: v ? m.inscriptionsEvenements : false,
           })
         }
       />
@@ -837,6 +838,14 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
             onChange={(v) => maj('financement.comiteEntreprise', Number(v.replace(/\D/g, '')) || 0)}
           />
         </div>
+      ) : null}
+      {m.bureau ? (
+        <Case
+          label="Inscriptions aux événements"
+          aide="Une page « Événements » : le bureau ouvre les inscriptions d’un événement (nombre de places, covoiturage), le public s’inscrit en une minute, le bureau voit les inscrits et efface la liste après."
+          checked={m.inscriptionsEvenements}
+          onChange={(v) => maj('modules.inscriptionsEvenements', v)}
+        />
       ) : null}
       {m.bureau ? (
         <Case

@@ -91,6 +91,12 @@ Choisissez, puis **Enregistrer**. Une confirmation s’affiche. Le site public s
 
 ---
 
+## Inscriptions aux événements, si la fonction est activée
+
+**Autre → Inscriptions événements** : pour un événement de l’agenda, indiquez le nombre de places (0 = sans limite) et cochez « covoiturage » si besoin, puis ouvrez. Le public s’inscrit sur la page **Événements** du site et ne voit que les places restantes. Vous voyez les inscrits, leur téléphone et le covoiturage (places proposées, personnes qui en cherchent). Après l’événement : **Clore et effacer**, la liste disparaît.
+
+---
+
 ## Bip sur le téléphone (une fois)
 
 1. Installez l’appli **ntfy**.
