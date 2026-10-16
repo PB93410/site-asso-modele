@@ -54,6 +54,10 @@ QR : https://www.exemple-asso.fr/essai?source=forum
 
 ---
 
+## Tablette du stand, si la fonction est activée
+
+Sur la tablette, ouvrez **/essai/tablette** (ajoutez-la à l’écran d’accueil). Les visiteurs tapent prénom, nom, téléphone, et choisissent un cours s’ils veulent. Après l’envoi, un « merci » s’affiche 10 secondes, puis l’écran se vide pour la personne suivante (aussi au bout de 90 secondes sans toucher). Les demandes arrivent dans **Essais**, notées « Forum ».
+
 ## Demandes d’essai — les trois listes
 
 Chaque fiche : bouton vert WhatsApp (texte déjà écrit) et, si besoin, **Appeler**.

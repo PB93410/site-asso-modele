@@ -79,6 +79,8 @@ const ASSO = {
     clubEnChiffres: ${m.clubEnChiffres === true ? 'true' : 'false'},
     /** Checklists de saison du bureau (rentrée, forum, cartes, réinscriptions, changement de saison), cochées par tous. Ses propres listes : clé « checklists » (facultative, voir asso.config.d.ts), sinon celles par défaut. */
     checklists: ${m.checklists === true ? 'true' : 'false'},
+    /** Mode tablette du forum (/essai/tablette) : plein écran, trois champs, écran vidé après chaque personne (demande essais). */
+    tablette: ${m.tablette === true ? 'true' : 'false'},
   },
 
   // ---- Identité ----

@@ -51,6 +51,7 @@ export const MODULES = {
   sondageEssai: false,
   clubEnChiffres: false,
   checklists: false,
+  tablette: false,
   ...(ASSO.modules || {}),
 };
 if (!MODULES.bureau) MODULES.mail = false;

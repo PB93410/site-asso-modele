@@ -42,6 +42,8 @@ export interface AssoModules {
   clubEnChiffres: boolean;
   /** Checklists de saison du bureau. Absent = désactivé. */
   checklists: boolean;
+  /** Mode tablette du forum. Absent = désactivé. */
+  tablette: boolean;
 }
 
 export interface AssoListeAttente {

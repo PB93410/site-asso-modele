@@ -314,6 +314,19 @@
   to = "/index.html"
   status = 200
 
+# Mode tablette du forum (modules.tablette) : page non prérendue, non indexée
+[[redirects]]
+  from = "/essai/tablette"
+  to = "/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/essai/tablette/"
+  to = "/index.html"
+  status = 200
+  force = true
+
 # Checklists de saison du bureau (modules.checklists)
 [[redirects]]
   from = "/api/checklists"
@@ -513,6 +526,12 @@
   [headers.values]
     Cache-Control = "no-store"
     X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/essai/tablette"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store"
 
 [[headers]]
   for = "/sondage-essai"

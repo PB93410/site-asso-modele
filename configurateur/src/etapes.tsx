@@ -700,8 +700,16 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
         label="Réserver un essai gratuit en ligne"
         aide="Les visiteurs choisissent un créneau ; la demande arrive dans un tableau Google partagé par le bureau. Sinon : ils appellent ou écrivent."
         checked={m.essais}
-        onChange={(v) => maj('modules.essais', v)}
+        onChange={(v) => maj('modules', { ...m, essais: v, tablette: v ? m.tablette : false, sondageEssai: v ? m.sondageEssai : false })}
       />
+      {m.essais ? (
+        <Case
+          label="Mode tablette pour le forum"
+          aide="Une page plein écran (/essai/tablette) pour la tablette du stand : prénom, nom, téléphone, un cours. Après chaque personne, l’écran se vide tout seul."
+          checked={m.tablette}
+          onChange={(v) => maj('modules.tablette', v)}
+        />
+      ) : null}
       <Case
         label="S’inscrire en ligne"
         aide="Formulaire d’adhésion complet ; les fiches arrivent dans un tableau Google. Sinon : inscription sur place."
