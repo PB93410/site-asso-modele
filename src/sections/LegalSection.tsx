@@ -155,6 +155,14 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                     Le téléphone n&apos;est lu que dans le tableur ou /bureau. Le formulaire affiche
                     une phrase d&apos;information (pas une case « consentement ») : base légale art.
                     6.1.b. Pas de tracking publicitaire.
+                    {MODULES.essaiMail ? (
+                      <>
+                        {' '}
+                        L&apos;e-mail, s&apos;il est donné, sert seulement au rappel la veille de l&apos;essai et à un
+                        mot après : il est rangé à part (pas dans le tableau du bureau), lié à cette demande, effacé
+                        après 12 mois ; chaque message contient un lien pour ne plus rien recevoir, qui l&apos;efface.
+                      </>
+                    ) : null}
                     {MODULES.parrainage ? (
                       <>
                         {' '}

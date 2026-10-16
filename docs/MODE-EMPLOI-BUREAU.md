@@ -54,6 +54,10 @@ QR : https://www.exemple-asso.fr/essai?source=forum
 
 ---
 
+## E-mail à l’essai, si la fonction est activée
+
+Sur `/essai`, la personne peut laisser son e-mail. Le site lui envoie alors, tout seul, le rappel la veille de l’essai et un mot le lendemain (avec le lien pour adhérer en 1 minute). C’est noté dans les notes de l’essai (« Mail veille essai… »). L’adresse n’apparaît pas dans le tableau des essais ; elle ne sert à rien d’autre et s’efface après 12 mois.
+
 ## Tablette du stand, si la fonction est activée
 
 Sur la tablette, ouvrez **/essai/tablette** (ajoutez-la à l’écran d’accueil). Les visiteurs tapent prénom, nom, téléphone, et choisissent un cours s’ils veulent. Après l’envoi, un « merci » s’affiche 10 secondes, puis l’écran se vide pour la personne suivante (aussi au bout de 90 secondes sans toucher). Les demandes arrivent dans **Essais**, notées « Forum ».

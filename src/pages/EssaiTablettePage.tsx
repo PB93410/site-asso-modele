@@ -3,7 +3,7 @@ import { CheckCircle2, Loader2 } from 'lucide-react';
 import { ACTIVITIES } from '../data/siteData';
 import { ASSO, COURS_ESSAI_LABEL, MODULES, NB_ESSAIS, essaisOuverts } from '../data/asso';
 import { usePageMeta } from '../hooks/usePageMeta';
-import { essaiFormError } from '../lib/formValidation';
+import { emailError, essaiFormError } from '../lib/formValidation';
 import { SECONDES_AVANT_RAZ, SECONDES_INACTIVITE, aDesDonnees } from '../lib/modeTablette';
 import NotFoundPage from './NotFoundPage';
 
@@ -43,6 +43,7 @@ function Tablette() {
   const [nom, setNom] = useState('');
   const [telephone, setTelephone] = useState('');
   const [cours, setCours] = useState('');
+  const [email, setEmail] = useState('');
   const [bot, setBot] = useState('');
   const [envoi, setEnvoi] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
@@ -62,6 +63,7 @@ function Tablette() {
     setNom('');
     setTelephone('');
     setCours('');
+    setEmail('');
     setBot('');
     setErreur(null);
     setMerci(null);
@@ -86,15 +88,15 @@ function Tablette() {
 
   // Sans toucher l'écran avec des données saisies : on efface.
   useEffect(() => {
-    if (merci !== null || !aDesDonnees({ prenom, nom, telephone, cours })) return;
+    if (merci !== null || !aDesDonnees({ prenom, nom, telephone, cours, email })) return;
     const t = window.setTimeout(raz, SECONDES_INACTIVITE * 1000);
     return () => window.clearTimeout(t);
-  }, [prenom, nom, telephone, cours, merci, raz]);
+  }, [prenom, nom, telephone, cours, email, merci, raz]);
 
   async function envoyer(e: FormEvent) {
     e.preventDefault();
     setErreur(null);
-    const faute = essaiFormError(prenom, nom, telephone);
+    const faute = essaiFormError(prenom, nom, telephone) || (MODULES.essaiMail ? emailError(email) : null);
     if (faute) {
       setErreur(faute);
       return;
@@ -108,6 +110,7 @@ function Tablette() {
           prenom: prenom.trim(),
           nom: nom.trim(),
           telephone: telephone.trim(),
+          ...(MODULES.essaiMail && email.trim() ? { email: email.trim() } : {}),
           cours,
           date_essai: '',
           creneau: '',
@@ -212,9 +215,27 @@ function Tablette() {
                 onChange={(e) => setTelephone(e.target.value)}
                 autoComplete="off"
                 placeholder="06 ou 07…"
-                enterKeyHint="done"
+                enterKeyHint={MODULES.essaiMail ? 'next' : 'done'}
               />
             </div>
+            {MODULES.essaiMail ? (
+              <div>
+                <label className={etiquette} htmlFor="t-mail">
+                  E-mail <span className="font-normal text-brand-gray">(facultatif, pour le rappel de la veille)</span>
+                </label>
+                <input
+                  id="t-mail"
+                  className={champ}
+                  type="email"
+                  inputMode="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="off"
+                  placeholder="marie@exemple.fr"
+                  enterKeyHint="done"
+                />
+              </div>
+            ) : null}
             <fieldset>
               <legend className={etiquette}>
                 Un cours qui vous tente ? <span className="font-normal text-brand-gray">(facultatif)</span>

@@ -13,7 +13,7 @@ import {
   slotValue,
 } from '../lib/essaiMessages';
 import { buildDateEssaiCell, formatEssaiDateLabel } from '../lib/essaiDates';
-import { essaiFormError } from '../lib/formValidation';
+import { emailError, essaiFormError } from '../lib/formValidation';
 import { buildHowToJoinSchema } from '../lib/schema';
 
 const MSG_UN_CRENEAU =
@@ -88,6 +88,7 @@ function FormulaireEssai() {
   const [prenom, setPrenom] = useState('');
   const [nom, setNom] = useState('');
   const [telephone, setTelephone] = useState('');
+  const [email, setEmail] = useState('');
   const [cours, setCours] = useState(preset);
   const [dateEssai, setDateEssai] = useState(presetDate);
   const [bot, setBot] = useState('');
@@ -142,7 +143,7 @@ function FormulaireEssai() {
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
-    const fieldErr = essaiFormError(prenom, nom, telephone);
+    const fieldErr = essaiFormError(prenom, nom, telephone) || (MODULES.essaiMail ? emailError(email) : null);
     if (fieldErr) {
       setError(fieldErr);
       return;
@@ -156,6 +157,7 @@ function FormulaireEssai() {
           prenom: prenom.trim(),
           nom: nom.trim(),
           telephone: telephone.trim(),
+          ...(MODULES.essaiMail && email.trim() ? { email: email.trim() } : {}),
           cours,
           date_essai: dateEssai,
           creneau: (() => {
@@ -371,6 +373,28 @@ function FormulaireEssai() {
                 Le bureau rappelle sur ce numéro (appel ou WhatsApp).
               </p>
             </div>
+
+            {MODULES.essaiMail ? (
+              <div>
+                <label className={labelClass} htmlFor="email">
+                  E-mail <span className="font-normal text-brand-gray">(facultatif)</span>
+                </label>
+                <input
+                  id="email"
+                  className={inputClass}
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  placeholder="marie@exemple.fr"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <p className="mt-1.5 font-body text-[13px] text-brand-gray">
+                  Pour recevoir le rappel la veille de votre essai et un mot après. Rien d’autre : votre adresse n’est
+                  jamais utilisée autrement, et chaque message contient un lien pour ne plus rien recevoir.
+                </p>
+              </div>
+            ) : null}
 
             <fieldset className="rounded-2xl bg-brand-cream p-4 border border-black/10">
               <legend className="font-body text-sm font-semibold text-brand-black px-1">

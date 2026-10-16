@@ -48,6 +48,8 @@ export interface AssoModules {
   carteHorsLigne: boolean;
   /** Demande d'avis Google après l'adhésion. Absent = désactivé. */
   demandeAvis: boolean;
+  /** E-mail facultatif à l'essai (rappel, merci). Absent = désactivé. */
+  essaiMail: boolean;
 }
 
 export interface AssoListeAttente {

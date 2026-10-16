@@ -85,6 +85,8 @@ const ASSO = {
     carteHorsLigne: ${m.carteHorsLigne === true ? 'true' : 'false'},
     /** Demande d'avis Google par mail, un à deux mois après l'adhésion, une fois par saison (demande reseaux.avisGoogle et l'envoi des mails). */
     demandeAvis: ${m.demandeAvis === true ? 'true' : 'false'},
+    /** E-mail facultatif sur /essai : rappel la veille de l'essai et mot après l'essai, rien d'autre ; adresse rangée à part, effacée après 12 mois (demande l'envoi des mails). */
+    essaiMail: ${m.essaiMail === true ? 'true' : 'false'},
   },
 
   // ---- Identité ----

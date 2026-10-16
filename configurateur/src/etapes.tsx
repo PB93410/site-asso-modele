@@ -700,7 +700,7 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
         label="Réserver un essai gratuit en ligne"
         aide="Les visiteurs choisissent un créneau ; la demande arrive dans un tableau Google partagé par le bureau. Sinon : ils appellent ou écrivent."
         checked={m.essais}
-        onChange={(v) => maj('modules', { ...m, essais: v, tablette: v ? m.tablette : false, sondageEssai: v ? m.sondageEssai : false })}
+        onChange={(v) => maj('modules', { ...m, essais: v, tablette: v ? m.tablette : false, sondageEssai: v ? m.sondageEssai : false, essaiMail: v ? m.essaiMail : false })}
       />
       {m.essais ? (
         <Case
@@ -708,6 +708,14 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
           aide="Une page plein écran (/essai/tablette) pour la tablette du stand : prénom, nom, téléphone, un cours. Après chaque personne, l’écran se vide tout seul."
           checked={m.tablette}
           onChange={(v) => maj('modules.tablette', v)}
+        />
+      ) : null}
+      {m.essais ? (
+        <Case
+          label="E-mail facultatif à l’essai : rappel la veille et merci après"
+          aide="La personne peut laisser son e-mail en demandant un essai. Elle reçoit seulement le rappel la veille et un mot après l’essai (avec le lien pour adhérer), avec un lien pour ne plus rien recevoir. Adresse effacée après 12 mois. Demande l’envoi des mails."
+          checked={m.essaiMail}
+          onChange={(v) => maj('modules.essaiMail', v)}
         />
       ) : null}
       <Case

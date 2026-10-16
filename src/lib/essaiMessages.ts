@@ -1,6 +1,7 @@
 import type { ScheduleRow } from '../data/siteData';
-import { ASSO, NB_ESSAIS, PAIEMENTS_BUREAU, TARIF_LABEL, lieuAdresse } from '../data/asso';
+import { ASSO, MODULES, NB_ESSAIS, PAIEMENTS_BUREAU, SITE_URL, TARIF_LABEL, lieuAdresse } from '../data/asso';
 import { formatEssaiDateLabel, slotHintFromCell } from './essaiDates';
+import { LIEN_SONDAGE } from './sondageEssai';
 
 export function slotValue(day: string, time: string) {
   const start = (time || '').split(/[–-]/)[0].trim();
@@ -149,8 +150,11 @@ Tenue souple, baskets, une bouteille d’eau.
 ${ASSO.nom}`;
 }
 
-/** Après le cours : 2e/3e essai ou adhésion, sans pression */
-export function msgApresCours(prenom: string, info: CreneauInfo, numEssai = 1) {
+/**
+ * Après le cours : 2e/3e essai ou adhésion, sans pression. `lienAdhesion` = jeton du lien « Adhérer en 1 minute »
+ * (formulaire prérempli) ; sans lui, rien de plus.
+ */
+export function msgApresCours(prenom: string, info: CreneauInfo, numEssai = 1, lienAdhesion = '') {
   const name = prenom || '';
   const cours = info.course ? ` de ${info.course}` : '';
   const restants = Math.max(0, NB_ESSAIS - numEssai);
@@ -162,7 +166,9 @@ export function msgApresCours(prenom: string, info: CreneauInfo, numEssai = 1) {
 Merci d’être venu(e) au cours${cours}.
 ${suite}
 Adhésion ${TARIF_LABEL}/an si vous le souhaitez : ${ASSO.adhesion.paiementUrl ? 'carte en ligne, ou ' : ''}${PAIEMENTS_BUREAU} au bureau.
-Sans pression — répondez ici.`;
+${lienAdhesion ? `Pour adhérer en ligne, en 1 minute (vos coordonnées sont déjà remplies) : ${SITE_URL}/inscription?e=${encodeURIComponent(lienAdhesion)}
+` : ''}${MODULES.sondageEssai ? `Votre avis en 30 secondes, sans donner votre nom : ${LIEN_SONDAGE}
+` : ''}Sans pression — répondez ici.`;
 }
 
 export function msgDeuxiemeEssai(prenom: string, info: CreneauInfo, prochain: number) {

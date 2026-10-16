@@ -25,6 +25,7 @@ import {
 } from './_bureau-lib.mjs';
 import { buildDateEssaiCell, formatEssaiDateLabel } from './_essai-dates.mjs';
 import { notifyBureauNewLead } from './_notify-bureau.mjs';
+import { ecrireMail } from './_essai-mails.mjs';
 import { sendEssaiNotification } from './_essai-mail.mjs';
 import { MODULES, SITE_URL, essaisOuverts } from '../../asso.derive.js';
 import { brancherStockage, modeStockage } from './_stockage.mjs';
@@ -229,6 +230,17 @@ async function handler(event) {
     }
 
     await appendRow(sheetId, tab, row);
+
+    // E-mail facultatif (modules.essaiMail) : rangé à part, seulement pour le rappel de la veille et le mot après l'essai.
+    // Lié à CETTE demande (téléphone + minute de la demande, comme la ligne écrite) : saisir le numéro d'un tiers ne
+    // détourne jamais ses rappels.
+    if (MODULES.essaiMail && email) {
+      try {
+        await ecrireMail({ tel: telephone, demandeLe: dateDemande }, email, todayYmd, process.env.BUREAU_SECRET);
+      } catch (mailErr) {
+        console.error('essai: adresse de rappel', mailErr?.message || 'failed');
+      }
+    }
     try {
       await sendEssaiNotification({
         prenom,
