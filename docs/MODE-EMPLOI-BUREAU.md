@@ -35,7 +35,7 @@ Tout se fait dans cet espace. Vous n’ouvrez pas Excel. WhatsApp s’ouvre tout
 
 ## Les onglets
 
-- **Accueil** — ce qu’il reste à faire aujourd’hui.
+- **Accueil** — ce qu’il reste à faire aujourd’hui. Touchez **Je suis** (Trésorerie, Présidence, Bénévole) : la liste se range dans l’ordre qui vous concerne (l’argent d’abord pour la trésorerie, la séance d’abord pour les bénévoles). Rien n’est caché, aucun mot de passe en plus ; le choix se retient sur ce téléphone.
 - **Stand** — Forum : onglet du bas. Ensuite : **Autre → Stand gymnase**.
 - **À payer** — inscriptions en ligne en attente des la cotisation. Recherche en haut.
 - **Essais** — à confirmer, rappel la veille, puis après le cours.

@@ -1,5 +1,6 @@
 import { ChevronRight, CircleCheck, CreditCard, MessageCircle, Phone, UserCheck, Wallet } from 'lucide-react';
-import type { ComponentType } from 'react';
+import { useState, type ComponentType } from 'react';
+import { lireRole, ordonnerActions, retenirRole, ROLES, type RoleBureau } from '../../lib/bureauAFaire';
 import { formatTelFr } from '../../lib/bureauSearch';
 import { PersonNameButton } from './BureauPersonSheet';
 import { Initiales, Statut, Vide } from './ui';
@@ -79,6 +80,7 @@ export default function BureauTodayTab({
   onCartes,
   onOpenPerson,
 }: Props) {
+  const [role, setRole] = useState<RoleBureau>(() => lireRole());
   if (qPeople) {
     return (
       <div className="space-y-3">
@@ -116,7 +118,7 @@ export default function BureauTodayTab({
     { cle: 'relances', label: 'Relances', aide: 'Essais à relancer sur WhatsApp', compte: relanceP1 + relanceP2, icone: MessageCircle, onClick: onRelances },
     { cle: 'cartes', label: 'Cartes à envoyer', aide: 'Adhérents à jour sans carte', compte: cartesAPreparer, icone: CreditCard, onClick: onCartes },
   ];
-  const aFaire = actions.filter((a) => a.compte > 0);
+  const aFaire = ordonnerActions(actions.filter((a) => a.compte > 0), role);
   const rien = actions.filter((a) => a.compte === 0);
 
   return (
@@ -146,7 +148,29 @@ export default function BureauTodayTab({
       ) : null}
 
       <section className="space-y-2">
-        <h2 className="text-sm font-semibold text-slate-500 px-1">À faire</h2>
+        <div className="flex items-center justify-between gap-2 flex-wrap px-1">
+          <h2 className="text-sm font-semibold text-slate-500">À faire</h2>
+          {/* Le rôle ne change que l'ordre de la liste ; il se retient sur ce téléphone. */}
+          <div className="flex items-center gap-1.5 flex-wrap" role="group" aria-label="Je suis">
+            <span className="text-sm text-slate-500">Je suis</span>
+            {ROLES.map((r) => (
+              <button
+                key={r.id}
+                type="button"
+                aria-pressed={role === r.id}
+                onClick={() => {
+                  setRole(r.id);
+                  retenirRole(r.id);
+                }}
+                className={`min-h-[44px] px-3 rounded-full border text-sm font-medium ${
+                  role === r.id ? 'bg-brand-olive text-white border-brand-olive' : 'bg-white border-black/10 text-brand-black'
+                }`}
+              >
+                {r.label}
+              </button>
+            ))}
+          </div>
+        </div>
         {loading && aFaire.length === 0 ? (
           <div className={`${carte} p-4 space-y-3`} aria-busy="true">
             {[0, 1, 2].map((i) => (
