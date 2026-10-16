@@ -29,6 +29,8 @@ export type EssaiInput = {
   notes?: string;
   row?: number;
   source?: string;
+  /** Jeton du lien « Adhérer en 1 minute » (essais-list), vide sans BUREAU_SECRET. */
+  lienAdhesion?: string;
 };
 
 export type AdherentInput = {
@@ -65,6 +67,7 @@ export type LiveRelanceCard = {
   daysSince: number;
   /** Jours depuis la date de l’essai, sans tenir compte des relances. */
   daysSinceEssai: number;
+  lienAdhesion: string;
 };
 
 export type RelancesQueue = {
@@ -348,6 +351,7 @@ function cardFromAgg(
     relanceCount: agg.relanceCount,
     daysSince: daysSinceOf(agg, opts.dateRaw, todayYmd),
     daysSinceEssai: daysFromEssai(opts.dateRaw, todayYmd),
+    lienAdhesion: String(e.lienAdhesion || ''),
   };
 }
 

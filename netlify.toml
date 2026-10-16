@@ -195,6 +195,13 @@
   status = 200
   force = true
 
+# Lien « Adhérer en 1 minute » : préremplissage de /inscription depuis le message du bureau
+[[redirects]]
+  from = "/api/adhesion-prefill"
+  to = "/.netlify/functions/adhesion-prefill"
+  status = 200
+  force = true
+
 # Paiement en ligne de l’adhésion (HelloAsso) : docs/DOC-PAIEMENT.md
 [[redirects]]
   from = "/api/paiement"
@@ -455,6 +462,12 @@
 
 [[headers]]
   for = "/api/essai"
+  [headers.values]
+    Cache-Control = "no-store"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/api/adhesion-prefill"
   [headers.values]
     Cache-Control = "no-store"
     X-Content-Type-Options = "nosniff"

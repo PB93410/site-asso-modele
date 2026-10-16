@@ -143,6 +143,10 @@ Sur le formulaire d’inscription, la personne indique ses aides. Le **reste à 
 
 Rien n’est enregistré : le PDF est fabriqué au moment du clic.
 
+## Message « merci » après l’essai : « Adhérer en 1 minute »
+
+Dans **Relances**, le message après un essai contient un lien personnel vers le formulaire d’inscription : prénom, nom et téléphone de l’essai y sont déjà remplis, la personne vérifie et complète. Le lien ne contient aucune donnée lisible et marche 45 jours. S’il manque (réglage du référent absent), le message renvoie vers la page des tarifs, comme avant.
+
 ## Mail « Le site a un problème »
 
 Chaque nuit, le site vérifie que ses pages principales s’ouvrent. Ce mail dit lesquelles ne répondaient pas (deux essais à 15 secondes d’écart). Ouvrez la page : si elle marche, c’était passager. Sinon, prévenez le référent ; si une mise en ligne vient d’avoir lieu, il peut republier la version précédente sur Netlify.

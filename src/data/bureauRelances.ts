@@ -17,7 +17,7 @@ ${ASSO.nom}`;
 export const MSG_B = `Bonjour {prenom},
 Merci d’être venu(e) à {cours}.
 Si le rythme te convient, l’adhésion est ${TARIF_LABEL}/an (${ASSO.adhesion.inclus}) :
-${SITE_URL}/tarifs
+{adhesion}
 ${PAIEMENTS_BUREAU} au bureau${ASSO.adhesion.paiementUrl ? ', carte ensuite' : ''}.
 Tu continues ?
 ${ASSO.nom}`;
@@ -41,18 +41,30 @@ function tplFor(message: RelanceMsg) {
   return MSG_B;
 }
 
+/**
+ * Lien du message B : « Adhérer en 1 minute » (formulaire prérempli, jeton signé par essais-list),
+ * sinon la page des tarifs.
+ */
+export function lienAdhesionMessage(jeton = '') {
+  return jeton
+    ? `Pour adhérer en 1 minute (tes coordonnées sont déjà remplies) : ${SITE_URL}/inscription?e=${encodeURIComponent(jeton)}`
+    : `${SITE_URL}/tarifs`;
+}
+
 /** Ligne calculée ou figée : prenom, tel, cours, message A|B|C. */
 export function relanceHref(row: {
   prenom: string;
   tel: string;
   cours: string;
   message: RelanceMsg | 'A' | 'B' | 'C';
+  lienAdhesion?: string;
 }) {
   const d = phoneToWa(row.tel);
   if (!d) return '';
   const text = tplFor(row.message)
     .replace('{prenom}', row.prenom)
-    .replace('{cours}', row.cours);
+    .replace('{cours}', row.cours)
+    .replace('{adhesion}', lienAdhesionMessage(row.lienAdhesion));
   return `https://wa.me/${d}?text=${encodeURIComponent(text)}`;
 }
 

@@ -15,6 +15,7 @@ export type PersonEssai = {
   notes?: string;
   row?: number;
   source?: string;
+  lienAdhesion?: string;
 };
 
 export type PersonAdherent = {
