@@ -4,6 +4,7 @@ import { CheckCircle2, Loader2, MessageCircle } from 'lucide-react';
 import { waUrl as clubWaUrl } from '../data/siteData';
 import { ASSO, COURS_ESSAI_LABEL, MODULES, NB_ESSAIS, TARIF_LABEL, essaisOuverts } from '../data/asso';
 import ContactDirect from '../components/ContactDirect';
+import QuizBandeau from '../components/QuizBandeau';
 import { useScheduleFromSheet } from '../hooks/useSheetData';
 import { usePageMeta } from '../hooks/usePageMeta';
 import {
@@ -84,6 +85,7 @@ function FormulaireEssai() {
   const presetDate = params.get('date') || '';
   const fromForum = params.get('source') === 'forum';
   const fromParrainage = params.get('source') === 'parrainage';
+  const [parrain, setParrain] = useState('');
 
   const [prenom, setPrenom] = useState('');
   const [nom, setNom] = useState('');
@@ -165,6 +167,7 @@ function FormulaireEssai() {
             return row ? slotLabel(row.day, row.time, row.course) : '';
           })(),
           source: fromForum ? 'forum' : fromParrainage ? 'parrainage' : 'site',
+          ...(MODULES.parrainage && fromParrainage && parrain.trim() ? { parrain: parrain.trim() } : {}),
           'bot-field': bot,
         }),
       });
@@ -310,6 +313,9 @@ function FormulaireEssai() {
         ) : !MODULES.essais ? (
           <ContactDirect motif="essai" />
         ) : (
+          <>
+          {/* Pas de cours choisi : le quiz aide à choisir, puis revient ici avec le cours (/essai?cours=…). */}
+          {!fromForum && !preset ? <QuizBandeau className="mb-6" /> : null}
           <form
             onSubmit={onSubmit}
             className="space-y-5 rounded-2xl bg-white border border-black/10 p-5 md:p-8"
@@ -373,6 +379,27 @@ function FormulaireEssai() {
                 Le bureau rappelle sur ce numéro (appel ou WhatsApp).
               </p>
             </div>
+
+            {MODULES.parrainage && fromParrainage ? (
+              <div>
+                <label className={labelClass} htmlFor="parrain">
+                  Qui vous a invité ? <span className="font-normal text-brand-gray">(facultatif)</span>
+                </label>
+                <input
+                  id="parrain"
+                  className={inputClass}
+                  type="text"
+                  autoComplete="off"
+                  maxLength={60}
+                  placeholder="Son prénom"
+                  value={parrain}
+                  onChange={(e) => setParrain(e.target.value)}
+                />
+                <p className="mt-1.5 font-body text-[13px] text-brand-gray">
+                  Pour que l’association puisse le ou la remercier. Vous n’êtes pas obligé de répondre.
+                </p>
+              </div>
+            ) : null}
 
             {MODULES.essaiMail ? (
               <div>
@@ -485,6 +512,7 @@ function FormulaireEssai() {
               Ou écrire sur WhatsApp
             </a>
           </form>
+          </>
         )}
       </div>
     </main>

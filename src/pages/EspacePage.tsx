@@ -5,6 +5,7 @@ import { usePageMeta } from '../hooks/usePageMeta';
 import { useScheduleFromSheet } from '../hooks/useSheetData';
 import { libelleDate, libelleHeure, parisMaintenant, sansCoursLe } from '../lib/accueil';
 import { seances } from '../lib/mesCours';
+import { salleDuCours } from '../lib/salleDuCours';
 import { lienParrainage, lienWhatsAppParrainage, messageParrainage } from '../lib/parrainage';
 import { activerHorsLigne, horsLigneActif, horsLigneDisponible, oublierHorsLigne } from '../lib/horsLigne';
 import Footer from '../sections/Footer';
@@ -158,7 +159,8 @@ function Parrainage() {
   return (
     <Carte titre="Inviter une personne">
       <p className="font-body text-[16px] text-brand-gray">
-        Un ami, un voisin, un collègue ? Envoyez-lui le lien. Nous ne savons pas qui l’a invité.
+        Un ami, un voisin, un collègue ? Envoyez-lui le lien. Le lien est le même pour tous : l’association ne sait pas
+        d’où il vient, sauf si votre invité écrit votre prénom pour vous remercier.
       </p>
       <div className="flex flex-wrap gap-3">
         <a href={lienWhatsAppParrainage()} target="_blank" rel="noopener noreferrer" className={boutonSecondaire}>
@@ -459,9 +461,10 @@ function MesCours({ f, coursClub }: { f: Fiche; coursClub: string[] }) {
               Pas de cours pendant les {sans.libelle} : reprise {libelleDate(sans.reprise)}.
             </p>
           ) : null}
-          {prochaines.length ? (
+          {prochaines[0] ? <ProchainCours s={prochaines[0]} aujourdhui={aujourdhui} /> : null}
+          {prochaines.length > 1 ? (
             <ul className="font-body text-[15px] text-brand-black space-y-1">
-              {prochaines.slice(0, 6).map((s, i) => (
+              {prochaines.slice(1, 6).map((s, i) => (
                 <li key={i}>
                   {majuscule(s.ymd === aujourdhui ? 'aujourd’hui' : jourLong(s.ymd))} · {libelleHeure(s.debut)} ·{' '}
                   <strong>{s.creneau.course}</strong>
@@ -469,9 +472,10 @@ function MesCours({ f, coursClub }: { f: Fiche; coursClub: string[] }) {
                 </li>
               ))}
             </ul>
-          ) : (
+          ) : null}
+          {!prochaines.length ? (
             <p className="font-body text-[15px] text-brand-gray">Pas de séance dans les deux semaines qui viennent.</p>
-          )}
+          ) : null}
           {pause ? (
             <p className="font-body text-[15px] text-brand-gray">
               {majuscule(pause.libelle)} à partir du {jourLong(pause.du)}, reprise {libelleDate(pause.reprise)}.
@@ -492,6 +496,37 @@ function MesCours({ f, coursClub }: { f: Fiche; coursClub: string[] }) {
       )}
       {info ? <p className="font-body text-[15px] text-brand-gray">{info}</p> : null}
     </Carte>
+  );
+}
+
+/** La prochaine séance, en grand : le cours, le jour, l'heure, la salle et l'itinéraire. */
+function ProchainCours({ s, aujourdhui }: { s: ReturnType<typeof seances>[number]; aujourdhui: string }) {
+  const salle = salleDuCours(s.creneau.location);
+  return (
+    <div className="rounded-xl bg-[#FDF8F1] border border-black/10 p-4 space-y-1">
+      <p className="font-mono text-[11px] tracking-[2px] uppercase text-orange-primary font-semibold">Votre prochain cours</p>
+      <p className="font-display font-bold text-[22px] text-brand-black leading-tight">{s.creneau.course}</p>
+      <p className="font-body text-[17px] text-brand-black">
+        {majuscule(s.ymd === aujourdhui ? 'aujourd’hui' : jourLong(s.ymd))} · {libelleHeure(s.debut)}
+      </p>
+      {salle ? (
+        <>
+          <p className="font-body text-[16px] text-brand-gray">
+            {salle.nom}, {salle.adresse}
+          </p>
+          <a
+            href={salle.itineraire}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-[44px] items-center font-semibold text-brand-olive underline underline-offset-2"
+          >
+            Voir l’itinéraire
+          </a>
+        </>
+      ) : s.creneau.location ? (
+        <p className="font-body text-[16px] text-brand-gray">{s.creneau.location}</p>
+      ) : null}
+    </div>
   );
 }
 
@@ -564,6 +599,8 @@ function VueFiche({ f, moi, onMaj }: { f: Fiche; moi: Moi; onMaj: () => void }) 
         </dl>
       </Carte>
 
+      {MODULES.parrainage && f.aJour ? <Parrainage /> : null}
+
       {f.mesCours && f.agenda ? <MesCours f={f} coursClub={moi.coursClub || []} /> : null}
 
       {f.paiement ? (
@@ -615,7 +652,6 @@ function VueFiche({ f, moi, onMaj }: { f: Fiche; moi: Moi; onMaj: () => void }) 
         </Carte>
       ) : null}
 
-      {MODULES.parrainage && f.aJour ? <Parrainage /> : null}
 
       {f.attestations.length ? (
         <Carte titre="Mes attestations">

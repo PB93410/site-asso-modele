@@ -167,7 +167,9 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                       <>
                         {' '}
                         Une demande venue du lien d&apos;invitation d&apos;un adhérent est notée « Parrainage » :
-                        le lien est le même pour tous, rien n&apos;indique qui a invité.
+                        le lien est le même pour tous, rien n&apos;indique qui a invité. Vous pouvez, si vous le
+                        souhaitez, écrire le prénom de la personne qui vous a invité, pour que l&apos;association
+                        la remercie : il est noté avec votre demande (essai ou inscription).
                       </>
                     ) : null}
                   </li>

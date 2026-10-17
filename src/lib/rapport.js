@@ -36,6 +36,30 @@ export function trancheAge(age) {
   return '60 ans et plus';
 }
 
+/** 9 derniers chiffres du téléphone (06 12… et +33 6 12… donnent la même clé), sinon ''. */
+function cleTel(tel) {
+  const d = String(tel || '').replace(/\D/g, '');
+  return d.length >= 9 ? d.slice(-9) : '';
+}
+
+/**
+ * Personnes arrivées par un lien de parrainage (essais de provenance « Parrainage », une fois chacune),
+ * et combien sont adhérentes (essai passé à « Adhérent », ou fiche à jour au même téléphone). Aucun nom.
+ */
+function compterParrainage(essais, aJour) {
+  const personnes = new Map();
+  for (const e of essais) {
+    if (String(e.SOURCE || e.source || '').trim().toLowerCase() !== 'parrainage') continue;
+    const cle = cleTel(e.TEL || e.tel) || `${e.PRENOM || e.prenom}|${e.NOM || e.nom}`.toLowerCase();
+    const adherent = String(e.STATUT || e.statut || '').trim() === 'Adhérent';
+    personnes.set(cle, Boolean(personnes.get(cle)) || adherent);
+  }
+  const telsAJour = new Set(aJour.map((a) => cleTel(a.TEL || a.tel)).filter(Boolean));
+  let adherents = 0;
+  for (const [cle, adherent] of personnes) if (adherent || telsAJour.has(cle)) adherents += 1;
+  return { personnes: personnes.size, adherents };
+}
+
 function compte(map, cle) {
   const k = String(cle || 'Non renseigné').trim() || 'Non renseigné';
   map[k] = (map[k] || 0) + 1;
@@ -73,6 +97,7 @@ export function calculerRapport({ adherents = [], essais = [], presences = [] } 
     parAge: ages,
     parCommune: communes,
     parCours,
+    parrainage: compterParrainage(ess, aJour),
   };
 }
 
@@ -85,6 +110,7 @@ export function rapportCsv(r) {
     ['Essais devenus adhérents', r.essaisDevenusAdherents],
     ['Conversion essai → adhésion (%)', r.conversionEssaiPct],
     ['Pointages', r.presences],
+    ...(r.parrainage?.personnes ? [['Venus par parrainage', r.parrainage.personnes], ['… dont adhérents', r.parrainage.adherents]] : []),
     [],
     ['Âge', 'Nombre'],
     ...Object.entries(r.parAge).map(([k, v]) => [k, v]),
@@ -121,6 +147,7 @@ export function rapportPdf(r, asso) {
     `Essais devenus adherents : ${r.essaisDevenusAdherents}`,
     `Conversion essai -> adhesion : ${r.conversionEssaiPct} %`,
     `Pointages : ${r.presences}`,
+    ...(r.parrainage?.personnes ? [`Venus par parrainage : ${r.parrainage.personnes}, dont ${r.parrainage.adherents} adherents`] : []),
     '',
     'Par age',
     ...Object.entries(r.parAge).map(([k, v]) => `  ${k} : ${v}`),

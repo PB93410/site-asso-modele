@@ -60,6 +60,7 @@ type FormState = {
   qs_sport: string;
   deja_adherent: string;
   connu: string;
+  parrain: string;
   cours: string[];
   message: string;
   'bot-field': string;
@@ -80,6 +81,7 @@ const initial: FormState = {
   qs_sport: '',
   deja_adherent: '',
   connu: '',
+  parrain: '',
   cours: [],
   message: '',
   'bot-field': '',
@@ -408,6 +410,7 @@ export default function InscriptionPage() {
         qs_sport: form.qs_sport,
         deja_adherent: form.deja_adherent || 'Non renseigné',
         connu: form.connu,
+        parrain: MODULES.parrainage && form.connu === CONNU_PARRAINAGE ? form.parrain.trim() : '',
         cours: form.cours.join(', ') || 'Non précisé',
         message: form.message.trim(),
         'bot-field': form['bot-field'],
@@ -966,6 +969,23 @@ export default function InscriptionPage() {
                       </Chip>
                     ))}
                   </div>
+                  {MODULES.parrainage && form.connu === CONNU_PARRAINAGE ? (
+                    <div className="mt-3">
+                      <label className={labelClass} htmlFor="parrain">
+                        Qui vous a invité ?{' '}
+                        <span className="font-normal text-brand-gray">(facultatif, pour le remercier)</span>
+                      </label>
+                      <input
+                        id="parrain"
+                        type="text"
+                        className={inputClass}
+                        value={form.parrain}
+                        maxLength={60}
+                        autoComplete="off"
+                        onChange={(e) => setField('parrain', e.target.value)}
+                      />
+                    </div>
+                  ) : null}
                 </fieldset>
               </div>
             )}
