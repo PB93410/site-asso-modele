@@ -84,6 +84,7 @@ function FormulaireEssai() {
   const presetDate = params.get('date') || '';
   const fromForum = params.get('source') === 'forum';
   const fromParrainage = params.get('source') === 'parrainage';
+  const [parrain, setParrain] = useState('');
 
   const [prenom, setPrenom] = useState('');
   const [nom, setNom] = useState('');
@@ -165,6 +166,7 @@ function FormulaireEssai() {
             return row ? slotLabel(row.day, row.time, row.course) : '';
           })(),
           source: fromForum ? 'forum' : fromParrainage ? 'parrainage' : 'site',
+          ...(MODULES.parrainage && fromParrainage && parrain.trim() ? { parrain: parrain.trim() } : {}),
           'bot-field': bot,
         }),
       });
@@ -373,6 +375,27 @@ function FormulaireEssai() {
                 Le bureau rappelle sur ce numéro (appel ou WhatsApp).
               </p>
             </div>
+
+            {MODULES.parrainage && fromParrainage ? (
+              <div>
+                <label className={labelClass} htmlFor="parrain">
+                  Qui vous a invité ? <span className="font-normal text-brand-gray">(facultatif)</span>
+                </label>
+                <input
+                  id="parrain"
+                  className={inputClass}
+                  type="text"
+                  autoComplete="off"
+                  maxLength={60}
+                  placeholder="Son prénom"
+                  value={parrain}
+                  onChange={(e) => setParrain(e.target.value)}
+                />
+                <p className="mt-1.5 font-body text-[13px] text-brand-gray">
+                  Pour que l’association puisse le ou la remercier. Vous n’êtes pas obligé de répondre.
+                </p>
+              </div>
+            ) : null}
 
             {MODULES.essaiMail ? (
               <div>

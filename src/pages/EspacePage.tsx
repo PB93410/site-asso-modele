@@ -158,7 +158,8 @@ function Parrainage() {
   return (
     <Carte titre="Inviter une personne">
       <p className="font-body text-[16px] text-brand-gray">
-        Un ami, un voisin, un collègue ? Envoyez-lui le lien. Nous ne savons pas qui l’a invité.
+        Un ami, un voisin, un collègue ? Envoyez-lui le lien. Le lien est le même pour tous : l’association ne sait pas
+        d’où il vient, sauf si votre invité écrit votre prénom pour vous remercier.
       </p>
       <div className="flex flex-wrap gap-3">
         <a href={lienWhatsAppParrainage()} target="_blank" rel="noopener noreferrer" className={boutonSecondaire}>
@@ -564,6 +565,8 @@ function VueFiche({ f, moi, onMaj }: { f: Fiche; moi: Moi; onMaj: () => void }) 
         </dl>
       </Carte>
 
+      {MODULES.parrainage && f.aJour ? <Parrainage /> : null}
+
       {f.mesCours && f.agenda ? <MesCours f={f} coursClub={moi.coursClub || []} /> : null}
 
       {f.paiement ? (
@@ -615,7 +618,6 @@ function VueFiche({ f, moi, onMaj }: { f: Fiche; moi: Moi; onMaj: () => void }) 
         </Carte>
       ) : null}
 
-      {MODULES.parrainage && f.aJour ? <Parrainage /> : null}
 
       {f.attestations.length ? (
         <Carte titre="Mes attestations">

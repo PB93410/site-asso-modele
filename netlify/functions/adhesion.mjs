@@ -23,6 +23,8 @@ import { brancherStockage, modeStockage } from './_stockage.mjs';
 import { versV2 } from './_v2.mjs';
 import { calculerReste, notesFinancement } from '../../src/lib/financement.js';
 import { etatPlace, inscrireFile } from './_liste-attente.mjs';
+import { CONNU_PARRAINAGE } from '../../src/lib/parrainage.ts';
+import { noteParrain } from '../../src/lib/parrainNom.ts';
 
 const CORS = {
   'Access-Control-Allow-Origin': SITE_URL,
@@ -49,6 +51,9 @@ function extractFields(raw) {
   if (deja) notesParts.push(`Déjà adhérent: ${deja}`);
   if (cours) notesParts.push(`Cours: ${cours}`);
   if (message) notesParts.push(`Message: ${message}`);
+  // Le nom de la personne qui a invité (facultatif) : seulement pour « Invité par un adhérent », et seulement en lettres.
+  const parrain = MODULES.parrainage && String(d.connu || '').trim() === CONNU_PARRAINAGE ? noteParrain(d.parrain) : '';
+  if (parrain) notesParts.push(parrain);
 
   const parts = new Intl.DateTimeFormat('fr-FR', {
     timeZone: 'Europe/Paris',

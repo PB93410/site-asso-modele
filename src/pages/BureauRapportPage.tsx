@@ -17,6 +17,7 @@ type Rapport = {
   parAge: Record<string, number>;
   parCommune: Record<string, number>;
   parCours: Record<string, number>;
+  parrainage?: { personnes: number; adherents: number };
 };
 
 export default function BureauRapportPage() {
@@ -84,6 +85,12 @@ function Contenu() {
               <li>Essais : {r.essais} · devenus adhérents : {r.essaisDevenusAdherents}</li>
               <li>Conversion essai → adhésion : <strong>{r.conversionEssaiPct} %</strong></li>
               <li>Pointages : {r.presences}</li>
+              {r.parrainage?.personnes ? (
+                <li>
+                  Venus par parrainage : {r.parrainage.personnes}, dont {r.parrainage.adherents} adhérent
+                  {r.parrainage.adherents > 1 ? 's' : ''}
+                </li>
+              ) : null}
             </ul>
             <div>
               <p className="font-semibold mb-1">Âges</p>

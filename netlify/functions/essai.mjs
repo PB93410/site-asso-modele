@@ -26,6 +26,7 @@ import {
 import { buildDateEssaiCell, formatEssaiDateLabel } from './_essai-dates.mjs';
 import { notifyBureauNewLead } from './_notify-bureau.mjs';
 import { ecrireMail } from './_essai-mails.mjs';
+import { noteParrain } from '../../src/lib/parrainNom.ts';
 import { sendEssaiNotification } from './_essai-mail.mjs';
 import { MODULES, SITE_URL, essaisOuverts } from '../../asso.derive.js';
 import { brancherStockage, modeStockage } from './_stockage.mjs';
@@ -130,6 +131,8 @@ async function handler(event) {
   const sourceBrute = pickValue(raw, 'source').toLowerCase();
   // Provenance : forum (QR du stand), parrainage (lien commun de l'espace adhérent, sans nom), sinon le formulaire.
   const leadSource = sourceBrute === 'forum' ? 'Forum' : sourceBrute === 'parrainage' && MODULES.parrainage ? 'Parrainage' : 'Formulaire';
+  // Le nom de la personne qui a invité n'est gardé que pour une demande arrivée par le lien de parrainage, et seulement en lettres.
+  const noteParrainage = leadSource === 'Parrainage' ? noteParrain(pickValue(raw, 'parrain')) : '';
   const creneau = buildEssaiCreneau(cours, dateEssai, pickValue(raw, 'creneau'));
   const email = pickValue(raw, 'email', 'mail');
 
@@ -200,7 +203,7 @@ async function handler(event) {
       STATUT: 'À venir',
       N_ESSAI: String(nEssai),
       SOURCE: leadSource,
-      NOTES: '',
+      NOTES: noteParrainage,
       Nom: nom,
       'Prénom': prenom,
       Prenom: prenom,
@@ -212,13 +215,13 @@ async function handler(event) {
       Statut: 'À venir',
       'N° essai': String(nEssai),
       'N essai': String(nEssai),
-      Remarque: leadSource,
+      Remarque: noteParrainage ? `${leadSource} · ${noteParrainage}` : leadSource,
     };
 
     const row =
       headers.length >= 3
         ? rowFromHeaders(headers, fields)
-        : [dateDemande, nom, prenom, telephone, creneau, cours, 'À venir', String(nEssai), leadSource, ''];
+        : [dateDemande, nom, prenom, telephone, creneau, cours, 'À venir', String(nEssai), leadSource, noteParrainage];
 
     // STATUT vide (décalage d’en-tête) → toujours « À venir » pour Accueil / Essais.
     if (headers.length >= 3) {

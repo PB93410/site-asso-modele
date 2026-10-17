@@ -66,5 +66,38 @@ describe('parrainage léger', () => {
     const { getEssaisSheetId, getEssaisTab, readSheetAsObjects } = await import('../netlify/functions/_bureau-lib.mjs');
     const { rows } = await readSheetAsObjects(getEssaisSheetId(), `'${getEssaisTab()}'!A:Z`);
     expect(rows.at(-1)?.SOURCE).toBe('Parrainage');
+    expect(rows.at(-1)?.NOTES).toBe('');
   }, 30_000);
+
+  it('le prénom de la personne qui a invité est noté, en lettres seulement, et seulement par le lien de parrainage', async () => {
+    const { traiter } = await import('../netlify/functions/essai.mjs');
+    const envoyer = (corps: Record<string, string>) =>
+      traiter({
+        httpMethod: 'POST',
+        headers: {},
+        queryStringParameters: {},
+        body: JSON.stringify({ prenom: 'Léa', nom: 'Exemple', cours: 'Pilates', ...corps }),
+      });
+    expect((await envoyer({ telephone: '0600000098', source: 'parrainage', parrain: 'Marie =1+1' })).statusCode).toBe(200);
+    expect((await envoyer({ telephone: '0600000097', parrain: 'Marie' })).statusCode).toBe(200);
+    const { getEssaisSheetId, getEssaisTab, readSheetAsObjects } = await import('../netlify/functions/_bureau-lib.mjs');
+    const { rows } = await readSheetAsObjects(getEssaisSheetId(), `'${getEssaisTab()}'!A:Z`);
+    const note = (tel: string) => rows.find((r: Record<string, string>) => r.TEL === tel)?.NOTES;
+    expect(note('0600000098')).toBe('Invité par Marie');
+    expect(note('0600000097')).toBe('');
+  }, 30_000);
+
+  it('le rapport annuel compte les personnes venues par parrainage, une fois chacune, sans nom', async () => {
+    const { calculerRapport } = await import('../src/lib/rapport.js');
+    const r = calculerRapport({
+      essais: [
+        { PRENOM: 'Ada', NOM: 'Exemple', TEL: '0600000001', SOURCE: 'Parrainage', STATUT: 'Venu' },
+        { PRENOM: 'Ada', NOM: 'Exemple', TEL: '+33 6 00 00 00 01', SOURCE: 'Parrainage', STATUT: 'Venu' },
+        { PRENOM: 'Bob', NOM: 'Exemple', TEL: '0600000002', SOURCE: 'Parrainage', STATUT: 'Adhérent' },
+        { PRENOM: 'Cy', NOM: 'Exemple', TEL: '0600000003', SOURCE: 'Formulaire', STATUT: 'Adhérent' },
+      ],
+      adherents: [{ PRENOM: 'Ada', NOM: 'Exemple', TEL: '06 00 00 00 01', STATUT: 'À jour' }],
+    });
+    expect(r.parrainage).toEqual({ personnes: 2, adherents: 2 });
+  });
 });

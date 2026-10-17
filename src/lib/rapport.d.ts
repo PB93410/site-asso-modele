@@ -14,6 +14,8 @@ export function calculerRapport(
   parAge: Record<string, number>;
   parCommune: Record<string, number>;
   parCours: Record<string, number>;
+  /** Personnes arrivées par un lien de parrainage, et combien sont adhérentes. Aucun nom. */
+  parrainage: { personnes: number; adherents: number };
 };
 export function rapportCsv(r: ReturnType<typeof calculerRapport>): string;
 export function rapportPdf(r: ReturnType<typeof calculerRapport>, asso: { nom?: string }): Buffer;
