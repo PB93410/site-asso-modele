@@ -59,7 +59,7 @@ Dans `asso.config.js → modules`, chaque fonction s’active séparément :
 | `bureau` | Espace `/bureau` des bénévoles, agenda (abonnement téléphone), export Excel, sauvegarde chaque lundi par mail | Mot de passe + secret |
 | `mail` | Boîte mail de l’asso lue dans le bureau | IMAP de la boîte (mêmes identifiants que l’envoi), ou compte Gmail connecté |
 | `presences` | Pointage par QR (un code par séance et par jour), stats au bureau, relance des absents | Bureau + secret déjà en place. **Désactivé par défaut.** |
-| `quiz` | Page « Quel cours pour moi ? » (6 questions, recommandation, lien essai ou adhésion) | Rien. **Désactivé par défaut.** |
+| `quiz` | Page « Quel cours pour moi ? » (6 questions, recommandation, lien essai ou adhésion) ; bandeau « Vous hésitez ? » sur `/essai` (le résultat revient au formulaire avec le cours choisi) et sur l’accueil, juste après le planning | Rien. **Désactivé par défaut.** |
 | `alertes` | Annulation / changement : bandeau sur le site, mail aux inscrits, notification sur le téléphone | Bureau. Envoi de mail (SMTP, Brevo ou Gmail). Notification : `VAPID_PUBLIC_KEY` et `VAPID_PRIVATE_KEY` (facultatif). **Désactivé par défaut.** |
 | `listeAttente` | Capacité par cours / créneau ; file d’attente ; place proposée (mail + WhatsApp) avec un délai | Bureau + secret. Mail si le module `mail` / SMTP est branché. **Désactivé par défaut.** |
 | `wallet` | Carte adhérent dans Apple Wallet (.pkpass) et Google Wallet | Bureau. En prod : certificats (voir ci-dessous). En démo : aperçu non signé, boutons visibles. **Désactivé par défaut.** |

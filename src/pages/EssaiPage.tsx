@@ -4,6 +4,7 @@ import { CheckCircle2, Loader2, MessageCircle } from 'lucide-react';
 import { waUrl as clubWaUrl } from '../data/siteData';
 import { ASSO, COURS_ESSAI_LABEL, MODULES, NB_ESSAIS, TARIF_LABEL, essaisOuverts } from '../data/asso';
 import ContactDirect from '../components/ContactDirect';
+import QuizBandeau from '../components/QuizBandeau';
 import { useScheduleFromSheet } from '../hooks/useSheetData';
 import { usePageMeta } from '../hooks/usePageMeta';
 import {
@@ -312,6 +313,9 @@ function FormulaireEssai() {
         ) : !MODULES.essais ? (
           <ContactDirect motif="essai" />
         ) : (
+          <>
+          {/* Pas de cours choisi : le quiz aide à choisir, puis revient ici avec le cours (/essai?cours=…). */}
+          {!fromForum && !preset ? <QuizBandeau className="mb-6" /> : null}
           <form
             onSubmit={onSubmit}
             className="space-y-5 rounded-2xl bg-white border border-black/10 p-5 md:p-8"
@@ -508,6 +512,7 @@ function FormulaireEssai() {
               Ou écrire sur WhatsApp
             </a>
           </form>
+          </>
         )}
       </div>
     </main>

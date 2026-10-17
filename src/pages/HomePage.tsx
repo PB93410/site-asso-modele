@@ -4,6 +4,7 @@ import ScheduleSection from '../sections/ScheduleSection';
 import ActivitiesSection from '../sections/ActivitiesSection';
 import HowItWorksSection from '../sections/HowItWorksSection';
 import TeamSection from '../sections/TeamSection';
+import QuizBandeau from '../components/QuizBandeau';
 import StickyOfferBar from '../components/StickyOfferBar';
 import BackToTop from '../components/BackToTop';
 import { usePageMeta } from '../hooks/usePageMeta';
@@ -76,6 +77,10 @@ export default function HomePage() {
         */}
         <HeroSection />
         <ScheduleSection />
+        {/* Juste après le planning : « Vous hésitez ? » (modules.quiz). */}
+        <div className="content-max-width">
+          <QuizBandeau className="mb-10" />
+        </div>
         <ActivitiesSection />
         <HowItWorksSection />
         <TeamSection part="coaches" />
