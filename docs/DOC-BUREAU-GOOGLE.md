@@ -37,7 +37,7 @@ Pas de scope `mail.google.com` (trop large).
 
 1. [Google Cloud Console](https://console.cloud.google.com/) — projet déjà utilisé pour les Sheets, ou nouveau projet « ASE site ».
 2. Activer **Gmail API**, **Google Calendar API** et **People API** (Contacts).
-3. Écran de consentement OAuth : type **Externe**, app en mode **Testing**. Ajouter `contact@exemple-asso.fr` comme **utilisateur de test**.
+3. Écran de consentement OAuth : type **Externe**, puis **Publier l’application** pour la passer **En production**. Ne la laissez pas en mode **Testing** : Google y fait expirer le jeton au bout de 7 jours (« Connexion Google expirée ou révoquée »). Dans « Image de marque », la page d’accueil est l’adresse du site (`siteUrl`) et les règles de confidentialité `…/confidentialite/` (jamais `/bureau`, page de connexion) ; ajoutez le domaine du site aux domaines autorisés. Pas de vérification Google nécessaire pour le seul compte de l’asso : à la connexion (étape 7), choisissez « Paramètres avancés », puis « Accéder à … (non sécurisé) ».
 4. Identifiants → **Créer un client OAuth** → type **Application Web**.
 5. URI de redirection autorisées :
    - Prod : `https://www.exemple-asso.fr/api/bureau/google/callback`
@@ -46,6 +46,8 @@ Pas de scope `mail.google.com` (trop large).
 7. Se connecter au **Bureau** (mot de passe partagé) → Autre → **Connecter Google** → autoriser **uniquement** le compte asso.
 8. Sur la page de retour : copier le jeton dans Netlify → `GOOGLE_REFRESH_TOKEN`. Mettre `GOOGLE_CALENDAR_ID=primary` (ou l’id du calendrier). Redéployer.
 9. Tester `/bureau/mail` et `/bureau/agenda` (sans ouvrir mail.google.com).
+
+Si « Connexion Google expirée ou révoquée » revient : vérifiez d’abord que l’application est bien **En production** (Google Cloud → Audience), puis refaites les étapes 7 et 8 (nouveau jeton, redéploiement). Un jeton obtenu en mode Testing expire au bout de 7 jours.
 10. Contacts / WhatsApp (référent, en local) :
     ```bash
     node scripts/sync-adherents-contacts.mjs --whatsapp
