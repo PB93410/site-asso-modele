@@ -27,7 +27,7 @@ export default function ContactSection() {
               <Mail size={22} className="text-orange-primary" />
             </div>
             <h3 className="font-display font-bold text-[16px] text-white mb-0.5">Email</h3>
-            <p className="font-body text-[12px] text-brand-gray mb-2">Réponse sous 48h</p>
+            <p className="font-body text-[14px] text-brand-gray mb-2">Réponse sous 48h</p>
             <span className="font-body text-[13px] text-orange-primary hover:underline break-all">
               {ASSO.email}
             </span>
@@ -42,7 +42,7 @@ export default function ContactSection() {
               <Phone size={22} className="text-brand-olive" />
             </div>
             <h3 className="font-display font-bold text-[16px] text-white mb-0.5">Téléphone</h3>
-            <p className="font-body text-[12px] text-brand-gray mb-3">Lun – Sam · on décroche</p>
+            <p className="font-body text-[14px] text-brand-gray mb-3">Lun – Sam · on décroche</p>
             <span className="font-body text-[13px] text-brand-olive hover:underline">
               {ASSO.telephone}
             </span>
@@ -53,7 +53,7 @@ export default function ContactSection() {
               <MessageCircle size={22} className="text-brand-olive" />
             </div>
             <h3 className="font-display font-bold text-[16px] text-white mb-0.5">WhatsApp</h3>
-            <p className="font-body text-[12px] text-brand-gray mb-2">Réponse rapide</p>
+            <p className="font-body text-[14px] text-brand-gray mb-2">Réponse rapide</p>
             <a
               href={waUrl(WHATSAPP_TEMPLATES.generic)}
               target="_blank"
@@ -63,7 +63,7 @@ export default function ContactSection() {
             >
               Écrire sur WhatsApp
             </a>
-            <p className="font-body text-[12px] text-brand-gray mt-2">
+            <p className="font-body text-[14px] text-brand-gray mt-2">
               Vous quittez le site vers WhatsApp (Meta).
             </p>
           </div>
@@ -74,7 +74,7 @@ export default function ContactSection() {
             <h4 className="font-display font-bold text-[15px] text-white mb-0.5">
               Retrouvez-nous aussi
             </h4>
-            <p className="font-body text-[12px] text-brand-gray">
+            <p className="font-body text-[14px] text-brand-gray">
               Avis et horaires sur Google Maps. Photos des cours sur Instagram.
             </p>
           </div>

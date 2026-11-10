@@ -6,7 +6,8 @@ import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  // Dossiers générés : jamais lus par ESLint (.netlify après netlify dev ou build).
+  globalIgnores(['dist', '.netlify', '.claude', '.cursor']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [

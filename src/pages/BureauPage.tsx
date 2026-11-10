@@ -38,6 +38,7 @@ import BureauReglages from '../components/bureau/BureauReglages';
 import BureauRecherches from '../components/bureau/BureauRecherches';
 import BureauAide from '../components/BureauAide';
 import { clearBureauToken, getBureauRole, getBureauToken, setBureauRole, setBureauToken } from '../lib/bureauSession';
+import { normalizeFrPhone } from '../lib/waPhone';
 import BureauAdhesionsTab from '../components/bureau/BureauAdhesionsTab';
 import BureauCartesTab from '../components/bureau/BureauCartesTab';
 import { isAJourCarte } from '../lib/cartes';
@@ -325,15 +326,6 @@ function friendlyError(msg: string) {
     return 'Le registre Google ne répond pas. Vérifiez Internet, puis Actualiser.';
   }
   return msg;
-}
-
-function normalizeFrPhone(raw: string): string | null {
-  const d = (raw || '').replace(/\D/g, '');
-  if (d.length < 9) return null;
-  if (d.startsWith('33') && d.length >= 11) return d;
-  if (d.startsWith('0') && d.length >= 10) return '33' + d.slice(1);
-  if (d.length === 9) return '33' + d;
-  return d;
 }
 
 function waUrl(tel: string, text: string): string | null {

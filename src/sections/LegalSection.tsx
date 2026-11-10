@@ -700,7 +700,7 @@ export function ConfidentialiteContent({ heading = 'h2' }: { heading?: HeadingLe
                     {ASSO.responsablePublication}
                   </span>
                 </div>
-                <p className="font-body text-[12px] text-brand-gray/60 mt-3">
+                <p className="font-body text-[14px] text-brand-gray/60 mt-3">
                   En l&apos;absence de réponse satisfaisante sous 1 mois, vous pouvez saisir la CNIL :
                   <a
                     href="https://www.cnil.fr/fr/plaintes"

@@ -648,7 +648,7 @@ export default function InscriptionPage() {
                       </span>
                     )}
                     <span
-                      className={`mt-1.5 font-body text-[11px] sm:text-[12px] text-center leading-tight ${
+                      className={`mt-1.5 font-body text-[13px] sm:text-[14px] text-center leading-tight ${
                         step === s.n ? 'text-orange-primary font-semibold' : step > s.n ? 'text-brand-olive' : 'text-brand-gray'
                       } ${step === s.n ? '' : 'hidden sm:block'}`}
                     >
@@ -798,7 +798,7 @@ export default function InscriptionPage() {
                       autoComplete="tel"
                       placeholder="06 ou 07…"
                     />
-                    <p className="font-body text-[12px] text-brand-gray mt-1.5 flex items-center gap-1">
+                    <p className="font-body text-[14px] text-brand-gray mt-1.5 flex items-center gap-1">
                       <Phone size={12} /> Le bureau rappelle, souvent le jour même.
                     </p>
                   </div>

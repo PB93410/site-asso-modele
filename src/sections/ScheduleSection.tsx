@@ -1,7 +1,7 @@
 import { useRef, useMemo } from 'react';
 import { useScheduleFromSheet } from '../hooks/useSheetData';
 import WhatsAppNotice from '../components/WhatsAppNotice';
-import { ASSO, ESSAIS_LABEL } from '../data/asso';
+import { ASSO, ESSAIS_LABEL, essaisProposes } from '../data/asso';
 import { ACTIVITIES } from '../data/siteData';
 import { libelleDate, parisMaintenant, sansCoursLe, type SansCours } from '../lib/accueil';
 
@@ -44,7 +44,7 @@ function CourseCell({ name, note }: { name: string; note?: string }) {
     <div>
       <p className="font-body text-[16px] text-white font-medium leading-snug">{name}</p>
       {note ? (
-        <p className="font-body text-[12px] text-orange-primary/90 font-normal mt-0.5 leading-snug">
+        <p className="font-body text-[14px] text-orange-primary/90 font-normal mt-0.5 leading-snug">
           {note}
         </p>
       ) : null}
@@ -67,6 +67,7 @@ function ScheduleHeading() {
 export default function ScheduleSection() {
   const tableRef = useRef<HTMLDivElement>(null);
   const { schedule } = useScheduleFromSheet();
+  const essais = essaisProposes();
   const todayLabel = useMemo(() => getTodayLabel(), []);
   const sansCours = useMemo(() => sansCoursLe(parisMaintenant(new Date()).ymd, ASSO.saison), []);
   const todayRows = useMemo(
@@ -91,7 +92,7 @@ export default function ScheduleSection() {
             <ul className="space-y-1.5">
               {todayRows.map((row, i) => (
                 <li key={i} className="font-body text-[15px] sm:text-[16px] text-white leading-snug">
-                  <span className="font-mono text-brand-olive font-medium">{row.time}</span>
+                  <span className="horaire-heure font-mono font-medium">{row.time}</span>
                   <span className="text-white/40 mx-2">·</span>
                   <span className="font-semibold">{row.course}</span>
                   <span className="text-white/50"> — {row.location}</span>
@@ -145,7 +146,7 @@ export default function ScheduleSection() {
                     </span>
                   )}
                 </span>
-                <span className="font-mono text-[15px] text-brand-olive font-medium">{row.time}</span>
+                <span className="horaire-heure font-mono text-[15px] font-medium">{row.time}</span>
                 <CourseCell name={row.course} note={row.note} />
                 <span className="inline-flex items-center gap-2 font-body text-[14px] text-white/85">
                   <span
@@ -185,7 +186,7 @@ export default function ScheduleSection() {
                       </span>
                     )}
                   </span>
-                  <span className="font-mono text-[14px] text-brand-olive font-medium">{row.time}</span>
+                  <span className="horaire-heure font-mono text-[15px] font-medium">{row.time}</span>
                 </div>
                 <CourseCell name={row.course} note={row.note} />
                 <p className="inline-flex items-center gap-2 font-body text-[14px] text-white/80">
@@ -202,14 +203,16 @@ export default function ScheduleSection() {
 
         <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
           <a
-            href="/essai"
-            data-analytics="CTA-Horaires-Essai"
+            href={essais ? '/essai' : '/inscription'}
+            data-analytics={essais ? 'CTA-Horaires-Essai' : 'CTA-Horaires-Adherer'}
             className="inline-flex items-center justify-center min-h-[48px] px-7 rounded-full bg-orange-primary hover:bg-orange-hover text-white font-body font-semibold text-[15px]"
           >
-            Venir essayer un cours
+            {essais ? 'Venir essayer un cours' : 'Adhérer au club'}
           </a>
           <p className="font-body text-[14px] text-white/70 leading-snug">
-            {ESSAIS_LABEL ? `${ESSAIS_LABEL[0].toUpperCase()}${ESSAIS_LABEL.slice(1)}. ` : ''}Le créneau se choisit sur le formulaire.
+            {essais
+              ? `${ESSAIS_LABEL ? `${ESSAIS_LABEL[0].toUpperCase()}${ESSAIS_LABEL.slice(1)}. ` : ''}Le créneau se choisit sur le formulaire.`
+              : `${ASSO.adhesion.tarif} € l’année, ${ASSO.adhesion.inclus}, tous les cours de la semaine.`}
           </p>
         </div>
 

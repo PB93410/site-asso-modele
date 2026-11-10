@@ -34,6 +34,10 @@ const secondaryLinks: NavLink[] = [
 const NAV_IDLE = 'text-[#EDEAE3] hover:text-white';
 const NAV_ACTIVE = 'text-white';
 
+/** Tant que la campagne d’essai est active et que l’asso en propose encore. */
+const SHOW_ESSAI_CTA = Date.now() < ESSAI_CTA_UNTIL && essaisProposes();
+const SHOW_CAMPAIGN = NB_ESSAIS > 0 && Date.now() < BANDEAU_END && essaisProposes();
+
 export default function Navigation() {
   const navRef = useRef<HTMLElement>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -43,13 +47,11 @@ export default function Navigation() {
   const location = useLocation();
   const path = location.pathname;
   const isHome = location.pathname === '/';
-  const SHOW_ESSAI_CTA = Date.now() < ESSAI_CTA_UNTIL && essaisProposes();
-  const SHOW_CAMPAIGN = NB_ESSAIS > 0 && Date.now() < BANDEAU_END && essaisProposes();
 
   useEffect(() => {
     document.documentElement.classList.toggle('has-campaign', SHOW_CAMPAIGN);
     return () => document.documentElement.classList.remove('has-campaign');
-  }, [SHOW_CAMPAIGN]);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {

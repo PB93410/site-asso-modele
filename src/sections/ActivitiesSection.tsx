@@ -83,7 +83,7 @@ export default function ActivitiesSection() {
                       {activity.name}
                     </h3>
                     {row ? (
-                      <p className="font-body text-[11px] sm:text-[14px] text-white/90 mt-0.5 sm:mt-1.5 flex items-center gap-1.5">
+                      <p className="font-body text-[13px] sm:text-[14px] text-white/90 mt-0.5 sm:mt-1.5 flex items-center gap-1.5">
                         <Clock size={12} className="shrink-0 hidden sm:block" aria-hidden="true" />
                         {row.day} · {row.time}
                       </p>
@@ -92,10 +92,10 @@ export default function ActivitiesSection() {
                 </div>
                 <div className="p-2.5 sm:p-4">
                   {phrase ? (
-                    <p className="font-body text-[12px] sm:text-[14px] text-brand-gray leading-snug">{phrase}</p>
+                    <p className="font-body text-[14px] text-brand-gray leading-snug">{phrase}</p>
                   ) : null}
                   {notice ? (
-                    <p className="mt-2 sm:mt-3 font-body text-[12px] sm:text-[13px] text-brand-gray leading-snug rounded-xl border border-black/10 bg-brand-cream px-2.5 py-2 sm:px-3 sm:py-2.5">
+                    <p className="mt-2 sm:mt-3 font-body text-[13px] sm:text-[14px] text-brand-gray leading-snug rounded-xl border border-black/10 bg-brand-cream px-2.5 py-2 sm:px-3 sm:py-2.5">
                       {notice}
                     </p>
                   ) : null}

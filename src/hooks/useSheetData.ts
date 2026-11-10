@@ -20,7 +20,19 @@ function withCacheBust(url: string): string {
   return `${url}${sep}_t=${Date.now()}`;
 }
 
-async function fetchCsv(url: string): Promise<string> {
+/** Requêtes en cours par URL : les composants montés ensemble (accueil) partagent un seul appel. */
+const enCours = new Map<string, Promise<string>>();
+
+function fetchCsv(url: string): Promise<string> {
+  let p = enCours.get(url);
+  if (!p) {
+    p = fetchCsvBrut(url).finally(() => enCours.delete(url));
+    enCours.set(url, p);
+  }
+  return p;
+}
+
+async function fetchCsvBrut(url: string): Promise<string> {
   const response = await fetch(withCacheBust(url), {
     method: 'GET',
     cache: 'no-store',

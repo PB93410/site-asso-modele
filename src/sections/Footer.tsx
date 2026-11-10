@@ -205,7 +205,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-          <p className="font-body text-[12px] text-brand-gray">
+          <p className="font-body text-[14px] text-brand-gray">
             <Link to="/mentions-legales" className="hover:text-white transition-colors">
               Mentions légales
             </Link>

@@ -147,7 +147,7 @@ export default function TeamSection({ part = 'all' }: { part?: 'coaches' | 'club
                         />
                         <meta itemProp="worksFor" content={ASSO.nom} />
                         {coach.specialties.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-1.5 md:mt-2">
+                          <div className="hidden md:flex flex-wrap gap-1 mt-1.5 md:mt-2">
                             {coach.specialties.map((spec) => (
                               <span
                                 key={spec}

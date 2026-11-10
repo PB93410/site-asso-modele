@@ -45,7 +45,7 @@ export default function ThemeToggle({ variant = 'icon' }: Props) {
       <button
         type="button"
         onClick={toggle}
-        className="inline-flex items-center gap-2 font-body text-[12px] text-brand-gray hover:text-white transition-colors min-h-[44px]"
+        className="inline-flex items-center gap-2 font-body text-[14px] text-brand-gray hover:text-white transition-colors min-h-[44px]"
         aria-label={label}
       >
         {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
