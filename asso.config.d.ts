@@ -120,6 +120,13 @@ export interface AssoConfig {
     /** IBAN affiché pour le virement (facultatif). */
     iban?: string;
   };
+  /**
+   * Accueil : phrase si le nombre d’adhérents n’est pas lisible (API publique).
+   * Vide = « des adhérents ». Absent = « plus d’une centaine ».
+   */
+  club?: {
+    repliAdherents?: string;
+  };
   listeAttente: AssoListeAttente;
   financement: AssoFinancement;
   attestations: AssoAttestations;

@@ -273,7 +273,7 @@ export function json(status, body, extraHeaders = {}) {
       'Cache-Control': 'no-store, private',
       'Access-Control-Allow-Origin': SITE_ORIGIN,
       'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Bureau-Token',
-      'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
       Vary: 'Origin',
       ...extraHeaders,
     },
@@ -363,6 +363,7 @@ export function ongletVierge(id, tab) {
     if (tab === 'ALERTES') return [['ID', 'DATE', 'SESSION', 'COURS', 'TYPE', 'MESSAGE', 'CREEE_LE', 'EXPIRE_LE']];
     if (tab === 'ALERTES_ABOS') return [['MAIL', 'CONSENT', 'DATE', 'TOKEN', 'PUSH', 'ACTIF']];
     if (tab === 'LISTE_ATTENTE') return [['ID', 'DATE', 'TYPE', 'CRENEAU', 'COURS', 'PRENOM', 'NOM', 'TEL', 'MAIL', 'RANG', 'STATUT', 'TOKEN', 'NOTIFIE_LE', 'EXPIRE_LE', 'NOTES']];
+    if (tab === 'REGLAGES') return [['TARIF', 'FIN_ESSAIS'], [String(ASSO.adhesion.tarif), String(ASSO.saison.finEssais || '')]];
     return [];
   }
   return [];
@@ -614,6 +615,19 @@ function normKey(s) {
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9]+/g, '');
+}
+
+/**
+ * Garde-fou : les colonnes attendues sont encore là, au bon endroit (préfixe).
+ * Une colonne insérée ou renommée ferait écrire le prénom dans le téléphone.
+ * @returns {string|null} première colonne manquante ou décalée, sinon null.
+ */
+export function colonneDecalee(ligne1, attendus) {
+  const got = (ligne1 || []).map((h) => normKey(h));
+  for (let i = 0; i < (attendus || []).length; i += 1) {
+    if (got[i] !== normKey(attendus[i])) return attendus[i];
+  }
+  return null;
 }
 
 export function rowFromHeaders(headers, fields) {

@@ -7,6 +7,7 @@ import { formatTelFr, telDedupeKey } from '../../lib/bureauSearch';
 import { PersonNameButton } from './BureauPersonSheet';
 import { isAVenir, isCountableEssai, isStrictAVenir } from '../../lib/essaiStatuts';
 import { ASSO, NB_ESSAIS, SITE_URL } from '../../data/asso';
+import { normalizeFrPhone } from '../../lib/waPhone';
 import { Initiales, Intertitre, Segments, Statut, Vide } from './ui';
 import { bouton, carte } from './styles';
 
@@ -190,15 +191,6 @@ function pickWaEssaiLine(items: EssaiItem[]): EssaiItem | null {
   const withSlot = items.find((i) => isAVenir(i.statut) && hasCreneauSlot(i));
   if (withSlot) return withSlot;
   return items.find((i) => isAVenir(i.statut) && !hasCreneauSlot(i)) || null;
-}
-
-function normalizeFrPhone(raw: string): string | null {
-  const d = (raw || '').replace(/\D/g, '');
-  if (d.length < 9) return null;
-  if (d.startsWith('33') && d.length >= 11) return d;
-  if (d.startsWith('0') && d.length >= 10) return '33' + d.slice(1);
-  if (d.length === 9) return '33' + d;
-  return d;
 }
 
 function waUrl(tel: string, text: string): string | null {

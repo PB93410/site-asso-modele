@@ -1,38 +1,64 @@
-import { HAS_PAIEMENT_EN_LIGNE, INCLUS_LABEL, TARIF_LABEL } from '../data/asso';
-
-const STEPS: {
-  n: string;
-  title: string;
-  desc: string;
-  href: string;
-  cta: string;
-  primary?: boolean;
-}[] = [
-  {
-    n: '1',
-    title: 'Vous choisissez un créneau',
-    desc: 'Le jour, l’heure et la salle s’affichent tout de suite. Le bureau confirme seulement si besoin.',
-    href: '/essai',
-    cta: 'Venir essayer',
-    primary: true,
-  },
-  {
-    n: '2',
-    title: 'Vous venez une fois',
-    desc: 'Sans engagement, tous niveaux. Le coach adapte si besoin.',
-    href: '#horaires',
-    cta: 'Voir les horaires',
-  },
-  {
-    n: '3',
-    title: 'Vous adhérez si ça convient',
-    desc: `${TARIF_LABEL} l’année, ${INCLUS_LABEL}. Formulaire d’abord, puis paiement au bureau${HAS_PAIEMENT_EN_LIGNE ? ' ou par carte' : ''}.`,
-    href: '/inscription',
-    cta: 'S’inscrire',
-  },
-];
+import { HAS_PAIEMENT_EN_LIGNE, INCLUS_LABEL, TARIF_LABEL, essaisProposes } from '../data/asso';
 
 export default function HowItWorksSection() {
+  const essais = essaisProposes();
+  const STEPS: {
+    n: string;
+    title: string;
+    desc: string;
+    href: string;
+    cta: string;
+    primary?: boolean;
+  }[] = essais
+    ? [
+        {
+          n: '1',
+          title: 'Vous choisissez un créneau',
+          desc: 'Le jour, l’heure et la salle s’affichent tout de suite. Le bureau confirme seulement si besoin.',
+          href: '/essai',
+          cta: 'Venir essayer',
+          primary: true,
+        },
+        {
+          n: '2',
+          title: 'Vous venez une fois',
+          desc: 'Sans engagement, tous niveaux. Le coach adapte si besoin.',
+          href: '#horaires',
+          cta: 'Voir les horaires',
+        },
+        {
+          n: '3',
+          title: 'Vous adhérez si ça convient',
+          desc: `${TARIF_LABEL} l’année, ${INCLUS_LABEL}. Formulaire d’abord, puis paiement au bureau${HAS_PAIEMENT_EN_LIGNE ? ' ou par carte' : ''}.`,
+          href: '/inscription',
+          cta: 'S’inscrire',
+        },
+      ]
+    : [
+        {
+          n: '1',
+          title: 'Vous choisissez vos cours',
+          desc: 'Le jour, l’heure et la salle de chaque cours sont sur le planning. Tous niveaux.',
+          href: '#horaires',
+          cta: 'Voir les horaires',
+        },
+        {
+          n: '2',
+          title: 'Vous remplissez le formulaire',
+          desc: 'Quelques minutes, sans pression. Le bureau vous rappelle si besoin.',
+          href: '/inscription',
+          cta: 'Adhérer au club',
+          primary: true,
+        },
+        {
+          n: '3',
+          title: 'Vous réglez la cotisation',
+          desc: `${TARIF_LABEL} l’année, ${INCLUS_LABEL}. ${HAS_PAIEMENT_EN_LIGNE ? 'Carte en ligne, ou règlement au bureau.' : 'Règlement au bureau.'}`,
+          href: '/tarifs',
+          cta: 'Voir les tarifs',
+        },
+      ];
+
   return (
     <section id="comment-ca-se-passe" className="bg-brand-cream section-padding !py-10 md:!py-14">
       <div className="content-max-width">
@@ -57,7 +83,7 @@ export default function HowItWorksSection() {
                 <h3 className="font-display font-bold text-[20px] sm:text-[22px] text-brand-black mb-2 leading-tight">
                   {title}
                 </h3>
-                <p className="font-body text-[15px] text-brand-gray leading-relaxed mb-6 max-w-[280px]">
+                <p className="font-body text-[16px] text-brand-gray leading-relaxed mb-6 max-w-[280px]">
                   {desc}
                 </p>
                 <a
@@ -74,18 +100,18 @@ export default function HowItWorksSection() {
                       }
                     }
                   }}
-                    className={
-                      primary
-                        ? 'mt-auto inline-flex items-center justify-center min-h-[48px] px-6 rounded-full bg-orange-primary hover:bg-orange-hover text-white font-body font-semibold text-[15px]'
-                        : 'mt-auto inline-flex items-center justify-center min-h-[48px] px-6 rounded-full border border-brand-olive text-brand-olive font-body font-semibold text-[15px] hover:bg-brand-olive-soft'
-                    }
-                  >
-                    {cta}
-                  </a>
-                </li>
-              );
-            })}
-          </ol>
+                  className={
+                    primary
+                      ? 'mt-auto inline-flex items-center justify-center min-h-[48px] px-6 rounded-full bg-orange-primary hover:bg-orange-hover text-white font-body font-semibold text-[16px]'
+                      : 'mt-auto inline-flex items-center justify-center min-h-[48px] px-6 rounded-full border border-brand-olive text-brand-olive font-body font-semibold text-[16px] hover:bg-brand-olive-soft'
+                  }
+                >
+                  {cta}
+                </a>
+              </li>
+            );
+          })}
+        </ol>
       </div>
     </section>
   );

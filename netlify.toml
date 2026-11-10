@@ -341,19 +341,7 @@
   status = 200
   force = true
 
-# Inscriptions aux événements (modules.inscriptionsEvenements) : page non prérendue
-[[redirects]]
-  from = "/evenements"
-  to = "/index.html"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/evenements/"
-  to = "/index.html"
-  status = 200
-  force = true
-
+# Inscriptions aux événements (modules.inscriptionsEvenements) : page dans seoRoutes (pré-rendue).
 [[redirects]]
   from = "/api/evenement-inscription"
   to = "/.netlify/functions/evenement-inscription"
@@ -373,20 +361,22 @@
   status = 200
   force = true
 
-# Le club en chiffres (modules.clubEnChiffres) : page non prérendue, chiffres lus à l'ouverture
-[[redirects]]
-  from = "/le-club-en-chiffres"
-  to = "/index.html"
-  status = 200
-
-[[redirects]]
-  from = "/le-club-en-chiffres/"
-  to = "/index.html"
-  status = 200
-
+# Le club en chiffres : page dans seoRoutes (pré-rendue). API publique (accueil + page).
 [[redirects]]
   from = "/api/club-chiffres"
   to = "/.netlify/functions/club-chiffres"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/reglages"
+  to = "/.netlify/functions/reglages"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/bureau-recherches"
+  to = "/.netlify/functions/bureau-recherches"
   status = 200
   force = true
 
@@ -722,6 +712,18 @@
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
     Cache-Control = "no-store"
+
+[[headers]]
+  for = "/api/reglages"
+  [headers.values]
+    Cache-Control = "no-store"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/api/bureau-recherches"
+  [headers.values]
+    Cache-Control = "no-store, private"
+    X-Content-Type-Options = "nosniff"
 
 [[headers]]
   for = "/api/espace"

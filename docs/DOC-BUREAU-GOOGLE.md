@@ -28,15 +28,16 @@ Scopes utilisés (minimaux) :
 - `https://www.googleapis.com/auth/gmail.send`
 - `https://www.googleapis.com/auth/calendar.events`
 - `https://www.googleapis.com/auth/contacts` (People API — sync Adhérents)
+- `https://www.googleapis.com/auth/webmasters.readonly` (Search Console — relevé du lundi et vue Bureau → Autre)
 
-Pas de scope `mail.google.com` (trop large).
+Pas de scope `mail.google.com` (trop large). Couper le relevé du lundi : `SEARCH_CONSOLE=non`.
 
 ---
 
 ## Checklist référent (une fois)
 
 1. [Google Cloud Console](https://console.cloud.google.com/) — projet déjà utilisé pour les Sheets, ou nouveau projet « ASE site ».
-2. Activer **Gmail API**, **Google Calendar API** et **People API** (Contacts).
+2. Activer **Gmail API**, **Google Calendar API**, **People API** (Contacts) et **Search Console API**.
 3. Écran de consentement OAuth : type **Externe**, puis **Publier l’application** pour la passer **En production**. Ne la laissez pas en mode **Testing** : Google y fait expirer le jeton au bout de 7 jours (« Connexion Google expirée ou révoquée »). Dans « Image de marque », la page d’accueil est l’adresse du site (`siteUrl`) et les règles de confidentialité `…/confidentialite/` (jamais `/bureau`, page de connexion) ; ajoutez le domaine du site aux domaines autorisés. Pas de vérification Google nécessaire pour le seul compte de l’asso : à la connexion (étape 7), choisissez « Paramètres avancés », puis « Accéder à … (non sécurisé) ».
 4. Identifiants → **Créer un client OAuth** → type **Application Web**.
 5. URI de redirection autorisées :

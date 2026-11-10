@@ -6,10 +6,12 @@ import {
   NB_ESSAIS,
   PAIEMENT_NOM,
   TARIF_LABEL,
+  essaisProposes,
 } from '../data/asso';
 
 export default function MembershipSection({ variant = 'tarifs' }: { variant?: 'home' | 'tarifs' }) {
   const isHome = variant === 'home';
+  const essais = essaisProposes();
 
   return (
     <section id="adhesion" className="bg-brand-cream section-padding !py-12 md:!py-14">
@@ -20,7 +22,9 @@ export default function MembershipSection({ variant = 'tarifs' }: { variant?: 'h
         <p className="font-body text-[16px] md:text-[17px] text-brand-gray leading-relaxed max-w-[640px] mb-8">
           {isHome ? (
             <>
-              Un essai d&apos;abord, l&apos;adhésion ensuite si le cours vous convient.{' '}
+              {essais
+                ? 'Un essai d’abord, l’adhésion ensuite si le cours vous convient. '
+                : 'L’adhésion se fait en ligne, puis le règlement. '}
               <a href="/tarifs" className="text-orange-primary underline underline-offset-2 font-medium">
                 Détail des tarifs
               </a>
@@ -28,12 +32,13 @@ export default function MembershipSection({ variant = 'tarifs' }: { variant?: 'h
           ) : (
             <>
               {TARIF_LABEL} l&apos;année — {INCLUS_LABEL}. Même tarif en cours de saison.
-              {NB_ESSAIS > 0 ? ` Les ${ESSAIS_LABEL} restent disponibles.` : ''}
+              {essais && NB_ESSAIS > 0 ? ` Les ${ESSAIS_LABEL} restent disponibles.` : ''}
             </>
           )}
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 items-stretch">
+        <div className={`grid grid-cols-1 ${essais ? 'md:grid-cols-2' : ''} gap-4 md:gap-5 items-stretch`}>
+          {essais ? (
           <div className="rounded-2xl border-2 border-orange-primary bg-orange-primary text-white p-6 flex flex-col min-h-[280px] shadow-[0_12px_32px_rgba(196,83,9,0.28)]">
             <p className="font-mono text-[11px] tracking-[2px] uppercase text-white/85 mb-2">
               Essayer
@@ -41,31 +46,36 @@ export default function MembershipSection({ variant = 'tarifs' }: { variant?: 'h
             <h3 className="font-display font-black text-[22px] md:text-[24px] leading-tight">
               {COURS_ESSAI_LABEL}
             </h3>
-            <p className="font-body text-[15px] text-white/90 mt-2">
+            <p className="font-body text-[16px] text-white/90 mt-2">
               Gratuit. Sans rien signer. Un créneau suffit pour commencer.
             </p>
             <div className="mt-auto pt-6">
               <a
                 href="/essai"
                 data-analytics="CTA-Tarifs-Essai-Gratuit"
-                className="flex items-center justify-center w-full font-body font-semibold text-[15px] rounded-full bg-white text-orange-primary hover:bg-orange-light min-h-[48px]"
+                className="flex items-center justify-center w-full font-body font-semibold text-[16px] rounded-full bg-white text-orange-primary hover:bg-orange-light min-h-[48px]"
               >
                 Réserver un essai
               </a>
-              <p className="font-body text-[12px] text-white/80 mt-3 text-center">
+              <p className="font-body text-[14px] text-white/80 mt-3 text-center">
                 Sans engagement · le créneau s’affiche tout de suite
               </p>
             </div>
           </div>
+          ) : null}
 
-          <div className="rounded-2xl border-2 border-orange-primary/30 bg-white p-6 flex flex-col min-h-[280px] shadow-[0_8px_24px_rgba(196,83,9,0.08)]">
-            <p className="font-mono text-[11px] tracking-[2px] uppercase text-orange-primary mb-2">
+          <div className={`rounded-2xl border-2 p-6 flex flex-col min-h-[280px] ${
+            essais
+              ? 'border-orange-primary/30 bg-white shadow-[0_8px_24px_rgba(196,83,9,0.08)]'
+              : 'border-orange-primary bg-orange-primary text-white shadow-[0_12px_32px_rgba(196,83,9,0.28)]'
+          }`}>
+            <p className={`font-mono text-[11px] tracking-[2px] uppercase mb-2 ${essais ? 'text-orange-primary' : 'text-white/85'}`}>
               Adhérer
             </p>
-            <h3 className="font-display font-black text-[22px] md:text-[24px] text-brand-black leading-tight">
+            <h3 className={`font-display font-black text-[22px] md:text-[24px] leading-tight ${essais ? 'text-brand-black' : ''}`}>
               {isHome ? 'Rejoindre le club' : `${TARIF_LABEL} l'année`}
             </h3>
-            <p className="font-body text-[15px] text-brand-gray mt-2">
+            <p className={`font-body text-[16px] mt-2 ${essais ? 'text-brand-gray' : 'text-white/90'}`}>
               Tous les cours, {INCLUS_LABEL}.{' '}
               {HAS_PAIEMENT_EN_LIGNE ? 'Carte en ligne, ou règlement au bureau.' : 'Règlement au bureau.'}
             </p>
@@ -73,11 +83,15 @@ export default function MembershipSection({ variant = 'tarifs' }: { variant?: 'h
               <a
                 href="/inscription"
                 data-analytics="CTA-Tarifs-Inscription"
-                className="flex items-center justify-center w-full min-h-[48px] rounded-full border border-orange-primary/40 text-orange-primary font-body font-semibold text-[15px] hover:bg-orange-primary hover:text-white"
+                className={
+                  essais
+                    ? 'flex items-center justify-center w-full min-h-[48px] rounded-full border border-orange-primary/40 text-orange-primary font-body font-semibold text-[16px] hover:bg-orange-primary hover:text-white'
+                    : 'flex items-center justify-center w-full min-h-[48px] rounded-full bg-white text-orange-primary font-body font-semibold text-[16px] hover:bg-orange-light'
+                }
               >
                 Remplir le formulaire
               </a>
-              <p className="font-body text-[12px] text-brand-gray text-center pt-1">
+              <p className={`font-body text-[14px] text-center pt-1 ${essais ? 'text-brand-gray' : 'text-white/80'}`}>
                 Rien n’est prélevé ici.{' '}
                 {HAS_PAIEMENT_EN_LIGNE
                   ? `Carte (${PAIEMENT_NOM}) ou bureau : vous choisissez à la dernière étape, après l’envoi.`
@@ -100,7 +114,7 @@ export default function MembershipSection({ variant = 'tarifs' }: { variant?: 'h
               },
               {
                 q: 'Je m’engage pour toute la saison ?',
-                a: `La cotisation est annuelle (${TARIF_LABEL}), sans obligation de présence. Vous venez quand vous pouvez. Les essais gratuits sont sans engagement.`,
+                a: `La cotisation est annuelle (${TARIF_LABEL}), sans obligation de présence. Vous venez quand vous pouvez.${essais ? ' Les essais gratuits sont sans engagement.' : ''}`,
               },
               {
                 q: 'Je ne connais personne, ça se passe comment ?',

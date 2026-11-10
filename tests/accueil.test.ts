@@ -134,6 +134,11 @@ describe('bouton principal selon la saison', () => {
     expect(ctaSaison(new Date('2026-11-02T10:00:00+01:00'), SAISON, 3)).toBe('adhesion');
     expect(ctaSaison(new Date('2026-10-13T10:00:00+02:00'), SAISON, 0)).toBe('adhesion');
   });
+  it('adhésion dès que saison.finEssais est passée, même pendant la campagne', () => {
+    const saison = { ...SAISON, finEssais: '2026-10-20' };
+    expect(ctaSaison(new Date('2026-10-20T22:00:00+02:00'), saison, 3)).toBe('essai');
+    expect(ctaSaison(new Date('2026-10-21T10:00:00+02:00'), saison, 3)).toBe('adhesion');
+  });
   it('réinscription en juin', () => {
     expect(ctaSaison(new Date('2027-06-10T10:00:00+02:00'), SAISON, 3)).toBe('reinscription');
     expect(ctaSaison(new Date('2026-06-10T10:00:00+02:00'), SAISON, 3)).toBe('reinscription');

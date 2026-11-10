@@ -22,11 +22,14 @@ export const TARIF_ADHESION = TARIF_LABEL;
 export const REPRISE_AT = new Date(`${ASSO.saison.reprise}T00:00:00+02:00`).getTime();
 /** Fin du bandeau « un essai reste possible ». */
 export const BANDEAU_END = new Date(`${ASSO.saison.finCampagneEssai}T23:59:59+01:00`).getTime();
+const FIN_ESSAIS_AT = ASSO.saison.finEssais
+  ? new Date(`${ASSO.saison.finEssais}T23:59:59+01:00`).getTime()
+  : Number.POSITIVE_INFINITY;
 /**
  * Bouton principal header / hero = essai tant que la campagne d'essai est active
- * (et que l'asso propose des essais). Ensuite : Adhérer.
+ * et que `saison.finEssais` n’est pas passée. Ensuite : Adhérer.
  */
-export const ESSAI_CTA_UNTIL = ASSO.adhesion.essais > 0 ? BANDEAU_END : 0;
+export const ESSAI_CTA_UNTIL = ASSO.adhesion.essais > 0 ? Math.min(BANDEAU_END, FIN_ESSAIS_AT) : 0;
 
 /**
  * Planning et événements : lecture live `/api/sheet` (édités depuis /bureau).

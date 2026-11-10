@@ -5,9 +5,11 @@
  */
 
 import {
+  ADHERENTS_HEADERS,
   appendRow,
   assertBrowserOrigin,
   clientIp,
+  colonneDecalee,
   consumeRateLimit,
   getAdherentsSheetId,
   getAdherentsTab,
@@ -15,7 +17,9 @@ import {
   parseFrBirthDate,
   pickValue,
   moduleOff,
+  readSheetValues,
 } from './_bureau-lib.mjs';
+import { lireReglages } from './_reglages.mjs';
 import { sendAdhesionNotification } from './_adhesion-mail.mjs';
 import { ASSO, MODE_CARTE, MODULES, PAYMENT_MODES, SITE_URL } from '../../asso.derive.js';
 import { nouvelleReference, paiementIntegre } from './_paiement.mjs';
@@ -168,13 +172,22 @@ async function handler(event) {
       return publicJson(400, { ok: false, error: 'Photos de cours et QS-SPORT sont requis' });
     }
 
+    const { reglages } = await lireReglages();
+    const tarif = reglages.tarif || ASSO.adhesion.tarif;
+    const premiere = await readSheetValues(getAdherentsSheetId(), getAdherentsTab());
+    const decalee = (premiere[0] || []).length >= 3 ? colonneDecalee(premiere[0], ADHERENTS_HEADERS) : null;
+    if (decalee) {
+      console.error('adhesion: colonnes', decalee);
+      return publicJson(500, { ok: false, error: 'Le tableau des adhérents a changé. Prévenez le référent.' });
+    }
+
     let notes = f.notes;
-    let montant = String(ASSO.adhesion.tarif);
+    let montant = String(tarif);
     let detail = f.detail || '';
     let financement = null;
     if (MODULES.financement) {
       financement = calculerReste(
-        ASSO.adhesion.tarif,
+        tarif,
         {
           passSport: /^(1|oui|true|on)$/i.test(f.pass_sport),
           ancv: f.ancv,

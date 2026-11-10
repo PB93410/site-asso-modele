@@ -90,6 +90,14 @@
     color: var(--text-muted-on-dark, #C4C0B8);
   }
 
+  /* Heure des cours : blanc cassé sur fond sombre (contraste 15:1), vert foncé une fois la surface repeinte en crème. */
+  .horaire-heure {
+    color: #EDEAE3;
+  }
+  [data-theme="light"] .bg-brand-black .horaire-heure {
+    color: #4A5740;
+  }
+
   body {
     /* Stack système stable — pas de webfont bloquante = moins de CLS texte */
     font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;

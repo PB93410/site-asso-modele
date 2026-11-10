@@ -2,11 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { BANDEAU_END, ESSAI_CTA_UNTIL } from '../data/CONFIG';
-import { ASSO, MODULES, NB_ESSAIS } from '../data/asso';
-
-/** Tant que le bandeau essais est actif : CTA = Essai. Ensuite = Adhérer. */
-const SHOW_ESSAI_CTA = Date.now() < ESSAI_CTA_UNTIL;
-const SHOW_CAMPAIGN = NB_ESSAIS > 0 && Date.now() < BANDEAU_END;
+import { ASSO, MODULES, NB_ESSAIS, essaisProposes } from '../data/asso';
 
 type NavLink = { label: string; href: string; isPage?: boolean };
 
@@ -37,6 +33,10 @@ const secondaryLinks: NavLink[] = [
 
 const NAV_IDLE = 'text-[#EDEAE3] hover:text-white';
 const NAV_ACTIVE = 'text-white';
+
+/** Tant que la campagne d’essai est active et que l’asso en propose encore. */
+const SHOW_ESSAI_CTA = Date.now() < ESSAI_CTA_UNTIL && essaisProposes();
+const SHOW_CAMPAIGN = NB_ESSAIS > 0 && Date.now() < BANDEAU_END && essaisProposes();
 
 export default function Navigation() {
   const navRef = useRef<HTMLElement>(null);
@@ -108,7 +108,7 @@ export default function Navigation() {
   const ctaTo = ctaIsHome ? '/' : SHOW_ESSAI_CTA ? '/essai' : '/inscription';
   const ctaLabel = ctaIsHome ? 'Accueil' : SHOW_ESSAI_CTA ? 'Essai' : 'Adhérer';
   const ctaClass =
-    'font-body text-sm font-medium rounded-full whitespace-nowrap inline-flex items-center justify-center min-h-[40px]';
+    'font-body text-sm font-medium rounded-full whitespace-nowrap inline-flex items-center justify-center min-h-[44px]';
   const ctaClassPrimary = `${ctaClass} text-white bg-orange-primary hover:bg-orange-hover px-4 sm:px-5 py-2`;
   const ctaClassHome = `${ctaClass} text-white border border-white/35 hover:border-white px-4 sm:px-5 py-2`;
   const overlayHero = isHome && !scrolled && !mobileOpen;

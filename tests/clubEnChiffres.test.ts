@@ -5,7 +5,7 @@ vi.mock('../asso.derive.js', async (orig) => {
   return { ...m, MODULES: { ...(m.MODULES as object), clubEnChiffres: true } };
 });
 
-const { anciennete } = await import('../src/lib/clubEnChiffres');
+const { anciennete, chiffresDepuisApi, libelleAdherents, libelleEffectif } = await import('../src/lib/clubEnChiffres');
 const { arrondi5, publier, SEUIL } = await import('../netlify/functions/_club-chiffres.mjs');
 const { calculerRapport } = await import('../src/lib/rapport.js');
 
@@ -93,6 +93,24 @@ describe('le club en chiffres — page', () => {
     expect(anciennete(new Date('2026-10-15'), '1980')).toBe(46);
     expect(anciennete(new Date('1970-01-01'), '1980')).toBe(0);
     expect(anciennete(new Date('2026-10-15'), '')).toBe(0);
+  });
+
+  it('libellé : plus de N si le registre répond, sinon la phrase de repli', () => {
+    expect(libelleEffectif(115, true)).toBe('plus de 115');
+    expect(libelleEffectif(9, true)).toBeNull();
+    expect(libelleAdherents(115, true)).toBe('plus de 115 adhérents');
+    expect(libelleAdherents(9, true)).toBe('des adhérents');
+    expect(libelleAdherents(0, false, 'plus d’une centaine')).toBe('plus d’une centaine d’adhérents');
+    expect(libelleAdherents(0, false, '')).toBe('des adhérents');
+  });
+
+  it('chiffresDepuisApi refuse une réponse incomplète', () => {
+    expect(chiffresDepuisApi({ ok: true, adherentsPlusDe: 80, parAge: [], communes: [], nbCommunes: 2 })).toMatchObject({
+      ok: true,
+      adherentsPlusDe: 80,
+    });
+    expect(chiffresDepuisApi({ ok: false })).toBeNull();
+    expect(chiffresDepuisApi({ ok: true, adherentsPlusDe: -1 })).toBeNull();
   });
 });
 

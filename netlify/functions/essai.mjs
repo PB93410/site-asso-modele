@@ -22,7 +22,10 @@ import {
   rowFromHeaders,
   telPersonKey,
   moduleOff,
+  colonneDecalee,
+  ESSAIS_HEADERS,
 } from './_bureau-lib.mjs';
+import { lireReglages } from './_reglages.mjs';
 import { buildDateEssaiCell, formatEssaiDateLabel } from './_essai-dates.mjs';
 import { notifyBureauNewLead } from './_notify-bureau.mjs';
 import { ecrireMail } from './_essai-mails.mjs';
@@ -104,8 +107,9 @@ async function handler(event) {
   if (!originCheck.ok) {
     return publicJson(originCheck.status, { ok: false, error: originCheck.error });
   }
-  // Fin des essais (saison.finEssais dans asso.config.js) : plus de nouvelle demande.
-  if (!essaisOuverts()) {
+  // Fin des essais (saison.finEssais, éventuellement mise à jour depuis le bureau).
+  const { reglages } = await lireReglages();
+  if (!essaisOuverts(Date.now(), reglages.finEssais)) {
     return publicJson(410, { ok: false, error: 'Les essais sont terminés pour cette saison. Vous pouvez adhérer sur le site.' });
   }
   if (!consumeRateLimit(`essai:${clientIp(event)}`, 8, 10 * 60 * 1000).ok) {
@@ -152,6 +156,11 @@ async function handler(event) {
     const sheetId = getEssaisSheetId();
     const tab = getEssaisTab();
     const { headers, rows } = await readSheetAsObjects(sheetId, `'${tab}'!A:Z`);
+    const decalee = headers.length >= 3 ? colonneDecalee(headers, ESSAIS_HEADERS) : null;
+    if (decalee) {
+      console.error('essai: colonnes', decalee);
+      return publicJson(500, { ok: false, error: 'Le tableau des essais a changé. Prévenez le référent.' });
+    }
     const phoneKey = telPersonKey(telephone);
 
     if (phoneKey && creneau) {

@@ -2,7 +2,7 @@ import type { ActivityFAQ, ActivityPageData } from '../data/activityPages';
 import type { BlogArticle } from '../data/blogData';
 import { faqs } from '../data/faqData';
 import { SITE_CONFIG, type Event } from '../data/siteData';
-import { ASSO, PAYMENT_MODES, SITE_URL, TEL_INTL, lieuAdresse, type AssoLieu } from '../data/asso';
+import { ASSO, PAYMENT_MODES, SITE_URL, TEL_INTL, essaisProposes, lieuAdresse, type AssoLieu } from '../data/asso';
 import { eventIsoDates, isPastEvent } from './events';
 
 export type Crumb = {
@@ -212,7 +212,44 @@ export function buildBreadcrumbSchema(items: Crumb[]) {
   };
 }
 
-export function buildHowToJoinSchema() {
+export function buildHowToJoinSchema(ouverts = essaisProposes()) {
+  if (!ouverts) {
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'HowTo',
+      '@id': `${SITE_URL}/#howto-inscription`,
+      name: `Comment adhérer à ${ASSO.nom}`,
+      description: `Remplir le formulaire d’inscription, régler la cotisation, puis venir au cours. Cotisation ${PRICE} € l’année, ${ASSO.adhesion.inclus}.`,
+      estimatedCost: {
+        '@type': 'MonetaryAmount',
+        currency: 'EUR',
+        value: PRICE,
+      },
+      step: [
+        {
+          '@type': 'HowToStep',
+          position: 1,
+          name: 'Remplissez le formulaire d’inscription',
+          text: 'Prénom, nom, téléphone, e-mail et choix des cours, à tout moment de la saison.',
+          url: `${SITE_URL}/inscription/`,
+        },
+        {
+          '@type': 'HowToStep',
+          position: 2,
+          name: 'Réglez la cotisation',
+          text: `Cotisation ${PRICE} € l’année, ${ASSO.adhesion.inclus}. Paiement : ${PAYMENT_MODES.join(', ').toLowerCase()}.`,
+          url: `${SITE_URL}/inscription/`,
+        },
+        {
+          '@type': 'HowToStep',
+          position: 3,
+          name: 'Venez au cours',
+          text: `${ASSO.lieux.map((l) => l.nom).join(' ou ')}, ${ASSO.ville}. Le bureau valide l’adhésion.`,
+          url: `${SITE_URL}/inscription/`,
+        },
+      ],
+    };
+  }
   return {
     '@context': 'https://schema.org',
     '@type': 'HowTo',

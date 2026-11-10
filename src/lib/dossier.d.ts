@@ -92,6 +92,7 @@ export interface Dossier {
   listeAttente: { capaciteDefaut: number; delaiReponseHeures: number };
   financement: { passSport: number; ancvMax: number; comiteEntreprise: number };
   attestations: { recuFiscal: boolean; objet: string };
+  club: { repliAdherents: string };
   remarques: string;
 }
 

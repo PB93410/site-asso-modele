@@ -61,7 +61,7 @@ export default function WhyJoinSection() {
                   </span>
                 )}
               </div>
-              <p className="font-body text-[13px] md:text-[14px] text-brand-gray leading-relaxed">{desc}</p>
+              <p className="font-body text-[15px] md:text-[16px] text-brand-gray leading-relaxed">{desc}</p>
             </div>
           ))}
         </div>

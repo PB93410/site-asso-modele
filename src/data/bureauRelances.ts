@@ -5,7 +5,7 @@
 
 import type { RelanceMsg } from '../lib/bureauRelancesQueue';
 import { telDedupeKey } from '../lib/bureauSearch';
-import { ASSO, MODULES, PAIEMENTS_BUREAU, SITE_URL, TARIF_LABEL } from './asso';
+import { ASSO, MODULES, PAIEMENTS_BUREAU, SITE_URL, TARIF_LABEL, essaisProposes } from './asso';
 import { LIEN_SONDAGE } from '../lib/sondageEssai';
 
 export const MSG_A = `Bonjour {prenom},
@@ -30,6 +30,17 @@ ${SITE_URL}/essai
 À bientôt,
 ${ASSO.nom}`;
 
+export const MSG_A_APRES = `Bonjour {prenom},
+Les essais de la saison sont terminés.
+Tu peux adhérer ici : ${SITE_URL}/inscription
+${ASSO.nom}`;
+
+export const MSG_C_APRES = `Bonjour {prenom},
+Les essais sont terminés pour cette saison.
+Adhésion : ${SITE_URL}/inscription
+À bientôt,
+${ASSO.nom}`;
+
 export function phoneToWa(tel: string) {
   let d = String(tel || '').replace(/\D/g, '');
   if (d.startsWith('0') && d.length === 10) d = `33${d.slice(1)}`;
@@ -38,8 +49,9 @@ export function phoneToWa(tel: string) {
 }
 
 function tplFor(message: RelanceMsg) {
-  if (message === 'A') return MSG_A;
-  if (message === 'C') return MSG_C;
+  const essais = essaisProposes();
+  if (message === 'A') return essais ? MSG_A : MSG_A_APRES;
+  if (message === 'C') return essais ? MSG_C : MSG_C_APRES;
   return MSG_B;
 }
 

@@ -89,6 +89,10 @@ Pour classer : **A adhéré**, **Ne veut plus**, **Plus tard**. La fiche sort de
 
 Choisissez, puis **Enregistrer**. Une confirmation s’affiche. Le site public se met à jour tout seul (quelques minutes). Pas besoin du référent. En cas de doute, n’enregistrez pas.
 
+**Autre → Tarif et fin des essais** : cotisation annuelle et dernier jour des essais. Les formulaires s’en servent tout de suite. L’accueil et la page tarifs se mettent à jour au prochain déploiement du site.
+
+**Autre → Recherches Google** : visites des 4 dernières semaines (ce que les gens tapent, pages ouvertes). Un mail part aussi le lundi matin. Demande le compte Google de l’asso (Search Console).
+
 ---
 
 ## Inscriptions aux événements, si la fonction est activée

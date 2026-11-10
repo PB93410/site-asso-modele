@@ -29,7 +29,7 @@ export default function StickyOfferBar() {
     <div className="fixed top-[56px] sm:top-[72px] left-0 right-0 z-40 bg-[#1A1916]/95 backdrop-blur-sm border-b border-orange-primary/20 max-[380px]:top-[52px]">
       <div className="content-max-width min-h-[32px] sm:min-h-[36px] py-1 flex items-center justify-center gap-1.5 sm:gap-3 px-2 sm:px-4">
         {essaiCta ? (
-          <p className="font-body font-medium text-[10px] sm:text-[12px] text-white truncate leading-tight">
+          <p className="font-body font-medium text-[14px] sm:text-[15px] text-white truncate leading-tight">
             <span className="hidden sm:inline">{ESSAIS_LABEL} — </span>
             <a
               href="/essai"
@@ -40,7 +40,7 @@ export default function StickyOfferBar() {
             </a>
           </p>
         ) : (
-          <p className="font-body font-medium text-[10px] sm:text-[12px] text-white truncate leading-tight">
+          <p className="font-body font-medium text-[14px] sm:text-[15px] text-white truncate leading-tight">
             <span className="hidden sm:inline">Saison en cours — {TARIF_LABEL}/an — </span>
             <span className="sm:hidden">{TARIF_LABEL}/an — </span>
             <a

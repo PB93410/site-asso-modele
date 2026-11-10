@@ -2,7 +2,7 @@ import { ArrowLeft, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { ActivityPageData } from '../../data/activityPages';
 import { SITE_CONFIG } from '../../data/siteData';
-import { ASSO, NB_ESSAIS } from '../../data/asso';
+import { ASSO, NB_ESSAIS, essaisProposes } from '../../data/asso';
 
 type Props = {
   activity: ActivityPageData;
@@ -76,11 +76,19 @@ export default function ActivityHero({ activity }: Props) {
         ) : null}
         <div className="flex flex-wrap items-center gap-4 mt-6">
           <a
-            href={`/essai?cours=${encodeURIComponent(activity.name)}`}
-            data-analytics={`CTA-Activite-${activity.name.replace(/\s+/g, '-')}-Essai`}
-            className="font-body font-semibold text-[14px] text-white px-6 py-3 rounded-full transition-all inline-flex items-center justify-center bg-orange-primary hover:bg-orange-hover"
+            href={
+              essaisProposes()
+                ? `/essai?cours=${encodeURIComponent(activity.name)}`
+                : '/inscription'
+            }
+            data-analytics={`CTA-Activite-${activity.name.replace(/\s+/g, '-')}-${essaisProposes() ? 'Essai' : 'Adherer'}`}
+            className="font-body font-semibold text-[16px] text-white px-6 py-3 min-h-[48px] rounded-full transition-all inline-flex items-center justify-center bg-orange-primary hover:bg-orange-hover"
           >
-            {NB_ESSAIS > 1 ? `Essai gratuit — ${NB_ESSAIS} cours` : 'Essai gratuit'}
+            {essaisProposes()
+              ? NB_ESSAIS > 1
+                ? `Essai gratuit — ${NB_ESSAIS} cours`
+                : 'Essai gratuit'
+              : 'Adhérer au club'}
           </a>
           <a
             href="#horaires-cours"

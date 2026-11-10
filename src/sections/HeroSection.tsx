@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AlertTriangle, CalendarClock } from 'lucide-react';
 import { BANDEAU_END } from '../data/CONFIG';
-import { ASSO, MODULES, NB_ESSAIS } from '../data/asso';
+import { ASSO, INCLUS_LABEL, MODULES, NB_ESSAIS, TARIF_LABEL, essaisProposes } from '../data/asso';
 import { useScheduleFromSheet } from '../hooks/useSheetData';
 import { useAlertes } from '../hooks/useAlertes';
 import { compteARebours, ctaSaison, libelleDate, libelleHeure, prochaineSeance } from '../lib/accueil';
@@ -105,9 +105,9 @@ export default function HeroSection() {
             className="font-body text-[16px] md:text-[17px] text-white max-w-[480px] mx-auto mt-4 sm:mt-5 leading-relaxed font-medium"
             style={{ textShadow: '0 2px 8px rgba(0,0,0,0.55)' }}
           >
-            {NB_ESSAIS > 0
+            {essaisProposes()
               ? `${NB_ESSAIS} essai${NB_ESSAIS > 1 ? 's' : ''} gratuit${NB_ESSAIS > 1 ? 's' : ''} pour découvrir le club`
-              : `${ASSO.accroche} à ${ASSO.ville}`}
+              : `${TARIF_LABEL} l’année, ${INCLUS_LABEL}`}
           </p>
 
           {alerte ? (
@@ -160,7 +160,7 @@ export default function HeroSection() {
             </a>
             {essaiCta ? (
               <p
-                className="font-body text-[14px] text-white"
+                className="font-body text-[16px] text-white"
                 style={{ textShadow: '0 1px 4px rgba(0,0,0,0.45)' }}
               >
                 {MODULES.quiz ? (
@@ -182,16 +182,26 @@ export default function HeroSection() {
               </p>
             ) : (
               <p
-                className="font-body text-[14px] text-white"
+                className="font-body text-[16px] text-white"
                 style={{ textShadow: '0 1px 4px rgba(0,0,0,0.45)' }}
               >
-                <a
-                  href="/essai"
-                  data-analytics="CTA-Hero-Essai-Secondaire"
-                  className="underline underline-offset-2 decoration-white/50 hover:decoration-white font-semibold text-white"
-                >
-                  {choix === 'reinscription' ? 'Nouveau ? Un essai gratuit d’abord' : 'D’abord un essai gratuit'}
-                </a>
+                {essaisProposes() ? (
+                  <a
+                    href="/essai"
+                    data-analytics="CTA-Hero-Essai-Secondaire"
+                    className="underline underline-offset-2 decoration-white/50 hover:decoration-white font-semibold text-white"
+                  >
+                    {choix === 'reinscription' ? 'Nouveau ? Un essai gratuit d’abord' : 'D’abord un essai gratuit'}
+                  </a>
+                ) : (
+                  <a
+                    href="/tarifs"
+                    data-analytics="CTA-Hero-Tarifs-Secondaire"
+                    className="underline underline-offset-2 decoration-white/50 hover:decoration-white font-semibold text-white"
+                  >
+                    Voir les tarifs
+                  </a>
+                )}
               </p>
             )}
           </div>

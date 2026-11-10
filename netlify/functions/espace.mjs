@@ -169,9 +169,12 @@ async function agendaIcs(event, secret) {
     return { statusCode: 404, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' }, body: 'Introuvable' };
   }
   const mail = foldMail(pickRow(f, 'MAIL', 'Mail', 'EMAIL'));
-  const { cours } = await coursSuivis(secret, mail, f);
   const debut = ymdParis(new Date(Date.now() - 31 * 86400000));
-  const liste = seances(await lirePlanning(), cours, { du: debut, jours: 150, saison: ASSO.saison });
+  const [{ cours }, planning] = await Promise.all([
+    coursSuivis(secret, mail, f),
+    lirePlanning(),
+  ]);
+  const liste = seances(planning, cours, { du: debut, jours: 150, saison: ASSO.saison });
   const evenements = liste.map((s) => ({
     id: `cours-${cleFiche(f)}-${s.ymd}-${s.debut}-${s.creneau.course}`.replace(/[^\w.-]+/g, '_'),
     start: { dateTime: heureParis(s.ymd, s.debut) },
