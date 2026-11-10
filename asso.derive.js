@@ -22,6 +22,11 @@ export function essaisOuverts(maintenant = Date.now(), fin = ASSO.saison.finEssa
   return jour <= fin;
 }
 
+/** L’asso propose encore un essai : des séances prévues, et `saison.finEssais` pas dépassée. */
+export function essaisProposes(maintenant = Date.now(), fin = ASSO.saison.finEssais) {
+  return (Number(ASSO.adhesion?.essais) || 0) > 0 && essaisOuverts(maintenant, fin);
+}
+
 /** Libellé du mode « carte en ligne » (vide si pas de paiement en ligne). */
 export const MODE_CARTE = ASSO.adhesion.paiementUrl
   ? `Carte (${ASSO.adhesion.paiementNom || 'en ligne'})`

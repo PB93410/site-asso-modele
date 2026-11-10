@@ -279,6 +279,7 @@ function siteSeed() {
     ['ALERTES', alertesSeed()],
     ['ALERTES_ABOS', [['MAIL', 'CONSENT', 'DATE', 'TOKEN', 'PUSH', 'ACTIF']]],
     ['LISTE_ATTENTE', listeAttenteSeed()],
+    ['REGLAGES', [['TARIF', 'FIN_ESSAIS'], [String(ASSO.adhesion.tarif), String(ASSO.saison.finEssais || '')]]],
   ]);
 }
 
@@ -448,6 +449,32 @@ export function demoCalendar() {
       async delete({ eventId }) {
         events = agenda().filter((e) => e.id !== find(eventId).id);
         return { data: {} };
+      },
+    },
+  };
+}
+
+/** Search Console fictive (relevé du lundi et vue bureau). */
+export function demoSearchConsole() {
+  return {
+    searchanalytics: {
+      async query({ requestBody }) {
+        const dim = requestBody?.dimensions?.[0];
+        if (dim === 'query') {
+          return {
+            data: {
+              rows: [
+                { keys: ['association sportive'], clicks: 42, impressions: 210, position: 8.4 },
+                { keys: ['cours essai'], clicks: 18, impressions: 90, position: 6.1 },
+              ],
+            },
+          };
+        }
+        return {
+          data: {
+            rows: [{ keys: [`${ASSO.siteUrl.replace(/\/+$/, '')}/`], clicks: 40, impressions: 180, position: 7.2 }],
+          },
+        };
       },
     },
   };

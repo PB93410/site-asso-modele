@@ -194,23 +194,26 @@ export type CtaSaison = 'essai' | 'reinscription' | 'adhesion';
 /**
  * Bouton principal du hero :
  * - juin à août (fin de saison, hors saison tout juste reprise) : réinscription ;
- * - jusqu'à `finCampagneEssai` (si l'asso propose des essais) : essai gratuit ;
+ * - jusqu'à `finCampagneEssai` et `finEssais` (si l'asso propose des essais) : essai gratuit ;
  * - sinon : adhésion.
  */
 export function ctaSaison(
   now: Date,
-  saison: { reprise: string; finCampagneEssai: string },
+  saison: { reprise: string; finCampagneEssai: string; finEssais?: string },
   nbEssais: number,
 ): CtaSaison {
   const mois = Number(
     new Intl.DateTimeFormat('en-US', { timeZone: 'Europe/Paris', month: 'numeric' }).format(now),
   );
   const reprise = new Date(`${saison.reprise}T00:00:00+02:00`).getTime();
-  const finEssai = new Date(`${saison.finCampagneEssai}T23:59:59+01:00`).getTime();
+  const finCampagne = new Date(`${saison.finCampagneEssai}T23:59:59+01:00`).getTime();
+  const finEssais = saison.finEssais
+    ? new Date(`${saison.finEssais}T23:59:59+01:00`).getTime()
+    : Number.POSITIVE_INFINITY;
   const t = now.getTime();
   // Saison tout juste reprise (moins de 90 jours) : pas de réinscription.
   const saisonEnCours = !Number.isNaN(reprise) && t >= reprise && t < reprise + 90 * 86400000;
   if (mois >= 6 && mois <= 8 && !saisonEnCours) return 'reinscription';
-  if (nbEssais > 0 && !Number.isNaN(finEssai) && t <= finEssai) return 'essai';
+  if (nbEssais > 0 && !Number.isNaN(finCampagne) && t <= finCampagne && t <= finEssais) return 'essai';
   return 'adhesion';
 }

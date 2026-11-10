@@ -118,6 +118,28 @@ export const ROUTES: SeoRoute[] = [
         },
       ]
     : []),
+  ...(MODULES.clubEnChiffres
+    ? [
+        {
+          path: '/le-club-en-chiffres',
+          title: `Le club en chiffres — ${ASSO.nom}`,
+          description: `${ASSO.nom} à ${ASSO.ville} : association${ASSO.anneeCreation ? ` depuis ${ASSO.anneeCreation}` : ''}, chiffres anonymes de la saison.`,
+          priority: '0.5',
+          changefreq: 'monthly' as const,
+        },
+      ]
+    : []),
+  ...(MODULES.inscriptionsEvenements
+    ? [
+        {
+          path: '/evenements',
+          title: `Événements — ${ASSO.nom}`,
+          description: `Les prochains événements de ${ASSO.nom} à ${ASSO.ville}, avec inscription.`,
+          priority: '0.6',
+          changefreq: 'weekly' as const,
+        },
+      ]
+    : []),
   {
     path: '/mentions-legales',
     title: `Mentions légales — ${ASSO.nom}`,

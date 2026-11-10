@@ -163,6 +163,7 @@ export function dossierVide(date = new Date()) {
     coachs: [],
     faq: [],
     apparence: { couleur: '#C45309', secondaire: '#5C6B4A', logo: '', hero: '', heroAlt: '' },
+    club: { repliAdherents: 'plus d’une centaine' },
     modules: { essais: true, adhesion: false, bureau: false, mail: false, presences: false, quiz: false, alertes: false, listeAttente: false, wallet: false, financement: false, rapport: false, attestations: false, espace: false, parrainage: false, sondageEssai: false, clubEnChiffres: false, checklists: false, tablette: false, carteHorsLigne: false, demandeAvis: false, essaiMail: false, inscriptionsEvenements: false },
     listeAttente: { capaciteDefaut: 20, delaiReponseHeures: 48 },
     financement: { passSport: 50, ancvMax: 40, comiteEntreprise: 30 },
@@ -194,6 +195,7 @@ export function normaliserDossier(raw) {
     listeAttente: merge(base.listeAttente, d.listeAttente),
     financement: merge(base.financement, d.financement),
     attestations: merge(base.attestations, d.attestations),
+    club: merge(base.club, d.club),
     lieux: Array.isArray(d.lieux) ? d.lieux : [],
     cours: Array.isArray(d.cours) ? d.cours : [],
     planning: Array.isArray(d.planning) ? d.planning : [],
@@ -369,6 +371,9 @@ export function configDepuisDossier(dossier, base) {
       paiementUrl: d.adhesion.paiementUrl.trim(),
       autresPaiements: d.adhesion.autresPaiements.map((p) => String(p).trim()).filter(Boolean),
       iban: String(d.adhesion.iban || '').replace(/\s+/g, '').toUpperCase(),
+    },
+    club: {
+      repliAdherents: String(d.club?.repliAdherents ?? base.club?.repliAdherents ?? 'plus d’une centaine'),
     },
     listeAttente: {
       capaciteDefaut: Number(d.listeAttente?.capaciteDefaut) || base.listeAttente?.capaciteDefaut || 20,

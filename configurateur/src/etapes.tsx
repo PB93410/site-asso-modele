@@ -879,6 +879,15 @@ export function EtapeFonctions({ d, maj }: PropsEtape) {
           onChange={(v) => maj('modules.clubEnChiffres', v)}
         />
       ) : null}
+      {m.adhesion ? (
+        <Texte
+          label="Si le registre est indisponible"
+          facultatif
+          aide="Phrase affichée sur l’accueil (« plus d’une centaine d’adhérents »). Dès que le registre répond et qu’il y a au moins 10 personnes, le site affiche « plus de … adhérents »."
+          value={d.club?.repliAdherents ?? ''}
+          onChange={(v) => maj('club.repliAdherents', v)}
+        />
+      ) : null}
       {m.bureau ? (
         <Case
           label="Rapport annuel (AG, subvention)"

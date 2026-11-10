@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react';
+import { useCallback, useEffect, lazy, Suspense, useState, type FormEvent, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { ASSO, MODULES } from '../data/asso';
 import { usePageMeta } from '../hooks/usePageMeta';
@@ -8,8 +8,9 @@ import { seances } from '../lib/mesCours';
 import { salleDuCours } from '../lib/salleDuCours';
 import { lienParrainage, lienWhatsAppParrainage, messageParrainage } from '../lib/parrainage';
 import { activerHorsLigne, horsLigneActif, horsLigneDisponible, oublierHorsLigne } from '../lib/horsLigne';
-import Footer from '../sections/Footer';
 import NotFoundPage from './NotFoundPage';
+
+const Footer = lazy(() => import('../sections/Footer'));
 
 /** Espace adhérent sans mot de passe : e-mail → code → session de 90 jours (cookie). */
 
@@ -909,7 +910,9 @@ export default function EspacePage() {
           Retour à l’accueil
         </Link>
       </main>
-      <Footer />
+      <Suspense fallback={null}>
+        <Footer />
+      </Suspense>
     </div>
   );
 }

@@ -47,12 +47,12 @@ export default function BureauGoogleConnectPage() {
           </div>
           <p className="text-base text-brand-gray leading-relaxed">
             Réservé au référent. Autorise une fois le compte{' '}
-            <strong>{ASSO.email}</strong> pour Mail, Agenda et Contacts
-            (sync adhérents) — sans donner le mot de passe Gmail aux bénévoles.
+            <strong>{ASSO.email}</strong> pour Mail, Agenda, Contacts
+            (sync adhérents) et Search Console — sans donner le mot de passe Gmail aux bénévoles.
           </p>
           <ol className="text-sm text-brand-gray space-y-2 list-decimal pl-5 leading-relaxed">
             <li>Cliquez ci-dessous et choisissez le compte asso (pas un Gmail perso).</li>
-            <li>Acceptez Gmail (lire + envoyer), Agenda et Contacts.</li>
+            <li>Acceptez Gmail (lire + envoyer), Agenda, Contacts et Search Console (lecture).</li>
             <li>
               Copiez le refresh token dans Netlify →{' '}
               <code className="text-xs">GOOGLE_REFRESH_TOKEN</code>, puis redéployez.
@@ -69,7 +69,7 @@ export default function BureauGoogleConnectPage() {
             disabled={busy}
             className="w-full sm:w-auto min-h-[48px] px-5 rounded-xl bg-orange-primary text-white font-semibold text-base disabled:opacity-60"
           >
-            {busy ? 'Redirection…' : 'Autoriser Gmail, Agenda et Contacts'}
+            {busy ? 'Redirection…' : 'Autoriser Gmail, Agenda, Contacts et Search Console'}
           </button>
           <p className="text-sm text-brand-gray">
             Mode d’emploi détaillé : fichier <strong>DOC-BUREAU-GOOGLE.md</strong> dans le

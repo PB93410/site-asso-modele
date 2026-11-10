@@ -127,10 +127,10 @@ async function handler(event) {
          <textarea id="rt" readonly>${escaped}</textarea>
          <ol>
            <li>Netlify → Site → Environment variables</li>
-           <li>Créer ou mettre à jour <code>GOOGLE_REFRESH_TOKEN</code> (scopes : Gmail + Calendar + Contacts)</li>
+           <li>Créer ou mettre à jour <code>GOOGLE_REFRESH_TOKEN</code> (scopes : Gmail + Calendar + Contacts + Search Console)</li>
            <li>Vérifier aussi <code>GOOGLE_CLIENT_ID</code>, <code>GOOGLE_CLIENT_SECRET</code>, <code>GOOGLE_CALENDAR_ID</code></li>
            <li>Redéployer le site</li>
-           <li>Tester <a href="/bureau/mail">Mail</a>, <a href="/bureau/agenda">Agenda</a>, puis sync Contacts (script)</li>
+           <li>Tester <a href="/bureau/mail">Mail</a>, <a href="/bureau/agenda">Agenda</a>, Autre → Recherches Google, puis sync Contacts (script)</li>
          </ol>
          <p>Ne partagez pas ce jeton (WhatsApp, mail, capture d’écran publique).</p>
          <p><a href="/bureau?tab=more">Retour Autre</a></p>

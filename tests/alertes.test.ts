@@ -81,7 +81,7 @@ describe('alertes — fonction démo', () => {
       headers: { ...auth },
       body: JSON.stringify({
         action: 'creer',
-        date: '2026-10-20',
+        date: '2026-12-15',
         cours: 'Pilates',
         type: 'annulation',
         message: 'Gymnase fermé ce jour-là.',

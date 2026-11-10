@@ -6,7 +6,7 @@ import { usePageMeta } from '../hooks/usePageMeta';
 import { SCHEDULE } from '../data/siteData';
 import Footer from '../sections/Footer';
 import NotFoundPage from './NotFoundPage';
-import { anciennete } from '../lib/clubEnChiffres';
+import { anciennete, chargerChiffresPublics, chiffresDepuisApi, libelleEffectif } from '../lib/clubEnChiffres';
 
 type Chiffres = {
   ok: boolean;
@@ -49,16 +49,11 @@ function ClubEnChiffres() {
 
   useEffect(() => {
     let vivant = true;
-    fetch('/api/club-chiffres')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d: Chiffres | null) => {
-        if (!vivant) return;
-        if (d?.ok) setChiffres(d);
-        else setIndispo(true);
-      })
-      .catch(() => {
-        if (vivant) setIndispo(true);
-      });
+    chargerChiffresPublics().then(({ chiffres: c, live }) => {
+      if (!vivant) return;
+      if (live && chiffresDepuisApi(c)) setChiffres(c);
+      else setIndispo(true);
+    });
     return () => {
       vivant = false;
     };
@@ -104,11 +99,14 @@ function ClubEnChiffres() {
             valeur={String(seances)}
             legende={`séances par semaine${salles > 1 ? `, dans ${salles} lieux` : ''}`}
           />
-          {chiffres && chiffres.adherentsPlusDe >= 10 ? (
-            <Tuile valeur={`+${chiffres.adherentsPlusDe}`} legende="adhérents cette saison" />
-          ) : (
-            <Tuile valeur="—" legende="adhérents cette saison" />
-          )}
+          {(() => {
+            const n = libelleEffectif(chiffres?.adherentsPlusDe || 0, Boolean(chiffres));
+            return n ? (
+              <Tuile valeur={n.replace(/^plus de /, '+')} legende="adhérents cette saison" />
+            ) : (
+              <Tuile valeur="—" legende="adhérents cette saison" />
+            );
+          })()}
         </section>
 
         {chiffres && chiffres.parAge.length ? (

@@ -31,7 +31,11 @@ import {
   ListOrdered,
   ListChecks,
   CalendarCheck,
+  BarChart3,
+  Euro,
 } from 'lucide-react';
+import BureauReglages from '../components/bureau/BureauReglages';
+import BureauRecherches from '../components/bureau/BureauRecherches';
 import BureauAide from '../components/BureauAide';
 import { clearBureauToken, getBureauRole, getBureauToken, setBureauRole, setBureauToken } from '../lib/bureauSession';
 import BureauAdhesionsTab from '../components/bureau/BureauAdhesionsTab';
@@ -102,7 +106,7 @@ type EssaiItem = {
 };
 
 type TabId = 'today' | 'adhesions' | 'relances' | 'essais' | 'more';
-type MoreKind = 'menu' | 'cartes' | 'planning' | 'events' | 'aide' | 'sondage' | 'checklists' | 'inscriptions';
+type MoreKind = 'menu' | 'cartes' | 'planning' | 'events' | 'aide' | 'sondage' | 'checklists' | 'inscriptions' | 'reglages' | 'recherches';
 type EssaisVue = 'nouveaux' | 'week' | 'person';
 type PorteId = 'seance' | 'admin';
 
@@ -1346,6 +1350,8 @@ export default function BureauPage() {
               {MODULES.inscriptionsEvenements ? (
                 <MenuLigne icone={CalendarCheck} label="Inscriptions événements" aide="Places, inscrits, covoiturage" onClick={() => setMoreKind('inscriptions')} />
               ) : null}
+              <MenuLigne icone={Euro} label="Tarif et fin des essais" aide="Les formulaires s’en servent tout de suite" onClick={() => setMoreKind('reglages')} />
+              <MenuLigne icone={BarChart3} label="Recherches Google" aide="Visites des 4 dernières semaines" onClick={() => setMoreKind('recherches')} />
             </MenuGroupe>
             <MenuGroupe titre="Bureau">
               {MODULES.checklists ? (
@@ -1460,6 +1466,14 @@ export default function BureauPage() {
             <Retour onClick={() => setMoreKind('menu')} />
             <BureauSondageEssai />
           </div>
+        )}
+
+        {tab === 'more' && moreKind === 'reglages' && token && porte === 'admin' && (
+          <BureauReglages onBack={() => setMoreKind('menu')} />
+        )}
+
+        {tab === 'more' && moreKind === 'recherches' && token && porte === 'admin' && (
+          <BureauRecherches onBack={() => setMoreKind('menu')} />
         )}
 
         {tab === 'more' && moreKind === 'aide' && token && porte === 'admin' && (

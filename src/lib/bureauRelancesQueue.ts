@@ -10,6 +10,7 @@ import {
 } from './bureauSearch';
 import { essaiYmdFromCreneau } from './essaiDates';
 import { foldStatut, isTerminalEssai } from './essaiStatuts';
+import { essaisOuverts } from '../data/asso';
 
 export type RelanceMsg = 'A' | 'B' | 'C';
 export type LivePrio = 'P1' | 'P2' | 'SKIP';
@@ -470,7 +471,9 @@ export function classifyRelances(
     const relanceOld = agg.lines.some((l) => isRelanceStatut(String(l.statut || '')))
       && sinceRelance !== null
       && sinceRelance >= 7;
-    if (!absent && !aVenirOld && !relanceOld) continue;
+    // Après la fin des essais : on relance encore ceux qui n’ont pas adhéré (plus d’essai à proposer).
+    const apresEssais = !essaisOuverts(now);
+    if (!absent && !aVenirOld && !relanceOld && !apresEssais) continue;
 
     const datedEssai = agg.lines
       .map((l) => essaiYmdFromCreneau(String(l.creneau || '')))

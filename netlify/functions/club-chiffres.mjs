@@ -1,10 +1,11 @@
 /**
- * GET /api/club-chiffres (modules.clubEnChiffres) — chiffres publics et anonymes du club (page /le-club-en-chiffres).
+ * GET /api/club-chiffres — chiffres publics et anonymes du club (accueil + page /le-club-en-chiffres).
  * Totaux arrondis et tranches de 10 personnes au moins : voir _club-chiffres.mjs. Ni nom, ni essai, ni montant.
  * Réponse gardée une heure : le registre n'est lu qu'une fois par heure et par région.
+ * Toujours public : l’accueil s’en sert même si le module `clubEnChiffres` (la page) est éteint.
  */
 
-import { clientIp, consumeRateLimit, json, moduleOff } from './_bureau-lib.mjs';
+import { clientIp, consumeRateLimit, json } from './_bureau-lib.mjs';
 import { publier } from './_club-chiffres.mjs';
 import { brancherStockage } from './_stockage.mjs';
 import { versV2 } from './_v2.mjs';
@@ -12,8 +13,6 @@ import { donnees } from './rapport.mjs';
 
 const handler = async (event) => {
   brancherStockage(event);
-  const off = moduleOff('clubEnChiffres');
-  if (off) return off;
   if (event.httpMethod !== 'GET') return json(405, { ok: false });
   if (!consumeRateLimit(`club-chiffres:${clientIp(event)}`, 30, 10 * 60 * 1000).ok) return json(429, { ok: false });
   try {

@@ -7,7 +7,7 @@
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { google } from 'googleapis';
 import { ASSO, SITE_URL } from '../../asso.derive.js';
-import { DEMO, demoCalendar, demoGmail } from './_demo.mjs';
+import { DEMO, demoCalendar, demoGmail, demoSearchConsole } from './_demo.mjs';
 
 /** Compte Google de l’association (Gmail, Agenda, Contacts) : ASSO_GMAIL ou asso.config.js → email. */
 export const ASSO_GMAIL = process.env.ASSO_GMAIL || ASSO.email;
@@ -24,6 +24,7 @@ export const GOOGLE_SCOPES = [
   'https://www.googleapis.com/auth/gmail.send',
   'https://www.googleapis.com/auth/calendar.events',
   'https://www.googleapis.com/auth/contacts',
+  'https://www.googleapis.com/auth/webmasters.readonly',
 ];
 
 function getBureauHmacSecret() {
@@ -83,6 +84,11 @@ export function calendarApi() {
   return DEMO ? demoCalendar() : google.calendar({ version: 'v3', auth: getUserGoogleAuth() });
 }
 
+/** Search Console du compte asso (faux en mode démo). */
+export function searchConsoleApi() {
+  return DEMO ? demoSearchConsole() : google.searchconsole({ version: 'v1', auth: getUserGoogleAuth() });
+}
+
 export function getCalendarId() {
   return (process.env.GOOGLE_CALENDAR_ID || 'primary').trim() || 'primary';
 }
@@ -137,7 +143,7 @@ export function googleErrorMessage(err) {
     return 'Connexion Google expirée ou révoquée. Le référent doit reconnecter le compte asso.';
   }
   if (code === 403 || /insufficient|accessNotConfigured|Daily Limit/i.test(msg)) {
-    return 'Accès Google refusé ou quota atteint. Vérifiez les API Gmail, Calendar et People (Contacts) dans Google Cloud.';
+    return 'Accès Google refusé ou quota atteint. Vérifiez les API Gmail, Calendar, People (Contacts) et Search Console dans Google Cloud.';
   }
   if (/GOOGLE_|manqu/i.test(msg)) {
     return msg;

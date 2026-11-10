@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { ACTIVITIES, BUREAU } from '../data/siteData';
-import { ASSO, AUTOUR_PATH, HAS_FEDERATION, TEL_INTL } from '../data/asso';
+import { ASSO, AUTOUR_PATH, HAS_FEDERATION, TEL_INTL, essaisProposes } from '../data/asso';
 import { useCoachsFromSheet, useEventsFromSheet, useScheduleFromSheet } from '../hooks/useSheetData';
+import { chargerChiffresPublics, libelleAdherents } from '../lib/clubEnChiffres';
 
 /** Invalide le cache Netlify (assets webp en immutable). */
 const COACH_IMG_V = '20260829b';
@@ -28,6 +29,8 @@ export default function TeamSection({ part = 'all' }: { part?: 'coaches' | 'club
   const headerRef = useRef<HTMLDivElement>(null);
   const coachesRef = useRef<HTMLDivElement>(null);
   const [openCoach, setOpenCoach] = useState<string | null>(null);
+  const [adherents, setAdherents] = useState(() => libelleAdherents(0, false));
+  const essais = essaisProposes();
 
   // Sans animateur renseigné (contenu/coachs.json vide), le bloc disparaît.
   const showCoaches = (part === 'coaches' || part === 'all') && COACHS.length > 0;
@@ -45,6 +48,16 @@ export default function TeamSection({ part = 'all' }: { part?: 'coaches' | 'club
         ACTIVITIES.find((a) => a.coach === selectedCoach.name)?.name || ''
       )}`
     : '/essai';
+
+  useEffect(() => {
+    let vivant = true;
+    chargerChiffresPublics().then(({ chiffres, live }) => {
+      if (vivant) setAdherents(libelleAdherents(chiffres.adherentsPlusDe, live));
+    });
+    return () => {
+      vivant = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!openCoach) return;
@@ -210,11 +223,11 @@ export default function TeamSection({ part = 'all' }: { part?: 'coaches' | 'club
                     </p>
                   )}
                   <a
-                    href={selectedEssaiUrl}
-                    data-analytics={`CTA-Coach-Sheet-Essai-${selectedCoach.name}`}
+                    href={essais ? selectedEssaiUrl : '/inscription'}
+                    data-analytics={`CTA-Coach-Sheet-${essais ? 'Essai' : 'Adherer'}-${selectedCoach.name}`}
                     className="mt-5 flex items-center justify-center w-full min-h-[48px] rounded-full bg-orange-primary text-white font-body font-semibold text-[16px] hover:bg-orange-hover"
                   >
-                    Réserver un essai
+                    {essais ? 'Réserver un essai' : 'Adhérer au club'}
                   </a>
                   <a
                     href="/#contact"
@@ -238,7 +251,7 @@ export default function TeamSection({ part = 'all' }: { part?: 'coaches' | 'club
             </h2>
             <p className="font-body text-[16px] sm:text-[17px] text-brand-gray max-w-[720px] leading-relaxed">
               Pas de compétition, pas de classement. {ASSO.lieux.length > 1 ? `${ASSO.lieux.length} salles` : 'Une salle'} à{' '}
-              {ASSO.ville}, {ACTIVITIES.length} cours par semaine, coachs diplômés
+              {ASSO.ville}, {ACTIVITIES.length} cours par semaine, coachs diplômés, {adherents}
               {HAS_FEDERATION ? (
                 <>
                   , affiliation <strong className="text-brand-black">{ASSO.federation.sigle || ASSO.federation.nom}</strong>

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { essaisOuverts } from '../asso.derive.js';
+import { essaisOuverts, essaisProposes } from '../asso.derive.js';
 
 describe('fin des essais (saison.finEssais)', () => {
   afterEach(() => {
@@ -9,6 +9,12 @@ describe('fin des essais (saison.finEssais)', () => {
 
   it('vide : les essais restent ouverts toute l’année', () => {
     expect(essaisOuverts(new Date('2030-01-01T12:00:00+01:00').getTime(), '')).toBe(true);
+  });
+
+  it('proposés seulement s’il reste des séances et que la date n’est pas passée', () => {
+    expect(essaisProposes(new Date('2026-10-20T12:00:00+02:00').getTime(), '2026-10-20')).toBe(true);
+    expect(essaisProposes(new Date('2026-10-21T12:00:00+02:00').getTime(), '2026-10-20')).toBe(false);
+    expect(essaisProposes(new Date('2026-10-20T12:00:00+02:00').getTime(), '')).toBe(true);
   });
 
   it('ouverts jusqu’à 23 h 59 (heure de Paris) du dernier jour, fermés ensuite', () => {

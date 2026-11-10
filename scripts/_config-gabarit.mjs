@@ -169,6 +169,12 @@ ${(c.lieux || []).map(lieu).join('\n')}
     iban: ${q(c.adhesion?.iban)},
   },
 
+  // ---- Accueil / club en chiffres ----
+  club: {
+    /** Phrase si le registre n’est pas lisible (« plus de 115 adhérents » sinon). Vide = « des adhérents ». */
+    repliAdherents: ${q(c.club?.repliAdherents ?? 'plus d’une centaine')},
+  },
+
   // ---- Liste d'attente (modules.listeAttente) ----
   listeAttente: {
     /** Places par défaut pour un créneau (essai) ou un cours (adhésion). */
