@@ -78,7 +78,7 @@ export default function BureauAuthGate({
                 onChange={(e) => setPassword(e.target.value)}
                 autoFocus
                 autoComplete="current-password"
-                className="w-full rounded-xl border-0 ring-1 ring-black/10 bg-white px-4 py-3.5 text-base focus:outline-none focus:ring-2 focus:ring-brand-olive"
+                className="w-full rounded-xl border border-brand-gray-light px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#4A90E2] bg-[#FDF8F1]"
                 placeholder="••••••••"
               />
             </div>
@@ -91,13 +91,13 @@ export default function BureauAuthGate({
             <button
               type="submit"
               disabled={loggingIn || !password}
-              className="w-full rounded-xl bg-brand-olive hover:bg-brand-olive-hover disabled:opacity-60 text-white font-semibold py-3.5 text-base min-h-[48px]"
+              className="w-full rounded-full bg-orange-primary hover:bg-orange-hover disabled:opacity-60 text-white font-display font-bold min-h-[48px]"
             >
               {loggingIn ? 'Connexion…' : 'Entrer'}
             </button>
           </form>
-          <p className="mt-4 text-xs text-slate-400 text-center">
-            Même mot de passe que l’espace Bureau. Page non indexée.
+          <p className="mt-4 text-xs text-brand-gray text-center">
+            Même mot de passe qu&apos;au bureau.
           </p>
         </div>
       </div>

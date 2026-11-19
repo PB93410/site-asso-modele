@@ -1,0 +1,21 @@
+/**
+ * Copie dist/index.html → dist/bureau/index.html
+ * À lancer APRÈS vite build / prerender (le prerender de /bureau timeout, c'est normal).
+ */
+import { copyFileSync, existsSync, mkdirSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const src = join(root, 'dist', 'index.html');
+const destDir = join(root, 'dist', 'bureau');
+const dest = join(destDir, 'index.html');
+
+if (!existsSync(src)) {
+  console.error('[bureau] dist/index.html introuvable — lancer npm run build d’abord');
+  process.exit(1);
+}
+
+mkdirSync(destDir, { recursive: true });
+copyFileSync(src, dest);
+console.log('[bureau] OK dist/bureau/index.html');

@@ -31,7 +31,7 @@ export default function MembershipSection({ variant = 'tarifs' }: { variant?: 'h
             </>
           ) : (
             <>
-              {TARIF_LABEL} l&apos;année — {INCLUS_LABEL}. Même tarif en cours de saison.
+              {INCLUS_LABEL}. Même tarif en cours de saison.
               {essais && NB_ESSAIS > 0 ? ` Les ${ESSAIS_LABEL} restent disponibles.` : ''}
             </>
           )}
@@ -73,7 +73,7 @@ export default function MembershipSection({ variant = 'tarifs' }: { variant?: 'h
               Adhérer
             </p>
             <h3 className={`font-display font-black text-[22px] md:text-[24px] leading-tight ${essais ? 'text-brand-black' : ''}`}>
-              {isHome ? 'Rejoindre le club' : `${TARIF_LABEL} l'année`}
+              {isHome ? 'Rejoindre le club' : 'Adhérer au club'}
             </h3>
             <p className={`font-body text-[16px] mt-2 ${essais ? 'text-brand-gray' : 'text-white/90'}`}>
               Tous les cours, {INCLUS_LABEL}.{' '}
@@ -85,7 +85,7 @@ export default function MembershipSection({ variant = 'tarifs' }: { variant?: 'h
                 data-analytics="CTA-Tarifs-Inscription"
                 className={
                   essais
-                    ? 'flex items-center justify-center w-full min-h-[48px] rounded-full border border-orange-primary/40 text-orange-primary font-body font-semibold text-[16px] hover:bg-orange-primary hover:text-white'
+                    ? 'flex items-center justify-center w-full min-h-[48px] rounded-full bg-orange-primary hover:bg-orange-hover text-white font-body font-semibold text-[16px]'
                     : 'flex items-center justify-center w-full min-h-[48px] rounded-full bg-white text-orange-primary font-body font-semibold text-[16px] hover:bg-orange-light'
                 }
               >
@@ -109,15 +109,15 @@ export default function MembershipSection({ variant = 'tarifs' }: { variant?: 'h
           <div className="divide-y divide-black/10 border-t border-b border-black/10">
             {[
               {
-                q: 'Faut-il un certificat médical ?',
+                q: `Faut-il un certificat médical\u00a0?`,
                 a: 'Non pour la pratique de loisir. Un questionnaire QS-SPORT suffit. Si une réponse est positive, un certificat vous sera demandé.',
               },
               {
-                q: 'Je m’engage pour toute la saison ?',
+                q: `Je m\u2019engage pour toute la saison\u00a0?`,
                 a: `La cotisation est annuelle (${TARIF_LABEL}), sans obligation de présence. Vous venez quand vous pouvez.${essais ? ' Les essais gratuits sont sans engagement.' : ''}`,
               },
               {
-                q: 'Je ne connais personne, ça se passe comment ?',
+                q: `Je ne connais personne, ça se passe comment\u00a0?`,
                 a: 'Quelqu’un vous accueille et vous présente au coach. Au bout de quelques séances, les visages deviennent familiers.',
               },
             ].map((item) => (

@@ -33,6 +33,7 @@ import {
 import { buildHowToJoinSchema } from '../lib/schema';
 import { aidesProposees, calculerReste, libelleAides } from '../lib/financement';
 import { CONNU_PARRAINAGE, connuDepuisLien } from '../lib/parrainage';
+import Footer from '../sections/Footer';
 
 const COURSES = [
   'Gym Douce',
@@ -466,6 +467,7 @@ export default function InscriptionPage() {
   const firstName = form.prenom.trim();
 
   return (
+    <>
     <main id="main-content" className="min-h-screen bg-brand-cream text-brand-black pt-[72px] pb-16">
       <script
         type="application/ld+json"
@@ -1202,6 +1204,8 @@ export default function InscriptionPage() {
         )}
       </div>
     </main>
+    <Footer />
+    </>
   );
 }
 

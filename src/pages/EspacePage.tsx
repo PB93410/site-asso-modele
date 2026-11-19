@@ -1,6 +1,7 @@
 import { useCallback, useEffect, lazy, Suspense, useState, type FormEvent, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { ASSO, MODULES } from '../data/asso';
+import { CLUB_PHONE_DISPLAY, CLUB_PHONE_TEL, EMAIL_CONTACT } from '../data/CONFIG';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useScheduleFromSheet } from '../hooks/useSheetData';
 import { libelleDate, libelleHeure, parisMaintenant, sansCoursLe } from '../lib/accueil';
@@ -795,6 +796,28 @@ export default function EspacePage() {
   return (
     <div className="relative bg-[#F8F7F4] min-h-screen">
       <main id="main-content" className="page-chrome-top content-max-width py-10 sm:py-14 max-w-xl">
+        <noscript>
+          <div className="max-w-[560px] mx-auto mb-8 rounded-2xl bg-white ring-1 ring-black/10 p-5">
+            <p className="font-body text-[16px] text-brand-black leading-relaxed mb-3">
+              Cette page nécessite JavaScript pour fonctionner. Activez JavaScript dans votre navigateur.
+            </p>
+            <p className="font-body text-[15px] text-brand-gray leading-relaxed">
+              Besoin d&apos;aide ? Contactez-nous :{' '}
+              {CLUB_PHONE_TEL ? (
+                <a href={`tel:${CLUB_PHONE_TEL}`} className="text-orange-ink underline underline-offset-2">
+                  {CLUB_PHONE_DISPLAY}
+                </a>
+              ) : (
+                <span>{CLUB_PHONE_DISPLAY}</span>
+              )}
+              {' '}ou{' '}
+              <a href={`mailto:${EMAIL_CONTACT}`} className="text-orange-ink underline underline-offset-2">
+                {EMAIL_CONTACT}
+              </a>
+              .
+            </p>
+          </div>
+        </noscript>
         <p className="font-mono text-[11px] tracking-[3px] uppercase text-orange-primary mb-3">Espace adhérent</p>
         <h1 className="font-display font-black text-brand-black text-[clamp(1.8rem,5vw,2.6rem)] leading-tight mb-4">
           {etape === 'espace' && fiche ? `Bonjour ${fiche.prenom}` : 'Mon espace'}

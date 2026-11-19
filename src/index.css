@@ -163,6 +163,12 @@
     min-width: 44px;
   }
 
+  /* Fil d'Ariane : forcer display inline-flex pour que min-height (nav a) soit effectif */
+  nav[aria-label="Fil d'Ariane"] a {
+    display: inline-flex;
+    align-items: center;
+  }
+
   /* Liens texte dans le contenu : agrandir la zone sans casser le flux */
   p a,
   li a,

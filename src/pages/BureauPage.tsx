@@ -788,23 +788,23 @@ export default function BureauPage() {
   if (!token) {
     return (
       <div data-bureau-root className="min-h-screen bg-brand-cream flex items-center justify-center p-4">
-        <div className="w-full max-w-sm bg-white rounded-3xl ring-1 ring-black/[0.06] shadow-xl shadow-black/[0.04] p-6 sm:p-8">
+        <div className="w-full max-w-md bg-white rounded-3xl ring-1 ring-black/[0.06] shadow-xl shadow-black/[0.04] p-6 sm:p-8">
           <div className="flex items-center gap-3 mb-6">
-<div className="w-12 h-12 rounded-2xl bg-brand-olive text-white font-display font-bold text-sm flex items-center justify-center" aria-hidden="true">
-              {ASSO.sigle.slice(0, 3)}
+            <div className="w-12 h-12 rounded-2xl bg-orange-soft flex items-center justify-center" aria-hidden="true">
+              <Shield className="w-6 h-6 text-orange-primary" aria-hidden="true" />
             </div>
             <div>
               <h1 className="font-display font-bold text-xl text-brand-black">Espace bureau</h1>
-              <p className="text-sm text-slate-500">{ASSO.nom}</p>
+              <p className="text-sm text-brand-gray">{ASSO.nom}</p>
             </div>
           </div>
           <form onSubmit={handleLogin} className="space-y-4">
-            <p className="text-sm text-slate-600 leading-relaxed">
+            <p className="text-sm text-brand-gray leading-relaxed">
               Espace réservé au bureau et aux bénévoles de séance. Tapez le mot de passe, puis
               choisissez Ce soir ou Bureau. Le mode d’emploi est dans Autre → Aide (côté bureau).
             </p>
             <div>
-              <label htmlFor="bureau-mdp" className="block text-sm font-medium text-slate-700 mb-1.5">
+              <label htmlFor="bureau-mdp" className="block text-sm font-medium text-brand-black mb-1.5">
                 Mot de passe du bureau
               </label>
               <input
@@ -814,8 +814,8 @@ export default function BureauPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 autoFocus
                 autoComplete="current-password"
-                className="w-full rounded-xl border-0 ring-1 ring-black/10 bg-white px-4 py-3.5 text-base focus:outline-none focus:ring-2 focus:ring-brand-olive"
-                placeholder="Le mot de passe que vous a donné le bureau"
+                className="w-full rounded-xl border border-brand-gray-light px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#4A90E2] bg-[#FDF8F1]"
+                placeholder="••••••••"
               />
             </div>
             {loginError && (
@@ -827,11 +827,14 @@ export default function BureauPage() {
             <button
               type="submit"
               disabled={loggingIn || !password}
-              className="w-full rounded-xl bg-brand-olive hover:bg-brand-olive-hover disabled:opacity-60 text-white font-semibold py-3.5 text-base min-h-[48px]"
+              className="w-full rounded-full bg-orange-primary hover:bg-orange-hover disabled:opacity-60 text-white font-display font-bold min-h-[48px]"
             >
-              {loggingIn ? 'Ouverture…' : 'Entrer'}
+              {loggingIn ? 'Connexion…' : 'Entrer'}
             </button>
           </form>
+          <p className="mt-4 text-xs text-brand-gray text-center">
+            Même mot de passe qu&apos;au bureau.
+          </p>
         </div>
       </div>
     );
