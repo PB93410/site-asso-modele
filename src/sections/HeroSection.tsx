@@ -159,50 +159,42 @@ export default function HeroSection() {
               {cta.label}
             </a>
             {essaiCta ? (
-              <p
-                className="font-body text-[16px] text-white"
+              MODULES.quiz ? (
+                <a
+                  href="/quiz"
+                  className="inline-flex items-center min-h-[44px] underline underline-offset-2 decoration-white/50 hover:decoration-white font-body font-semibold text-[14px] text-white"
+                  style={{ textShadow: '0 1px 4px rgba(0,0,0,0.45)' }}
+                >
+                  Quel cours pour moi ?
+                </a>
+              ) : (
+                <a
+                  href="/tarifs"
+                  data-analytics="CTA-Hero-Tarifs-Secondaire"
+                  className="inline-flex items-center min-h-[44px] underline underline-offset-2 decoration-white/50 hover:decoration-white font-body font-semibold text-[14px] text-white"
+                  style={{ textShadow: '0 1px 4px rgba(0,0,0,0.45)' }}
+                >
+                  Voir les tarifs
+                </a>
+              )
+            ) : essaisProposes() ? (
+              <a
+                href="/essai"
+                data-analytics="CTA-Hero-Essai-Secondaire"
+                className="inline-flex items-center min-h-[44px] underline underline-offset-2 decoration-white/50 hover:decoration-white font-body font-semibold text-[14px] text-white"
                 style={{ textShadow: '0 1px 4px rgba(0,0,0,0.45)' }}
               >
-                {MODULES.quiz ? (
-                  <a
-                    href="/quiz"
-                    className="underline underline-offset-2 decoration-white/50 hover:decoration-white font-semibold text-white"
-                  >
-                    Quel cours pour moi ?
-                  </a>
-                ) : (
-                  <a
-                    href="/tarifs"
-                    data-analytics="CTA-Hero-Tarifs-Secondaire"
-                    className="underline underline-offset-2 decoration-white/50 hover:decoration-white font-semibold text-white"
-                  >
-                    Voir les tarifs
-                  </a>
-                )}
-              </p>
+                {choix === 'reinscription' ? 'Nouveau ? Un essai gratuit d’abord' : 'D’abord un essai gratuit'}
+              </a>
             ) : (
-              <p
-                className="font-body text-[16px] text-white"
+              <a
+                href="/tarifs"
+                data-analytics="CTA-Hero-Tarifs-Secondaire"
+                className="inline-flex items-center min-h-[44px] underline underline-offset-2 decoration-white/50 hover:decoration-white font-body font-semibold text-[14px] text-white"
                 style={{ textShadow: '0 1px 4px rgba(0,0,0,0.45)' }}
               >
-                {essaisProposes() ? (
-                  <a
-                    href="/essai"
-                    data-analytics="CTA-Hero-Essai-Secondaire"
-                    className="underline underline-offset-2 decoration-white/50 hover:decoration-white font-semibold text-white"
-                  >
-                    {choix === 'reinscription' ? 'Nouveau ? Un essai gratuit d’abord' : 'D’abord un essai gratuit'}
-                  </a>
-                ) : (
-                  <a
-                    href="/tarifs"
-                    data-analytics="CTA-Hero-Tarifs-Secondaire"
-                    className="underline underline-offset-2 decoration-white/50 hover:decoration-white font-semibold text-white"
-                  >
-                    Voir les tarifs
-                  </a>
-                )}
-              </p>
+                Voir les tarifs
+              </a>
             )}
           </div>
         </div>

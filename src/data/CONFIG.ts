@@ -4,12 +4,18 @@
 // Les valeurs propres à l'association viennent de asso.config.js (racine).
 
 import { ASSO, SAISON_COURTE, SEASON_PREFIX, TARIF_LABEL } from './asso';
+import { normalizeFrPhone } from '../lib/waPhone';
 
 export { SEASON_PREFIX };
 export const SEASON_LABEL = ASSO.saison.label;
 /** Verso commun des cartes, public. Mettre la saison dans le nom (cache /assets d'un an). */
 export const CARTE_VERSO_URL = `/assets/carte-verso-${SAISON_COURTE}.png`;
 export const CLUB_PHONE_DISPLAY = ASSO.telephone;
+/** Lien `tel:` pour le repli sans JavaScript (format international). */
+export const CLUB_PHONE_TEL = (() => {
+  const n = normalizeFrPhone(ASSO.telephone || '');
+  return n ? `+${n}` : '';
+})();
 export const SAISON = SEASON_LABEL;
 export const EMAIL_CONTACT = ASSO.email;
 export const WHATSAPP_NUMBER = ASSO.whatsapp;

@@ -90,7 +90,7 @@ export default function Footer() {
                     <Link
                       key={link.href}
                       to={link.href}
-                      className="font-body text-[13px] text-brand-gray hover:text-white transition-colors duration-150"
+                      className="inline-flex items-center min-h-[44px] font-body text-[13px] text-brand-gray hover:text-white transition-colors duration-150"
                     >
                       {link.label}
                     </Link>
@@ -99,7 +99,7 @@ export default function Footer() {
                       key={link.href}
                       href={link.href}
                       onClick={(e) => handleHomeHash(e, link.href)}
-                      className="font-body text-[13px] text-brand-gray hover:text-white transition-colors duration-150"
+                      className="inline-flex items-center min-h-[44px] font-body text-[13px] text-brand-gray hover:text-white transition-colors duration-150"
                     >
                       {link.label}
                     </a>
@@ -114,7 +114,7 @@ export default function Footer() {
                   <Link
                     key={link.href}
                     to={link.href}
-                    className="font-body text-[13px] text-brand-gray hover:text-white transition-colors duration-150"
+                    className="inline-flex items-center min-h-[44px] font-body text-[13px] text-brand-gray hover:text-white transition-colors duration-150"
                   >
                     {link.label}
                   </Link>
@@ -129,7 +129,7 @@ export default function Footer() {
                     <Link
                       key={link.href}
                       to={link.href}
-                      className="font-body text-[13px] text-brand-gray hover:text-white transition-colors duration-150"
+                      className="inline-flex items-center min-h-[44px] font-body text-[13px] text-brand-gray hover:text-white transition-colors duration-150"
                     >
                       {link.label}
                     </Link>
@@ -138,7 +138,7 @@ export default function Footer() {
                       key={link.href}
                       href={link.href}
                       onClick={(e) => handleHomeHash(e, link.href)}
-                      className="font-body text-[13px] text-brand-gray hover:text-white transition-colors duration-150"
+                      className="inline-flex items-center min-h-[44px] font-body text-[13px] text-brand-gray hover:text-white transition-colors duration-150"
                     >
                       {link.label}
                     </a>

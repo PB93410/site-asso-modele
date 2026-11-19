@@ -19,6 +19,12 @@ export default {
         'orange-mid': ASSO.couleurs.primaireHover,
         // Réservé dégradés événementiels (forum, badges rentrée) — pas les boutons
         'orange-bright': '#EA580C',
+        // Sur fond clair (liens, petits textes orange lisibles)
+        'orange-ink': '#A34608',
+        // Sur fond noir / photo : contraste fort (ex. accroche sur hero)
+        'orange-on-dark': '#EA580C',
+        // Titres sur fond sombre (hero) : contraste ≥ 4,5:1 sur #111110
+        'orange-clair': '#FDBA74',
         'orange-light': '#FFF4EB',
         'orange-soft': '#FDEAD7',
         'brand-black': '#111110',

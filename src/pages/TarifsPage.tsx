@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import MembershipSection from '../sections/MembershipSection';
+import Footer from '../sections/Footer';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { ASSO, ESSAIS_LABEL, PAYMENT_MODES, TARIF_LABEL } from '../data/asso';
 import { SEASON_LABEL } from '../data/CONFIG';
@@ -63,6 +64,7 @@ export default function TarifsPage() {
           </p>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

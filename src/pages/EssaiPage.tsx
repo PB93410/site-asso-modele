@@ -16,6 +16,7 @@ import {
 import { buildDateEssaiCell, formatEssaiDateLabel } from '../lib/essaiDates';
 import { emailError, essaiFormError } from '../lib/formValidation';
 import { buildHowToJoinSchema } from '../lib/schema';
+import { CLUB_PHONE_DISPLAY, CLUB_PHONE_TEL, EMAIL_CONTACT } from '../data/CONFIG';
 
 const MSG_UN_CRENEAU =
   NB_ESSAIS > 1
@@ -33,7 +34,33 @@ function UnCreneauNote({ className = '' }: { className?: string }) {
 export default function EssaiPage() {
   // Heure lue une fois : après `saison.finEssais`, plus de demande d'essai.
   const [ouverts] = useState(() => essaisOuverts());
-  return ouverts ? <FormulaireEssai /> : <EssaisTermines />;
+  return (
+    <>
+      <noscript>
+        <div className="content-max-width max-w-[560px] mx-auto px-4 py-10">
+          <p className="font-body text-[16px] text-brand-black leading-relaxed mb-3">
+            Cette page nécessite JavaScript pour fonctionner. Activez JavaScript dans votre navigateur.
+          </p>
+          <p className="font-body text-[15px] text-brand-gray leading-relaxed">
+            Contactez-nous&nbsp;:{' '}
+            {CLUB_PHONE_TEL ? (
+              <a href={`tel:${CLUB_PHONE_TEL}`} className="text-orange-ink underline underline-offset-2">
+                {CLUB_PHONE_DISPLAY}
+              </a>
+            ) : (
+              <span>{CLUB_PHONE_DISPLAY}</span>
+            )}
+            {' '}ou{' '}
+            <a href={`mailto:${EMAIL_CONTACT}`} className="text-orange-ink underline underline-offset-2">
+              {EMAIL_CONTACT}
+            </a>
+            .
+          </p>
+        </div>
+      </noscript>
+      {ouverts ? <FormulaireEssai /> : <EssaisTermines />}
+    </>
+  );
 }
 
 /** Après la fin des essais : la page reste, pour les anciens liens, et mène à l'adhésion. */
